@@ -1,0 +1,107 @@
+Global
+	$Split_PanelPrincipal, $PanelPrincipal[1]
+
+$Split_PanelPrincipal					= $form.SplitContainer()
+$Split_PanelPrincipal.Anchor			= 4+8+1+2
+$Split_PanelPrincipal.BackColor			= 51, 51, 51
+$Split_PanelPrincipal.Orientation		= 0
+$Split_PanelPrincipal.Size				= $form.ClientWidth, $form.ClientHeight
+$Split_PanelPrincipal.SplitterDistance	= 100
+$PanelPrincipal[0] 						= $Split_PanelPrincipal.Panel1
+$PanelPrincipal[0].OnResize				= '$$Split_PanelPrincipal.SplitterDistance	= 100'
+$PanelPrincipal[1] 						= $Split_PanelPrincipal.Panel2
+$PanelPrincipal[1].pic					= $PanelPrincipal[1].Picturebox()
+$PanelPrincipal[1].pic.Size				= $PanelPrincipal[1].ClientSize
+$PanelPrincipal[1].pic.image			= @curdir+"\empresa.bmp"
+$PanelPrincipal[1].pic.Dock				= 5
+$PanelPrincipal[1].pic.SizeMode			= 1
+
+$PanelPrincipal[0].BackColor			= $Split_PanelPrincipal.BackColor
+$PanelPrincipal[0].ForeColor			= "White"
+$PanelPrincipal[0].Font					= $System.font("Segeo UI", 11, 1)
+
+$PanelPrincipal[0].btContrato				= $PanelPrincipal[0].ToolButton()
+$PanelPrincipal[0].btContrato.Size			= 120, 80
+$PanelPrincipal[0].btContrato.ToolTipText	= "Ver os contratos cadastrados."
+$PanelPrincipal[0].btContrato.Text			= "Contratos"
+$PanelPrincipal[0].btContrato.Cursor		= 16
+$PanelPrincipal[0].btContrato.Location		= 10, 12
+$PanelPrincipal[0].btContrato.Alignment		= 2
+$PanelPrincipal[0].btContrato.FlatStyle		= 0
+$PanelPrincipal[0].btContrato.BorderStyle	= 0
+$PanelPrincipal[0].btContrato.BackColor		= $System.Color(0, 128, 255)
+$PanelPrincipal[0].btContrato.HotBackColor	= $System.Color(20, 148, 255)
+$PanelPrincipal[0].btContrato.icon			= $main_img.Images(0)
+$PanelPrincipal[0].btContrato.OnClick		= "VerContrato($$form)"
+
+$PanelPrincipal[0].btFuncionario				= $PanelPrincipal[0].ToolButton()
+$PanelPrincipal[0].btFuncionario.Size			= 120, 80
+$PanelPrincipal[0].btFuncionario.ToolTipText	= "Ver os funcionários e fazer o controle dos dados"+@crlf+"de cada funcionário."
+$PanelPrincipal[0].btFuncionario.Text			= "Funcionários"
+$PanelPrincipal[0].btFuncionario.Cursor			= 16
+$PanelPrincipal[0].btFuncionario.Location		= $PanelPrincipal[0].btContrato.right+5, 12
+$PanelPrincipal[0].btFuncionario.Alignment		= 2
+$PanelPrincipal[0].btFuncionario.FlatStyle		= 0
+$PanelPrincipal[0].btFuncionario.BorderStyle	= 0
+$PanelPrincipal[0].btFuncionario.BackColor		= $System.Color(0, 128, 255)
+$PanelPrincipal[0].btFuncionario.HotBackColor	= $System.Color(20, 148, 255)
+$PanelPrincipal[0].btFuncionario.icon			= $main_img.Images(1)
+$PanelPrincipal[0].btFuncionario.OnClick		= "VerFuncionario($$form)"
+
+$PanelPrincipal[0].btPagamentofunc				= $PanelPrincipal[0].ToolButton()
+$PanelPrincipal[0].btPagamentofunc.Size			= 120, 80
+$PanelPrincipal[0].btPagamentofunc.ToolTipText	= "Ver os pagamentos de cada funcionário."
+$PanelPrincipal[0].btPagamentofunc.Text			= "Pagamentos funcionários"
+$PanelPrincipal[0].btPagamentofunc.Cursor		= 16
+$PanelPrincipal[0].btPagamentofunc.Location		= $PanelPrincipal[0].btFuncionario.right+5, 12
+$PanelPrincipal[0].btPagamentofunc.Alignment	= 2
+$PanelPrincipal[0].btPagamentofunc.FlatStyle	= 0
+$PanelPrincipal[0].btPagamentofunc.BorderStyle	= 0
+$PanelPrincipal[0].btPagamentofunc.BackColor	= $System.Color(0, 128, 255)
+$PanelPrincipal[0].btPagamentofunc.HotBackColor	= $System.Color(20, 148, 255)
+$PanelPrincipal[0].btPagamentofunc.icon			= $main_img.Images(2)
+$PanelPrincipal[0].btPagamentofunc.OnClick		= "frmPagamento()"
+
+$PanelPrincipal[0].btPagamentoAluno				= $PanelPrincipal[0].ToolButton()
+$PanelPrincipal[0].btPagamentoAluno.Size		= 120, 80
+$PanelPrincipal[0].btPagamentoAluno.ToolTipText	= "Ver os pagamentos de cada aluno."
+$PanelPrincipal[0].btPagamentoAluno.Text		= "Pagamentos alunos"
+$PanelPrincipal[0].btPagamentoAluno.Cursor		= 16
+$PanelPrincipal[0].btPagamentoAluno.Location	= $PanelPrincipal[0].btPagamentofunc.right+5, 12
+$PanelPrincipal[0].btPagamentoAluno.Alignment	= 2
+$PanelPrincipal[0].btPagamentoAluno.FlatStyle	= 0
+$PanelPrincipal[0].btPagamentoAluno.BorderStyle	= 0
+$PanelPrincipal[0].btPagamentoAluno.BackColor	= $System.Color(0, 128, 255)
+$PanelPrincipal[0].btPagamentoAluno.HotBackColor= $System.Color(20, 148, 255)
+$PanelPrincipal[0].btPagamentoAluno.icon		= $main_img.Images(4)
+$PanelPrincipal[0].btPagamentoAluno.OnClick		= "frmPagamentoAluno()"
+
+$PanelPrincipal[0].btLOGO				= $PanelPrincipal[0].ToolButton()
+$PanelPrincipal[0].btLOGO.Anchor		= 1+2+8
+$PanelPrincipal[0].btLOGO.Size			= 70, $PanelPrincipal[0].Height
+$PanelPrincipal[0].btLOGO.Cursor		= 16
+$PanelPrincipal[0].btLOGO.Location		= $PanelPrincipal[0].right-$PanelPrincipal[0].btLOGO.Width, 0
+$PanelPrincipal[0].btLOGO.Alignment		= 2
+$PanelPrincipal[0].btLOGO.FlatStyle		= 0
+$PanelPrincipal[0].btLOGO.BorderStyle	= 0
+$PanelPrincipal[0].btLOGO.BackColor		= 51, 51, 51
+$PanelPrincipal[0].btLOGO.HotBackColor	= $System.Color(26, 26, 26)
+$PanelPrincipal[0].btLOGO.icon			= $main_img.Images(3)
+
+$PanelPrincipal[0].lbApresentacao				= $PanelPrincipal[0].Label()
+$PanelPrincipal[0].lbApresentacao.Anchor		= 1+2+4+8
+$PanelPrincipal[0].lbApresentacao.Size			= 270, 70
+$PanelPrincipal[0].lbApresentacao.Location		= $PanelPrincipal[0].btPagamentoAluno.right+5, 15
+$PanelPrincipal[0].lbApresentacao.TextAlign		= 1
+$PanelPrincipal[0].lbApresentacao.font			= $System.Font("Consolas", 11.5, 1)
+$PanelPrincipal[0].lbApresentacao.ForeColor		= "White"
+$PanelPrincipal[0].lbApresentacao.FixText		= "Razão social : {}"+@crlf+"CNPJ         : {}"+@crlf+"Nome fantasia: {}"+@crlf
+dim $data $data =
+			tb_getdata("Empresa.razao-social", 1),
+			tb_getdata("Empresa.cnpj/cpf", 1),
+			tb_getdata("Empresa.nome-fantasia", 1)
+
+$PanelPrincipal[0].lbApresentacao.Text			=
+	Format($PanelPrincipal[0].lbApresentacao.FixText, $data)
+
+; $PanelPrincipal[1].BackGroundImage = @Curdir+"\img\Empresa.bmp"

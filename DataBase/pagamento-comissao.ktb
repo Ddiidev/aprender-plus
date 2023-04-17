@@ -1,0 +1,31 @@
+##23:19:32,416 | 2018/11/25##
+##22:16:25,904 | 2018/12/16##
+##Aqui fica todos os pagamentos das comissões de todos os funcionários.##
+##pagamento-comissao##
+##1.1.0.2018##
+##
+<IDCODIGO>
+|1
+|2
+|3
+</IDCODIGO>
+<ID-PAGAMENTO-SALARIO>
+|1
+|2
+|6
+</ID-PAGAMENTO-SALARIO>
+<ID-CONTRATO>
+|1
+|2
+|4
+</ID-CONTRATO>
+<VALOR-PAGAMENTO>
+|6,66666666666667
+|6,66666666666667
+|6,66666666666667
+</VALOR-PAGAMENTO>
+<DATA-PAGAMENTO>
+|09/12/2018
+|09/12/2018
+|14/12/2018
+</DATA-PAGAMENTO>

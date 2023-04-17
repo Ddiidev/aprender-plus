@@ -1,0 +1,432 @@
+Global $objPagaAluno
+function frmPagamentoAluno()
+	Dim $DATA, $i
+	
+	;;<PAGAMENTO>
+	$objPagaAluno		 			= $System.Object()
+	$objPagaAluno.pn		 		= $System.Object()
+	$objPagaAluno.Contas_Pagar		= $System.Object()
+	$objPagaAluno.Lista_Pagar		= $System.Object()
+	
+	$objPagaAluno.form					= $System.form($form)
+	$objPagaAluno.form.Text				= "Pagamento dos alunos"
+	$objPagaAluno.form.size				= 500, 650
+	$objPagaAluno.form.backcolor		= 51, 51, 51
+	$objPagaAluno.form.MaximizeBox		= 0
+	$objPagaAluno.form.MinimizeBox		= 0
+	$objPagaAluno.form.FormBorderStyle	= 1
+	$objPagaAluno.form.icon				= $form.icon
+	$objPagaAluno.form.onClosing		= "$$objPagaAluno.form.Hide() $$objPagaAluno.task.Stop()"
+	$objPagaAluno.form.Center()
+	
+	$objPagaAluno.Table				= $objPagaAluno.form.TabControl()
+	$objPagaAluno.Table.Dock		= 5
+	$objPagaAluno.Table.Size		= $objPagaAluno.form.ClientSize
+	$objPagaAluno.Table.BackColor	= 35, 35, 35
+	$objPagaAluno.Table.ForeColor	= "white"
+	$objPagaAluno.Table.Appearance 	= "FlatButtons"
+	
+	;;<CONTAS A PAGAR>
+		/*	CONTAS A PAGAR	*/
+	$objPagaAluno.Contas_PagarTB				= $objPagaAluno.Table.TabPages.Add("Contas a pagar")
+	$objPagaAluno.Contas_Pagar					= $objPagaAluno.Contas_PagarTB.panel()
+	$objPagaAluno.Contas_Pagar.Size				= $objPagaAluno.Contas_PagarTB.ClientSize
+	$objPagaAluno.Contas_Pagar.BackColor		= 35, 35, 35
+	$objPagaAluno.Contas_Pagar.ForeColor		= "white"
+	$objPagaAluno.Contas_Pagar.Font				= $System.font("Segeo UI", 11.5)
+	$objPagaAluno.Contas_Pagar.lb				= $System.Object()
+	$objPagaAluno.Contas_Pagar.bt				= $System.Object()
+	$objPagaAluno.Contas_Pagar.cb				= $System.Object()
+	$objPagaAluno.Contas_Pagar.ck				= $System.Object()
+	$objPagaAluno.Contas_Pagar.gb				= $System.Object()
+	$objPagaAluno.Contas_Pagar.tx				= $System.Object()
+	
+		$objPagaAluno.Contas_Pagar.lb.aluno				= $objPagaAluno.Contas_Pagar.Label()
+		$objPagaAluno.Contas_Pagar.lb.aluno.width		= 170
+		$objPagaAluno.Contas_Pagar.lb.aluno.Text		= "Selecione o aluno"
+	
+		$objPagaAluno.pn.objcb										= $objPagaAluno.Contas_Pagar.Panel()
+		$objPagaAluno.pn.objcb.size									= 216, 22
+		$objPagaAluno.pn.objcb.location								= $objPagaAluno.Contas_Pagar.lb.aluno.left, $objPagaAluno.Contas_Pagar.lb.aluno.bottom+2
+		$objPagaAluno.Contas_Pagar.cb.aluno							= $objPagaAluno.pn.objcb.ComboBox()
+		$objPagaAluno.Contas_Pagar.cb.aluno.size					= 220, 22
+		$objPagaAluno.Contas_Pagar.cb.aluno.location				= -2, -1
+		$objPagaAluno.Contas_Pagar.cb.aluno.OnSelectedIndexChanged	= ""
+		$DATA = tb_findTextInSequenceData('contrato.idcodigo', 'STATUS-CONTRATO', 'ABERTO', '=')
+		for $i=0 to ubound($DATA)
+			$DATA[$i] = cstr($DATA[$i])+' - '+tb_getData('cadastro-aluno.nome-aluno',, 'idcodigo', tb_getdata('contrato.id-aluno',, 'idcodigo', $DATA[$i]))
+			$objPagaAluno.Contas_Pagar.cb.aluno.AddItem(
+				$DATA[$i]
+			)
+		next
+		
+		;;<DADOS PESSOAIS>
+			$objPagaAluno.Contas_Pagar.gb.DadosPessoais					= $objPagaAluno.Contas_Pagar.GroupBox()
+			$objPagaAluno.Contas_Pagar.gb.DadosPessoais.text			= "Dados pessoais"
+			$objPagaAluno.Contas_Pagar.gb.DadosPessoais.Location		= $objPagaAluno.pn.objcb.left, $objPagaAluno.pn.objcb.bottom+2
+			$objPagaAluno.Contas_Pagar.gb.DadosPessoais.size			= $objPagaAluno.Contas_PagarTB.ClientWidth, 165
+
+			$objPagaAluno.Contas_Pagar.lb.NomeAluno						= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.Label()
+			$objPagaAluno.Contas_Pagar.lb.NomeAluno.text				= "Nome do aluno"
+			$objPagaAluno.Contas_Pagar.lb.NomeAluno.size				= 100, 25
+			$objPagaAluno.Contas_Pagar.lb.NomeAluno.Location			= 5, 20
+
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno						= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno.ReadOnly			= true
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno.BorderStyle			= 0
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno.BackColor			= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno.font				= $System.font("Segeo UI", 16)
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno.ForeColor			= "white"
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno.size				= 300, 25
+			$objPagaAluno.Contas_Pagar.tx.NomeAluno.Location			= 5, $objPagaAluno.Contas_Pagar.lb.NomeAluno.Bottom+2
+
+			$objPagaAluno.Contas_Pagar.lb.Nascimento					= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.Label()
+			$objPagaAluno.Contas_Pagar.lb.Nascimento.text				= "Data de nascimento"
+			$objPagaAluno.Contas_Pagar.lb.Nascimento.size				= 150, 25
+			$objPagaAluno.Contas_Pagar.lb.Nascimento.Location			= $objPagaAluno.Contas_Pagar.tx.NomeAluno.Right+15, $objPagaAluno.Contas_Pagar.lb.NomeAluno.Top
+
+			$objPagaAluno.Contas_Pagar.tx.Nascimento					= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.Nascimento.ReadOnly			= true
+			$objPagaAluno.Contas_Pagar.tx.Nascimento.BorderStyle		= 0
+			$objPagaAluno.Contas_Pagar.tx.Nascimento.BackColor			= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.Nascimento.font				= $System.font("Segeo UI", 16)
+			$objPagaAluno.Contas_Pagar.tx.Nascimento.ForeColor			= "white"
+			$objPagaAluno.Contas_Pagar.tx.Nascimento.size				= 150, 25
+			$objPagaAluno.Contas_Pagar.tx.Nascimento.Location			= $objPagaAluno.Contas_Pagar.lb.Nascimento.left, $objPagaAluno.Contas_Pagar.lb.Nascimento.Bottom+2
+
+			$objPagaAluno.Contas_Pagar.lb.Escolaridade					= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.Label()
+			$objPagaAluno.Contas_Pagar.lb.Escolaridade.text				= "Escolaridade"
+			$objPagaAluno.Contas_Pagar.lb.Escolaridade.size				= 150, 25
+			$objPagaAluno.Contas_Pagar.lb.Escolaridade.Location			= $objPagaAluno.Contas_Pagar.tx.NomeAluno.left, $objPagaAluno.Contas_Pagar.tx.NomeAluno.Bottom+5
+
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade					= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade.ReadOnly			= true
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade.BorderStyle		= 0
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade.BackColor		= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade.font				= $System.font("Segeo UI", 16)
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade.ForeColor		= "white"
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade.size				= 135, 25
+			$objPagaAluno.Contas_Pagar.tx.Escolaridade.Location			= $objPagaAluno.Contas_Pagar.lb.Escolaridade.left, $objPagaAluno.Contas_Pagar.lb.Escolaridade.Bottom
+
+			$objPagaAluno.Contas_Pagar.lb.TelAluno						= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.Label()
+			$objPagaAluno.Contas_Pagar.lb.TelAluno.text					= "Telefone"
+			$objPagaAluno.Contas_Pagar.lb.TelAluno.size					= 150, 25
+			$objPagaAluno.Contas_Pagar.lb.TelAluno.Location				= $objPagaAluno.Contas_Pagar.tx.Escolaridade.Right+15, $objPagaAluno.Contas_Pagar.lb.Escolaridade.top
+
+			$objPagaAluno.Contas_Pagar.tx.TelAluno						= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.TelAluno.ReadOnly				= true
+			$objPagaAluno.Contas_Pagar.tx.TelAluno.BorderStyle			= 0
+			$objPagaAluno.Contas_Pagar.tx.TelAluno.BackColor			= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.TelAluno.font					= $System.font("Segeo UI", 16)
+			$objPagaAluno.Contas_Pagar.tx.TelAluno.ForeColor			= "white"
+			$objPagaAluno.Contas_Pagar.tx.TelAluno.size					= 150, 25
+			$objPagaAluno.Contas_Pagar.tx.TelAluno.Location				= $objPagaAluno.Contas_Pagar.lb.TelAluno.left, $objPagaAluno.Contas_Pagar.lb.TelAluno.Bottom
+
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno					= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.ToolButton()
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.BorderStyle		= 0
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.FlatStyle		= 0
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.Dock			= 2
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.size			= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.ClientWidth-6, 27
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.Location		= 3, $objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.top-3
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.BackColor		= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.HotBackColor	= 55, 120, 196
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.ForeColor		= 55, 120, 196
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.HotForeColor	= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.Cursor			= 16
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.font			= $System.font("consolas", 13, 1)
+			$objPagaAluno.Contas_Pagar.bt.MaisInfoAluno.Text			= "Mais informações"
+		;;</DADOS PESSOAIS>
+		
+		;;<DADOS DO RESPONSÁVEL>
+			$objPagaAluno.Contas_Pagar.gb.DadosResponsavel				= $objPagaAluno.Contas_Pagar.GroupBox()
+			$objPagaAluno.Contas_Pagar.gb.DadosResponsavel.text			= "Dados do responsável"
+			$objPagaAluno.Contas_Pagar.gb.DadosResponsavel.Location		= $objPagaAluno.Contas_Pagar.gb.DadosPessoais.left, $objPagaAluno.Contas_Pagar.gb.DadosPessoais.bottom+2
+			$objPagaAluno.Contas_Pagar.gb.DadosResponsavel.size			= $objPagaAluno.Contas_PagarTB.ClientWidth, 90
+
+			$objPagaAluno.Contas_Pagar.lb.NomeResp						= $objPagaAluno.Contas_Pagar.gb.DadosResponsavel.Label()
+			$objPagaAluno.Contas_Pagar.lb.NomeResp.text					= "Nome"
+			$objPagaAluno.Contas_Pagar.lb.NomeResp.size					= 100, 25
+			$objPagaAluno.Contas_Pagar.lb.NomeResp.Location				= 5, 20
+
+			$objPagaAluno.Contas_Pagar.tx.NomeResp						= $objPagaAluno.Contas_Pagar.gb.DadosResponsavel.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.NomeResp.ReadOnly				= true
+			$objPagaAluno.Contas_Pagar.tx.NomeResp.BorderStyle			= 0
+			$objPagaAluno.Contas_Pagar.tx.NomeResp.BackColor			= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.NomeResp.font					= $System.font("Segeo UI", 16)
+			$objPagaAluno.Contas_Pagar.tx.NomeResp.ForeColor			= "white"
+			$objPagaAluno.Contas_Pagar.tx.NomeResp.size					= 300, 25
+			$objPagaAluno.Contas_Pagar.tx.NomeResp.Location				= 5, $objPagaAluno.Contas_Pagar.lb.NomeResp.Bottom+2
+
+			$objPagaAluno.Contas_Pagar.lb.TelResp						= $objPagaAluno.Contas_Pagar.gb.DadosResponsavel.Label()
+			$objPagaAluno.Contas_Pagar.lb.TelResp.text					= "Telefone"
+			$objPagaAluno.Contas_Pagar.lb.TelResp.size					= 150, 25
+			$objPagaAluno.Contas_Pagar.lb.TelResp.Location				= $objPagaAluno.Contas_Pagar.tx.NomeResp.Right+15, $objPagaAluno.Contas_Pagar.lb.NomeResp.Top
+
+			$objPagaAluno.Contas_Pagar.tx.TelResp						= $objPagaAluno.Contas_Pagar.gb.DadosResponsavel.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.TelResp.ReadOnly				= true
+			$objPagaAluno.Contas_Pagar.tx.TelResp.BorderStyle			= 0
+			$objPagaAluno.Contas_Pagar.tx.TelResp.BackColor				= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.TelResp.font					= $System.font("Segeo UI", 16)
+			$objPagaAluno.Contas_Pagar.tx.TelResp.ForeColor				= "white"
+			$objPagaAluno.Contas_Pagar.tx.TelResp.size					= 150, 25
+			$objPagaAluno.Contas_Pagar.tx.TelResp.Location				= $objPagaAluno.Contas_Pagar.lb.TelResp.left, $objPagaAluno.Contas_Pagar.lb.TelResp.Bottom+2
+		;;</DADOS DO RESPONSÁVEL>
+
+		;;<DADOS DO CONTRATO>
+			$objPagaAluno.Contas_Pagar.gb.ValorContrato					= $objPagaAluno.Contas_Pagar.GroupBox()
+			$objPagaAluno.Contas_Pagar.gb.ValorContrato.text			= "Valores do contrato"
+			$objPagaAluno.Contas_Pagar.gb.ValorContrato.Location		= $objPagaAluno.Contas_Pagar.gb.DadosResponsavel.left, $objPagaAluno.Contas_Pagar.gb.DadosResponsavel.bottom+2
+			$objPagaAluno.Contas_Pagar.gb.ValorContrato.size			= $objPagaAluno.Contas_PagarTB.ClientWidth, 90
+
+			$objPagaAluno.Contas_Pagar.lb.ValMatricula					= $objPagaAluno.Contas_Pagar.gb.ValorContrato.Label()
+			$objPagaAluno.Contas_Pagar.lb.ValMatricula.text				= "Valor da matrícula"
+			$objPagaAluno.Contas_Pagar.lb.ValMatricula.size				= 150, 25
+			$objPagaAluno.Contas_Pagar.lb.ValMatricula.Location			= 5, 20
+
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula					= $objPagaAluno.Contas_Pagar.gb.ValorContrato.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula.ReadOnly			= true
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula.BorderStyle		= 0
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula.BackColor		= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula.font				= $System.font("Segeo UI", 16, 1)
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula.ForeColor		= 0, 128, 0
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula.size				= 300, 25
+			$objPagaAluno.Contas_Pagar.tx.ValMatricula.Location			= 5, $objPagaAluno.Contas_Pagar.lb.ValMatricula.Bottom+2
+
+			$objPagaAluno.Contas_Pagar.lb.ValMensalidade				= $objPagaAluno.Contas_Pagar.gb.ValorContrato.Label()
+			$objPagaAluno.Contas_Pagar.lb.ValMensalidade.text			= "Valor da mensalidade"
+			$objPagaAluno.Contas_Pagar.lb.ValMensalidade.size			= 150, 25
+			$objPagaAluno.Contas_Pagar.lb.ValMensalidade.Location		= $objPagaAluno.Contas_Pagar.tx.ValMatricula.Right+15, $objPagaAluno.Contas_Pagar.lb.ValMatricula.Top
+
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade				= $objPagaAluno.Contas_Pagar.gb.ValorContrato.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade.ReadOnly		= true
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade.BorderStyle	= 0
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade.BackColor		= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade.font			= $System.font("Segeo UI", 16, 1)
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade.ForeColor		= 0, 128, 0
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade.size			= 150, 25
+			$objPagaAluno.Contas_Pagar.tx.ValMensalidade.Location		= $objPagaAluno.Contas_Pagar.lb.ValMensalidade.left, $objPagaAluno.Contas_Pagar.lb.ValMensalidade.Bottom+2
+		;;</DADOS DO RESPONSÁVEL>
+		
+		;;<VALOR DO PAGAMENTO>
+			$objPagaAluno.Contas_Pagar.gb.ValorPago					= $objPagaAluno.Contas_Pagar.GroupBox()
+			$objPagaAluno.Contas_Pagar.gb.ValorPago.text			= "Valores do contrato"
+			$objPagaAluno.Contas_Pagar.gb.ValorPago.Location		= $objPagaAluno.Contas_Pagar.gb.ValorContrato.left, $objPagaAluno.Contas_Pagar.gb.ValorContrato.bottom+2
+			$objPagaAluno.Contas_Pagar.gb.ValorPago.size			= $objPagaAluno.Contas_PagarTB.ClientWidth, 120
+
+			$objPagaAluno.Contas_Pagar.ck.ValPagaTudo				= $objPagaAluno.Contas_Pagar.gb.ValorPago.CheckBox()
+			$objPagaAluno.Contas_Pagar.ck.ValPagaTudo.text			= "Não será pago por completo."
+			$objPagaAluno.Contas_Pagar.ck.ValPagaTudo.size			= 220, 20
+			$objPagaAluno.Contas_Pagar.ck.ValPagaTudo.ForeColor		= "white"
+			$objPagaAluno.Contas_Pagar.ck.ValPagaTudo.Location		= 5, 25
+			$objPagaAluno.Contas_Pagar.ck.ValPagaTudo.Location		=
+			'
+				$$objPagaAluno.Contas_Pagar.lb._TotalMensalidade.Enabled	= $$objPagaAluno.Contas_Pagar.ck.NaoPagaTodoSalario.Checked
+				$$objPagaAluno.Contas_Pagar.lb.ValFaltSalario1.Enabled	= $$objPagaAluno.Contas_Pagar.ck.NaoPagaTodoSalario.Checked
+				$$objPagaAluno.Contas_Pagar.tx.ValorSalario.ReadOnly	= not $$objPagaAluno.Contas_Pagar.ck.NaoPagaTodoSalario.Checked
+
+				if ($$objPagaAluno.Contas_Pagar.ck.ValPagaTudo.Checked = -1)
+					$$objPagaAluno.Contas_Pagar.tx.ValorSalario.tag		= 0.0
+					$$objPagaAluno.Contas_Pagar.tx.ValorSalario.text	= "0,00"
+				else
+					$$objPagaAluno.Contas_Pagar.tx.ValorSalario.tag		= $$objPagaAluno.Contas_Pagar.lb._TotalMensalidade.tag
+					$$objPagaAluno.Contas_Pagar.tx.ValorSalario.text	= $$objPagaAluno.Contas_Pagar.tx.ValorSalario.tag
+				endif
+			'
+			
+			$objPagaAluno.Contas_Pagar.lb._TotalMensalidade				= $objPagaAluno.Contas_Pagar.gb.ValorPago.Label()
+			$objPagaAluno.Contas_Pagar.lb._TotalMensalidade.size		= 220, 20
+			$objPagaAluno.Contas_Pagar.lb._TotalMensalidade.location	= $objPagaAluno.Contas_Pagar.ck.ValPagaTudo.right+35, $objPagaAluno.Contas_Pagar.ck.ValPagaTudo.top
+			$objPagaAluno.Contas_Pagar.lb._TotalMensalidade.ForeColor	= "white"
+			$objPagaAluno.Contas_Pagar.lb._TotalMensalidade.Text		= "Total da mensalidade"
+			
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade				= $objPagaAluno.Contas_Pagar.gb.ValorPago.Label()
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade.location		= $objPagaAluno.Contas_Pagar.lb._TotalMensalidade.left, $objPagaAluno.Contas_Pagar.lb._TotalMensalidade.bottom+2
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade.ForeColor	= 0, 128, 0
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade.tag			= 0.0
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade.Text			= "R$ 0,00"
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade.size			= 150, 20
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade.FontBold		= true
+			$objPagaAluno.Contas_Pagar.lb.TotalMensalidade.Enabled		= false
+			
+			$objPagaAluno.Contas_Pagar.lb.ValorPago						= $objPagaAluno.Contas_Pagar.gb.ValorPago.Label()
+			$objPagaAluno.Contas_Pagar.lb.ValorPago.size				= 220, 20
+			$objPagaAluno.Contas_Pagar.lb.ValorPago.location			= $objPagaAluno.Contas_Pagar.ck.ValPagaTudo.left, $objPagaAluno.Contas_Pagar.ck.ValPagaTudo.bottom+24
+			$objPagaAluno.Contas_Pagar.lb.ValorPago.ForeColor			= "white"
+			$objPagaAluno.Contas_Pagar.lb.ValorPago.Text				= "Quanto está sendo pago"
+			
+			$objPagaAluno.Contas_Pagar.tx.ValorPago						= $objPagaAluno.Contas_Pagar.gb.ValorPago.TextBox()
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.location			= $objPagaAluno.Contas_Pagar.lb.ValorPago.left, $objPagaAluno.Contas_Pagar.lb.ValorPago.bottom+2
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.BorderStyle			= 0
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.ForeColor			= 0, 128, 0
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.tag					= 0.0
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.Text				= "R$ 0,00"
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.size				= 150, 20
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.FontBold			= true
+			$objPagaAluno.Contas_Pagar.tx.ValorPago.Enabled				= false
+			
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante					= $objPagaAluno.Contas_Pagar.gb.ValorPago.Label()
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante.size				= 220, 20
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante.location			= $objPagaAluno.Contas_Pagar.lb._TotalMensalidade.left, $objPagaAluno.Contas_Pagar.lb.ValorPago.top+2
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante.ForeColor			= "white"
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante.Text				= "Valor faltante da mensalidade"
+			
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1					= $objPagaAluno.Contas_Pagar.gb.ValorPago.Label()
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1.location			= $objPagaAluno.Contas_Pagar.lb.ValFaltante.left, $objPagaAluno.Contas_Pagar.lb.ValFaltante.bottom+2
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1.ForeColor		= 0, 128, 0
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1.tag				= 0.0
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1.Text				= "R$ 0,00"
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1.size				= 150, 20
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1.FontBold			= true
+			$objPagaAluno.Contas_Pagar.lb.ValFaltante1.Enabled			= false
+			
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento				= $objPagaAluno.Contas_Pagar.ToolButton()
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.BorderStyle	= 0
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.FlatStyle		= 0
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.Dock			= 2
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.BackColor		= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.HotBackColor	= 0, 185, 0
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.ForeColor		= 0, 185, 0
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.HotForeColor	= 51, 51, 51
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.Cursor			= 16
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.font			= $System.font("consolas", 13, 1)
+			$objPagaAluno.Contas_Pagar.bt.ConfirmarPagamento.Text			= "ConfirmarPagamento"
+		;;</VALOR DO PAGAMENTO>'
+		
+	;;<LISTAS DE CONTAS PAGAS>
+		$objPagaAluno.Lista_PagarTB					= $objPagaAluno.Table.TabPages.Add("Listar pagamentos")
+		$objPagaAluno.Lista_Pagar					= $objPagaAluno.Lista_PagarTB.panel()
+		$objPagaAluno.Lista_Pagar.Size				= $objPagaAluno.Lista_PagarTB.ClientSize
+		$objPagaAluno.Lista_Pagar.BackColor			= 35, 35, 35
+		$objPagaAluno.Lista_Pagar.ForeColor			= "white"
+		$objPagaAluno.Lista_Pagar.Font				= $System.font("Segeo UI", 11.5)
+		$objPagaAluno.Lista_Pagar.Font				= $System.font("Segeo UI", 11.5)
+		$objPagaAluno.Lista_Pagar.lb				= $System.Object()
+		$objPagaAluno.Lista_Pagar.ck				= $System.Object()
+		$objPagaAluno.Lista_Pagar.tx				= $System.Object()
+		$objPagaAluno.Lista_Pagar.bt				= $System.Object()
+		$objPagaAluno.Lista_Pagar.cb				= $System.Object()
+		$objPagaAluno.Lista_Pagar.gb				= $System.Object()
+		$objPagaAluno.Lista_Pagar.pn				= $System.Object()
+		$objPagaAluno.Lista_Pagar.grid				= $System.Object()
+		
+		$objPagaAluno.Lista_Pagar.lb.aluno							= $objPagaAluno.Lista_Pagar.Label()
+		$objPagaAluno.Lista_Pagar.lb.aluno.width					= 170
+		$objPagaAluno.Lista_Pagar.lb.aluno.top						= 5
+		$objPagaAluno.Lista_Pagar.lb.aluno.Text						= "Selecione o aluno"
+	
+		$objPagaAluno.pn.objcb3										= $objPagaAluno.Lista_Pagar.Panel()
+		$objPagaAluno.pn.objcb3.size								= 216, 22
+		$objPagaAluno.pn.objcb3.location							= 5, $objPagaAluno.Lista_Pagar.lb.aluno.bottom+2
+		$objPagaAluno.Lista_Pagar.cb.aluno							= $objPagaAluno.pn.objcb3.ComboBox()
+		$objPagaAluno.Lista_Pagar.cb.aluno.size						= 220, 22
+		$objPagaAluno.Lista_Pagar.cb.aluno.location					= -2, -1
+		$DATA = tb_findTextInSequenceData('contrato.idcodigo', 'STATUS-CONTRATO', 'ABERTO', '=')
+		for $i=0 to ubound($DATA)
+			$DATA[$i] = cstr($DATA[$i])+' - '+tb_getData('cadastro-aluno.nome-aluno',, 'idcodigo', tb_getdata('contrato.id-aluno',, 'idcodigo', $DATA[$i]))
+			$objPagaAluno.Lista_Pagar.cb.aluno.AddItem(
+				$DATA[$i]
+			)
+		next
+		
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo				= $objPagaAluno.Lista_Pagar.CheckBox()
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.size			= 13, 14
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.Cursor	 	= 16
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.Checked		= -1
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.FlatStyle 	= 0
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.ToolTipText	= "(De)Seleciona a busca por@crlfperiodo de pagamento."
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.Location		= $objPagaAluno.Lista_Pagar.Right-$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.Width-3, $objPagaAluno.Lista_Pagar.lb.aluno.top
+		$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.OnClick		= "$$objPagaAluno.Lista_Pagar.gb.datas.Enabled = $$objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.Checked"
+	
+		$objPagaAluno.Lista_Pagar.gb.datas					= $objPagaAluno.Lista_Pagar.GroupBox()
+		$objPagaAluno.Lista_Pagar.gb.datas.BorderStyle		= 1
+		$objPagaAluno.Lista_Pagar.gb.datas.ForeColor		= 5, 149, 235
+		$objPagaAluno.Lista_Pagar.gb.datas.Enabled			= $objPagaAluno.Lista_Pagar.ck.BuscaPeriodo.Checked
+		$objPagaAluno.Lista_Pagar.gb.datas.text				= "Datas"
+		$objPagaAluno.Lista_Pagar.gb.datas.size				= 255, 65
+		$objPagaAluno.Lista_Pagar.gb.datas.location			= $objPagaAluno.pn.objcb3.Right+5, $objPagaAluno.Lista_Pagar.lb.aluno.top-5
+		;;<DATA DE>
+			$objPagaAluno.Lista_Pagar.lb.de					= $objPagaAluno.Lista_Pagar.gb.datas.Label()
+			$objPagaAluno.Lista_Pagar.lb.de.ForeColor		= "white"
+			$objPagaAluno.Lista_Pagar.lb.de.text			= "De..."
+			$objPagaAluno.Lista_Pagar.lb.de.location		= 5, 15
+			$objPagaAluno.Lista_Pagar.lb.de.size			= 60, 20
+			$objPagaAluno.Lista_Pagar.lb.de.font			= $System.font("Consolas", 11, 1)
+			
+			$objPagaAluno.Lista_Pagar.tx.de					= $objPagaAluno.Lista_Pagar.gb.datas.MaskedTextBox()
+			$objPagaAluno.Lista_Pagar.tx.de.size			= 110, 20
+			$objPagaAluno.Lista_Pagar.tx.de.BorderStyle		= false
+			$objPagaAluno.Lista_Pagar.tx.de.location		= $objPagaAluno.Lista_Pagar.lb.de.left, $objPagaAluno.Lista_Pagar.lb.de.bottom
+			$objPagaAluno.Lista_Pagar.tx.de.Mask			= "00/00/0000"
+			$objPagaAluno.Lista_Pagar.tx.de.text			= replace(CurrentDate(), '/', '')
+			$objPagaAluno.Lista_Pagar.tx.de.forecolor		= "white"
+			$objPagaAluno.Lista_Pagar.tx.de.backcolor		= 51, 51, 51
+		;;</DATA DE>
+		;;<DATA ATÉ>
+			$objPagaAluno.Lista_Pagar.lb.ate				= $objPagaAluno.Lista_Pagar.gb.datas.Label()
+			$objPagaAluno.Lista_Pagar.lb.ate.ForeColor		= "white"
+			$objPagaAluno.Lista_Pagar.lb.ate.text			= "Até..."
+			$objPagaAluno.Lista_Pagar.lb.ate.location		= $objPagaAluno.Lista_Pagar.lb.de.right+65, 15
+			$objPagaAluno.Lista_Pagar.lb.ate.size			= 60, 20
+			$objPagaAluno.Lista_Pagar.lb.ate.font			= $System.font("Consolas", 11, 1)
+			
+			$objPagaAluno.Lista_Pagar.tx.ate				= $objPagaAluno.Lista_Pagar.gb.datas.MaskedTextBox()
+			$objPagaAluno.Lista_Pagar.tx.ate.size			= 110, 20
+			$objPagaAluno.Lista_Pagar.tx.ate.BorderStyle	= false
+			$objPagaAluno.Lista_Pagar.tx.ate.location		= $objPagaAluno.Lista_Pagar.lb.ate.left, $objPagaAluno.Lista_Pagar.lb.ate.bottom
+			$objPagaAluno.Lista_Pagar.tx.ate.Mask			= "00/00/0000"
+			$objPagaAluno.Lista_Pagar.tx.ate.text			= replace(CurrentDate(), '/', '')
+			$objPagaAluno.Lista_Pagar.tx.ate.forecolor		= "white"
+			$objPagaAluno.Lista_Pagar.tx.ate.backcolor		= 51, 51, 51
+		;;</DATA ATÉ>
+		;;<GRIDVIEW>
+			$objPagaAluno.Lista_Pagar.bt.buscar					= $objPagaAluno.Lista_Pagar.ToolButton()
+			$objPagaAluno.Lista_Pagar.bt.buscar.Location		= $objPagaAluno.pn.objcb3.left, $objPagaAluno.Lista_Pagar.gb.datas.bottom+5
+			$objPagaAluno.Lista_Pagar.bt.buscar.BorderStyle		= 0
+			$objPagaAluno.Lista_Pagar.bt.buscar.FlatStyle		= 0
+			$objPagaAluno.Lista_Pagar.bt.buscar.size			= $objPagaAluno.Lista_Pagar.ClientWidth-10, 27
+			$objPagaAluno.Lista_Pagar.bt.buscar.BackColor		= 51, 51, 51
+			$objPagaAluno.Lista_Pagar.bt.buscar.HotBackColor	= 247, 164, 72
+			$objPagaAluno.Lista_Pagar.bt.buscar.ForeColor		= 247, 164, 72
+			$objPagaAluno.Lista_Pagar.bt.buscar.HotForeColor	= 51, 51, 51
+			$objPagaAluno.Lista_Pagar.bt.buscar.Cursor			= 16
+			$objPagaAluno.Lista_Pagar.bt.buscar.font			= $System.font("consolas", 13, 1)
+			$objPagaAluno.Lista_Pagar.bt.buscar.Text			= "Buscar"
+	
+			$objPagaAluno.Lista_Pagar.lb.TitleGrid				= $objPagaAluno.Lista_Pagar.Label()
+			$objPagaAluno.Lista_Pagar.lb.TitleGrid.Location		= $objPagaAluno.Lista_Pagar.bt.buscar.left, $objPagaAluno.Lista_Pagar.bt.buscar.bottom
+			$objPagaAluno.Lista_Pagar.lb.TitleGrid.size			= $objPagaAluno.Lista_Pagar.ClientWidth-10, 20
+			$objPagaAluno.Lista_Pagar.lb.TitleGrid.BackColor	= "black"
+			$objPagaAluno.Lista_Pagar.lb.TitleGrid.ForeColor	= "white"
+			$objPagaAluno.Lista_Pagar.lb.TitleGrid.FontBold		= 1
+			$objPagaAluno.Lista_Pagar.lb.TitleGrid.Text			= "Lista de pagamentos da data selecionada"
+			;;<GridView>
+				$objPagaAluno.Lista_Pagar.grid							= $objPagaAluno.Lista_Pagar.GridView()
+				$objPagaAluno.Lista_Pagar.grid.Anchor					= 1 + 2 + 4
+				$objPagaAluno.Lista_Pagar.grid.BorderStyle				= 0
+				$objPagaAluno.Lista_Pagar.grid.ReadOnly					= 1
+				$objPagaAluno.Lista_Pagar.grid.FullRowSelect			= 1
+				$objPagaAluno.Lista_Pagar.grid.ScrollBars				= 2
+				$objPagaAluno.Lista_Pagar.grid.Location					= $objPagaAluno.Lista_Pagar.lb.TitleGrid.left, $objPagaAluno.Lista_Pagar.lb.TitleGrid.Bottom+2
+				$objPagaAluno.Lista_Pagar.grid.Fontsize					= 15
+				$objPagaAluno.Lista_Pagar.grid.SelectionForeColor		= 0,0,0
+				$objPagaAluno.Lista_Pagar.grid.size						= $objPagaAluno.Lista_Pagar.lb.TitleGrid.Width, 322
+				$objPagaAluno.Lista_Pagar.grid.HeaderStyle				= 1
+				$objPagaAluno.Lista_Pagar.grid.AlternatingBackColor		= &0F7EBE7
+				$objPagaAluno.Lista_Pagar.grid.SelectionBackColor		= 169,178,202
+				$objPagaAluno.Lista_Pagar.grid.BackColor				= "White";"GhostWhite"
+				$objPagaAluno.Lista_Pagar.grid.GridLineColor			= &E7BE94 ;"RoyalBlue"
+				$objPagaAluno.Lista_Pagar.grid.ForeColor				= "Black" ;"MidnightBlue"
+				$objPagaAluno.Lista_Pagar.grid.Font						= $System.Font("Segeo UI", 10)
+			;;</GridView>
+			$objPagaAluno.Lista_Pagar.lb.FoterGrid				= $objPagaAluno.Lista_Pagar.Label()
+			$objPagaAluno.Lista_Pagar.lb.FoterGrid.Location		= $objPagaAluno.Lista_Pagar.grid.left, $objPagaAluno.Lista_Pagar.grid.bottom+2
+			$objPagaAluno.Lista_Pagar.lb.FoterGrid.size			= $objPagaAluno.Lista_Pagar.grid.width, 20
+			$objPagaAluno.Lista_Pagar.lb.FoterGrid.BackColor	= "black"
+			$objPagaAluno.Lista_Pagar.lb.FoterGrid.ForeColor	= "white"
+			$objPagaAluno.Lista_Pagar.lb.FoterGrid.fText		= "Valor total : {}"
+			$objPagaAluno.Lista_Pagar.lb.FoterGrid.Text			= "Valor total :"
+		;;</GRIDVIEW>
+	;;</LISTAS DE CONTAS PAGAS>
+	
+	$objPagaAluno.form.ShowModal()
+endfunction

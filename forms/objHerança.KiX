@@ -1,0 +1,334 @@
+function Herança()
+Dim
+	$objDinheiro, $i
+
+; <PAGAMENTO>
+$herança			 			= $System.Object()
+$objDinheiro		 			= $System.Object()
+$objDinheiro.lb		 			= $System.Object()
+$objDinheiro.bt		 			= $System.Object()
+$objDinheiro.pn		 			= $System.Object()
+
+$objDinheiro.Contas_Pagar		= $System.Object()
+$objDinheiro.Lista_Pagar		= $System.Object()
+
+
+$objDinheiro.form				= $System.form()
+$objDinheiro.form.Text			= "ObjDinheiro"
+$objDinheiro.form.size			= 500, 600
+$objDinheiro.form.backcolor		= 51, 51, 51
+$objDinheiro.form.Center()
+
+$objDinheiro.Table				= $objDinheiro.form.TabControl()
+$objDinheiro.Table.Dock			= 5
+$objDinheiro.Table.Size			= $objDinheiro.form.ClientSize
+$objDinheiro.Table.BackColor	= 35, 35, 35
+$objDinheiro.Table.ForeColor	= "white"
+$objDinheiro.Table.Appearance 	= "FlatButtons"
+
+$objDinheiro.Contas_PagarTB					= $objDinheiro.Table.TabPages.Add("Contas a pagar")
+$objDinheiro.Contas_Pagar					= $objDinheiro.Contas_PagarTB.panel()
+$objDinheiro.Contas_Pagar.Size				= $objDinheiro.Contas_PagarTB.ClientSize
+$objDinheiro.Contas_Pagar.BackColor			= 35, 35, 35
+$objDinheiro.Contas_Pagar.ForeColor			= "white"
+$objDinheiro.Contas_Pagar.Font				= $System.font("Segeo UI", 11.5)
+$objDinheiro.Contas_Pagar.lb				= $System.Object()
+$objDinheiro.Contas_Pagar.bt				= $System.Object()
+$objDinheiro.Contas_Pagar.cb				= $System.Object()
+$objDinheiro.Contas_Pagar.ck				= $System.Object()
+$objDinheiro.Contas_Pagar.gb				= $System.Object()
+$objDinheiro.Contas_Pagar.tx				= $System.Object()
+
+$objDinheiro.Lista_PagarTB					= $objDinheiro.Table.TabPages.Add("Listar pagamentos")
+$objDinheiro.Lista_Pagar					= $objDinheiro.Lista_PagarTB.panel()
+$objDinheiro.Lista_Pagar.Size				= $objDinheiro.Lista_PagarTB.ClientSize
+$objDinheiro.Lista_Pagar.BackColor			= 35, 35, 35
+$objDinheiro.Lista_Pagar.ForeColor			= "white"
+$objDinheiro.Lista_Pagar.Font				= $System.font("Segeo UI", 11.5)
+$objDinheiro.Lista_Pagar.Font				= $System.font("Segeo UI", 11.5)
+$objDinheiro.Lista_Pagar.lb					= $System.Object()
+$objDinheiro.Lista_Pagar.bt					= $System.Object()
+$objDinheiro.Lista_Pagar.cb					= $System.Object()
+
+; <CONTAS A PAGAR>
+	$objDinheiro.Contas_Pagar.lb.func				= $objDinheiro.Contas_Pagar.Label()
+	$objDinheiro.Contas_Pagar.lb.func.width			= 170
+	$objDinheiro.Contas_Pagar.lb.func.Text			= "Selecione o funcionário"
+
+	$objDinheiro.pn.objcb							= $objDinheiro.Contas_Pagar.Panel()
+	$objDinheiro.pn.objcb.size						= 166, 22
+	$objDinheiro.pn.objcb.location					= $objDinheiro.Contas_Pagar.lb.func.left, $objDinheiro.Contas_Pagar.lb.func.bottom+2
+	$objDinheiro.Contas_Pagar.cb.func				= $objDinheiro.pn.objcb.ComboBox()
+	$objDinheiro.Contas_Pagar.cb.func.size			= 170, 22
+	$objDinheiro.Contas_Pagar.cb.func.location		= -2, -1
+	for $i=0 to tb_GetCountRow('funcionario')
+		$objDinheiro.Contas_Pagar.cb.func.Add(
+			tb_getdata('funcionario.id', $i+1)+" - "+tb_getdata('funcionario.Nome', $i+1),
+			$i
+		)
+	next
+
+	/*	DADOS DO FUNCIONÁRIO	*/
+	$objDinheiro.Contas_Pagar.gb.func				= $objDinheiro.Contas_Pagar.GroupBox()
+	$objDinheiro.Contas_Pagar.gb.func.Anchor		= 4+8
+	$objDinheiro.Contas_Pagar.gb.func.Text			= "Dados do funcionário"
+	$objDinheiro.Contas_Pagar.gb.func.Location		= $objDinheiro.Contas_Pagar.cb.func.left+2, $objDinheiro.pn.objcb.Bottom+2
+	$objDinheiro.Contas_Pagar.gb.func.size			= $objDinheiro.form.ClientWidth-7, 175
+	$objDinheiro.Contas_Pagar.gb.func.BackColor		= $objDinheiro.Contas_Pagar.BackColor
+	$objDinheiro.Contas_Pagar.gb.func.ForeColor		= $objDinheiro.Contas_Pagar.ForeColor
+	
+	; <NOME DO FUNCIONÁRIO>
+		$objDinheiro.Contas_Pagar.lb.nomefunc				= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.nomefunc.width			= 145
+		$objDinheiro.Contas_Pagar.lb.nomefunc.location		= 5, 18
+		$objDinheiro.Contas_Pagar.lb.nomefunc.Text			= "Nome do funcionário"
+	
+		$objDinheiro.Contas_Pagar.tx.nomefunc				= $objDinheiro.Contas_Pagar.gb.func.TextBox()
+		$objDinheiro.Contas_Pagar.tx.nomefunc.ReadOnly		= true
+		$objDinheiro.Contas_Pagar.tx.nomefunc.BorderStyle	= 0
+		$objDinheiro.Contas_Pagar.tx.nomefunc.BackColor		= $objDinheiro.Contas_Pagar.gb.func.backcolor;51, 51, 51
+		$objDinheiro.Contas_Pagar.tx.nomefunc.ForeColor		= "white"
+		$objDinheiro.Contas_Pagar.tx.nomefunc.size			= 220, 25
+		$objDinheiro.Contas_Pagar.tx.nomefunc.fontsize		= 14
+		$objDinheiro.Contas_Pagar.tx.nomefunc.location		= $objDinheiro.Contas_Pagar.lb.nomefunc.left, $objDinheiro.Contas_Pagar.lb.nomefunc.bottom
+	; </NOME DO FUNCIONÁRIO>
+	
+	; <TIPO DO PAGAMENTO>
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc			= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc.size		= 210, 20
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc.location	= $objDinheiro.Contas_Pagar.tx.nomefunc.right+30, $objDinheiro.Contas_Pagar.lb.nomefunc.top
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc.Text		= "Tipo de pagamento"
+		
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc1			= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc1.size		= 210, 20
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc1.fontbold	= true
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc1.location	= $objDinheiro.Contas_Pagar.lb.TipoPagfunc.left, $objDinheiro.Contas_Pagar.lb.TipoPagfunc.bottom+2
+		$objDinheiro.Contas_Pagar.lb.TipoPagfunc1.Text		= "Valor fixo"
+	; </TIPO DO PAGAMENTO>
+	
+	; <SALÁRIO>
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc			= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc.size		= 220, 20
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc.location	= $objDinheiro.Contas_Pagar.tx.nomefunc.right+30, $objDinheiro.Contas_Pagar.lb.nomefunc.top
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc.Text		= "Salário do funcionário"
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc.location	= $objDinheiro.Contas_Pagar.tx.nomefunc.left, $objDinheiro.Contas_Pagar.tx.nomefunc.bottom+5
+	
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc1			= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc1.size		= 210, 20
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc1.fontbold	= true
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc1.ForeColor	= 0, 128, 0
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc1.Text		= "R$ 200,00"
+		$objDinheiro.Contas_Pagar.lb.SalarioFunc1.location	= $objDinheiro.Contas_Pagar.lb.SalarioFunc.left, $objDinheiro.Contas_Pagar.lb.SalarioFunc.bottom+2
+	; </SALÁRIO>
+	
+	; <TIPO DO FUNCIONÁRIO>
+		$objDinheiro.Contas_Pagar.lb.Tipofunc				= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.Tipofunc.size			= 220, 20
+		$objDinheiro.Contas_Pagar.lb.Tipofunc.location		= $objDinheiro.Contas_Pagar.lb.SalarioFunc.right+30, $objDinheiro.Contas_Pagar.lb.SalarioFunc.top
+		$objDinheiro.Contas_Pagar.lb.Tipofunc.Text			= "Tipo do funcionário"
+		
+		$objDinheiro.Contas_Pagar.lb.Tipofunc1				= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.Tipofunc1.size			= 210, 20
+		$objDinheiro.Contas_Pagar.lb.Tipofunc1.fontbold		= true
+		$objDinheiro.Contas_Pagar.lb.Tipofunc1.location		= $objDinheiro.Contas_Pagar.lb.Tipofunc.left, $objDinheiro.Contas_Pagar.lb.SalarioFunc1.top
+		$objDinheiro.Contas_Pagar.lb.Tipofunc1.Text			= "Não Professor"
+	; </TIPO DO FUNCIONÁRIO>
+	
+	; <TIPO DA COMISSÃO>
+		$objDinheiro.Contas_Pagar.lb.TipoComissao			= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.TipoComissao.size		= 220, 20
+		$objDinheiro.Contas_Pagar.lb.TipoComissao.location	= $objDinheiro.Contas_Pagar.lb.SalarioFunc1.left, $objDinheiro.Contas_Pagar.lb.SalarioFunc1.Bottom+5
+		$objDinheiro.Contas_Pagar.lb.TipoComissao.Text		= "Tipo da comissão"
+		
+		$objDinheiro.Contas_Pagar.lb.TipoComissao1			= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.TipoComissao1.size		= 210, 20
+		$objDinheiro.Contas_Pagar.lb.TipoComissao1.fontbold	= true
+		$objDinheiro.Contas_Pagar.lb.TipoComissao1.location	= $objDinheiro.Contas_Pagar.lb.TipoComissao.left, $objDinheiro.Contas_Pagar.lb.TipoComissao.bottom+3
+		$objDinheiro.Contas_Pagar.lb.TipoComissao1.Text		= "1 - Comissão Alta"
+	; </TIPO DA COMISSÃO>
+	
+	; <HORAS TRABALHADAS>
+		$objDinheiro.Contas_Pagar.lb.HorasTrabalha				= $objDinheiro.Contas_Pagar.gb.func.Label()
+		$objDinheiro.Contas_Pagar.lb.HorasTrabalha.size			= 220, 20
+		$objDinheiro.Contas_Pagar.lb.HorasTrabalha.location		= $objDinheiro.Contas_Pagar.lb.TipoComissao.right+30, $objDinheiro.Contas_Pagar.lb.TipoComissao.top
+		$objDinheiro.Contas_Pagar.lb.HorasTrabalha.Text			= "Horas Trabalhadas"
+		
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1				= $objDinheiro.Contas_Pagar.gb.func.MaskedTextBox()
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.ReadOnly	= true
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.BorderStyle	= 0
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.BackColor	= 51, 51, 51
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.ForeColor	= "white"
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.size		= 150, 25
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.fontsize	= 14
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.Mask		= "00 Hrs"
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.text		= "3"
+		$objDinheiro.Contas_Pagar.tx.HorasTrabalha1.location	= $objDinheiro.Contas_Pagar.lb.HorasTrabalha.left, $objDinheiro.Contas_Pagar.lb.HorasTrabalha.bottom
+	; </HORAS TRABALHADAS>
+	
+	/*	DADOS DO DO PAGAMENTO	*/
+	$objDinheiro.Contas_Pagar.gb.comissao				= $objDinheiro.Contas_Pagar.GroupBox()
+	$objDinheiro.Contas_Pagar.gb.comissao.Anchor		= 1+4+8
+	$objDinheiro.Contas_Pagar.gb.comissao.Text			= "Dados da comissão"
+	$objDinheiro.Contas_Pagar.gb.comissao.Location		= $objDinheiro.Contas_Pagar.gb.func.left, $objDinheiro.Contas_Pagar.gb.func.bottom+2
+	$objDinheiro.Contas_Pagar.gb.comissao.size			= $objDinheiro.Contas_Pagar.gb.func.width, 120
+	$objDinheiro.Contas_Pagar.gb.comissao.BackColor		= $objDinheiro.Contas_Pagar.BackColor
+	$objDinheiro.Contas_Pagar.gb.comissao.ForeColor		= $objDinheiro.Contas_Pagar.ForeColor
+	
+	; <NÃO PAGO HOJE TODA COMISSÃO>
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao			= $objDinheiro.Contas_Pagar.gb.comissao.CheckBox()
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.size		= 220, 20
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.location	= 5, 25
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.ForeColor	= "white"
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.Text		= "Não irei pagar toda comissão."
+	; </NÃO PAGO HOJE TODA COMISSÃO>
+	
+	; <VALOR DA COMISSÃO>
+		$objDinheiro.Contas_Pagar.lb.ValorComissao				= $objDinheiro.Contas_Pagar.gb.comissao.Label()
+		$objDinheiro.Contas_Pagar.lb.ValorComissao.size			= 220, 20
+		$objDinheiro.Contas_Pagar.lb.ValorComissao.location		= $objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.Right+35, $objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.top
+		$objDinheiro.Contas_Pagar.lb.ValorComissao.ForeColor	= "white"
+		$objDinheiro.Contas_Pagar.lb.ValorComissao.Text			= "Total da comissão"
+		
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1				= $objDinheiro.Contas_Pagar.gb.comissao.Controls.Label()
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1.Name		= "ValorComissao"
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1.size		= 220, 20
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1.Enabled		= false
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1.location	= $objDinheiro.Contas_Pagar.lb.ValorComissao.left, $objDinheiro.Contas_Pagar.lb.ValorComissao.bottom+2
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1.FontBold	= true
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1.ForeColor	= 0, 128, 0
+		$objDinheiro.Contas_Pagar.lb.ValorComissao1.Text		= "R$ 0,00"
+	; </VALOR DA COMISSÃO>
+	
+	; <VALOR PAGO DA COMISSÃO>
+		$objDinheiro.Contas_Pagar.lb.ValorPagComissao				= $objDinheiro.Contas_Pagar.gb.comissao.Label()
+		$objDinheiro.Contas_Pagar.lb.ValorPagComissao.size			= 220, 20
+		$objDinheiro.Contas_Pagar.lb.ValorPagComissao.location		= 5, $objDinheiro.Contas_Pagar.lb.ValorComissao1.Bottom+2
+		$objDinheiro.Contas_Pagar.lb.ValorPagComissao.ForeColor		= "white"
+		$objDinheiro.Contas_Pagar.lb.ValorPagComissao.Text			= "Quanto será pago de comissão"
+		
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1				= $objDinheiro.Contas_Pagar.gb.comissao.TextBox()
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.ReadOnly		= true
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.location		= 5, $objDinheiro.Contas_Pagar.lb.ValorPagComissao.Bottom
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.Font			= $System.font("Segeo UI", 11.5, true)
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.BorderStyle	= 0
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.size			= 150, 20
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.BackColor	= 51, 51, 51
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.ForeColor	= 0, 128, 0
+		$objDinheiro.Contas_Pagar.tx.ValorPagComissao1.Text			= "0,00"
+	; </VALOR PAGO DA COMISSÃO>
+	
+	; <VALOR FALTANTE DA COMISSÃO>
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao				= $objDinheiro.Contas_Pagar.gb.comissao.Label()
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao.size			= 220, 20
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao.location		= $objDinheiro.Contas_Pagar.lb.ValorPagComissao.Right+35, $objDinheiro.Contas_Pagar.lb.ValorPagComissao.Top
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao.ForeColor	= "white"
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao.Text			= "Valor faltante da comissão"
+		
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao1				= $objDinheiro.Contas_Pagar.gb.comissao.Label()
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao1.Enabled		= false
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao1.size		= 220, 20
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao1.location	= $objDinheiro.Contas_Pagar.lb.ValorFaltComissao.Left, $objDinheiro.Contas_Pagar.lb.ValorFaltComissao.Bottom
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao1.ForeColor	= 0, 128, 0
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao1.Font		= $System.font("Segeo UI", 11.5, true)
+		$objDinheiro.Contas_Pagar.lb.ValorFaltComissao1.Text		= "R$ 0,00"
+	; </VALOR FALTANTE DA COMISSÃO>
+	
+	/*	DADOS DO SALÁRIO	*/
+	$objDinheiro.Contas_Pagar.gb.Salario				= $objDinheiro.Contas_Pagar.GroupBox()
+	$objDinheiro.Contas_Pagar.gb.Salario.Anchor			= 1+4+8
+	$objDinheiro.Contas_Pagar.gb.Salario.Text			= "Dados do salário"
+	$objDinheiro.Contas_Pagar.gb.Salario.Location		= $objDinheiro.Contas_Pagar.gb.comissao.left, $objDinheiro.Contas_Pagar.gb.comissao.bottom+2
+	$objDinheiro.Contas_Pagar.gb.Salario.size			= $objDinheiro.Contas_Pagar.gb.func.width, 80
+	$objDinheiro.Contas_Pagar.gb.Salario.BackColor		= $objDinheiro.Contas_Pagar.BackColor
+	$objDinheiro.Contas_Pagar.gb.Salario.ForeColor		= $objDinheiro.Contas_Pagar.ForeColor
+
+	; <NÃO PAGO HOJE TODA COMISSÃO>
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodoSalario				= $objDinheiro.Contas_Pagar.gb.Salario.CheckBox()
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodoSalario.size		= 220, 20
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodoSalario.location	= 5, 25
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodoSalario.ForeColor	= "white"
+		$objDinheiro.Contas_Pagar.ck.NaoPagaTodoSalario.Text		= "Não irei pagar todo salário."
+	; </NÃO PAGO HOJE TODA COMISSÃO>
+	
+	; <VALOR DA COMISSÃO>
+		$objDinheiro.Contas_Pagar.lb.ValorSalario				= $objDinheiro.Contas_Pagar.gb.Salario.Label()
+		$objDinheiro.Contas_Pagar.lb.ValorSalario.size			= 220, 20
+		$objDinheiro.Contas_Pagar.lb.ValorSalario.location		= $objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.Right+35, $objDinheiro.Contas_Pagar.ck.NaoPagaTodaComissao.top
+		$objDinheiro.Contas_Pagar.lb.ValorSalario.ForeColor		= "white"
+		$objDinheiro.Contas_Pagar.lb.ValorSalario.Text			= "Quanto será pago do salário"
+		
+		$objDinheiro.Contas_Pagar.tx.ValorSalario				= $objDinheiro.Contas_Pagar.gb.Salario.TextBox()
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.location		= $objDinheiro.Contas_Pagar.lb.ValorSalario.left, $objDinheiro.Contas_Pagar.lb.ValorSalario.bottom+2
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.ForeColor		= 0, 128, 0
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.BackColor		= 51, 51, 51
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.BorderStyle	= 0
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.Text			= "0,00"
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.size			= 150, 20
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.FontBold		= true
+		$objDinheiro.Contas_Pagar.tx.ValorSalario.ReadOnly		= true
+	; </VALOR DA COMISSÃO>
+	
+	/*	DADOS DO FECHAMENTO	*/
+	$objDinheiro.Contas_Pagar.gb.Paga					= $objDinheiro.Contas_Pagar.GroupBox()
+	$objDinheiro.Contas_Pagar.gb.Paga.Anchor			= 1+4+8
+	$objDinheiro.Contas_Pagar.gb.Paga.Text				= "Dados do pagamento"
+	$objDinheiro.Contas_Pagar.gb.Paga.Location			= $objDinheiro.Contas_Pagar.gb.Salario.left, $objDinheiro.Contas_Pagar.gb.Salario.bottom+2
+	$objDinheiro.Contas_Pagar.gb.Paga.size				= $objDinheiro.Contas_Pagar.gb.func.width, 115
+	$objDinheiro.Contas_Pagar.gb.Paga.BackColor			= $objDinheiro.Contas_Pagar.BackColor
+	$objDinheiro.Contas_Pagar.gb.Paga.ForeColor			= $objDinheiro.Contas_Pagar.ForeColor
+	
+	; <VALORES>
+		$objDinheiro.Contas_Pagar.lb.ValSendoPago				= $objDinheiro.Contas_Pagar.gb.Paga.Label()
+		$objDinheiro.Contas_Pagar.lb.ValSendoPago.size			= 320, 18
+		$objDinheiro.Contas_Pagar.lb.ValSendoPago.location		= 5, 15
+		$objDinheiro.Contas_Pagar.lb.ValSendoPago.Font			= $System.font("Consolas", 11, 1)
+		$objDinheiro.Contas_Pagar.lb.ValSendoPago.ForeColor		= "white"
+		$objDinheiro.Contas_Pagar.lb.ValSendoPago.fText			= "Total do salário	: R$ {}"
+		$objDinheiro.Contas_Pagar.lb.ValSendoPago.Text			= "Total do salário	: R$ 0,00"
+		
+		$objDinheiro.Contas_Pagar.lb.TotalSalario				= $objDinheiro.Contas_Pagar.gb.Paga.Label()
+		$objDinheiro.Contas_Pagar.lb.TotalSalario.size			= 320, 18
+		$objDinheiro.Contas_Pagar.lb.TotalSalario.location		= $objDinheiro.Contas_Pagar.lb.ValSendoPago.left, $objDinheiro.Contas_Pagar.lb.ValSendoPago.bottom
+		$objDinheiro.Contas_Pagar.lb.TotalSalario.ForeColor		= "white"
+		$objDinheiro.Contas_Pagar.lb.TotalSalario.Font			= $System.font("Consolas", 11, 1)
+		$objDinheiro.Contas_Pagar.lb.TotalSalario.fText			= "Total das comissões	: R$ {}"
+		$objDinheiro.Contas_Pagar.lb.TotalSalario.Text			= "Total das comissões	: R$ 0,00"
+		
+		$objDinheiro.Contas_Pagar.lb.TotalFalta					= $objDinheiro.Contas_Pagar.gb.Paga.Label()
+		$objDinheiro.Contas_Pagar.lb.TotalFalta.size			= 320, 18
+		$objDinheiro.Contas_Pagar.lb.TotalFalta.location		= $objDinheiro.Contas_Pagar.lb.TotalSalario.left, $objDinheiro.Contas_Pagar.lb.TotalSalario.bottom
+		$objDinheiro.Contas_Pagar.lb.TotalFalta.ForeColor		= "white"
+		$objDinheiro.Contas_Pagar.lb.TotalFalta.Font			= $System.font("Consolas", 11, 1)
+		$objDinheiro.Contas_Pagar.lb.TotalFalta.fText			= "Total faltante		: R$ {}"
+		$objDinheiro.Contas_Pagar.lb.TotalFalta.Text			= "Total faltante		: R$ 0,00"
+		
+		$objDinheiro.Contas_Pagar.lb.Total_SerPago				= $objDinheiro.Contas_Pagar.gb.Paga.Label()
+		$objDinheiro.Contas_Pagar.lb.Total_SerPago.size			= 320, 18
+		$objDinheiro.Contas_Pagar.lb.Total_SerPago.location		= $objDinheiro.Contas_Pagar.lb.TotalFalta.left, $objDinheiro.Contas_Pagar.lb.TotalFalta.bottom
+		$objDinheiro.Contas_Pagar.lb.Total_SerPago.ForeColor	= "white"
+		$objDinheiro.Contas_Pagar.lb.Total_SerPago.Font			= $System.font("Consolas", 11, 1)
+		$objDinheiro.Contas_Pagar.lb.Total_SerPago.fText		= "Total a ser pago	: R$ {}"
+		$objDinheiro.Contas_Pagar.lb.Total_SerPago.Text			= "Total a ser pago	: R$ 0,00"
+		
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento				= $objDinheiro.Contas_Pagar.gb.Paga.ToolButton()
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.BorderStyle	= 0
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.FlatStyle	= 0
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.BackColor	= 51, 51, 51
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.HotBackColor= 0, 185, 0
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.ForeColor	= 0, 185, 0
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.HotForeColor= 51, 51, 51
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.Location	= $objDinheiro.Contas_Pagar.lb.Total_SerPago.Left, $objDinheiro.Contas_Pagar.lb.Total_SerPago.Bottom
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.size		= $objDinheiro.Contas_Pagar.gb.paga.ClientWidth-10, 25
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.font		= $System.font("Segeo UI", 13, 1)
+		$objDinheiro.Contas_Pagar.bt.ConfirmarPagamento.text		= "Confirmar pagamento"
+	; </VALORES>
+; </CONTAS A PAGAR>
+; <PAGAMENTO>
+$heraça = $
+endfunction
+
+; $objDinheiro.form.show()
+; while $objDinheiro.form.visible()
+	; $=Execute($system.Application.DoEvents())
+; loop
+; quit

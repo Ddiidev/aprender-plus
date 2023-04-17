@@ -1,0 +1,103 @@
+Break on
+dim $spanel[1]
+
+$sys		= createobject("Kixtart.System")
+$frm		= $sys.form()
+$frm.size	= 650, 500
+
+$split							= $frm.SplitContainer()
+$split.BackColor				= "black"
+$split.ForeColor				= "black"
+$split.Orientation				= 0
+$split.Dock						= 5
+
+$spanel[0]						= $split.panel1
+$spanel[0].BackColor			= 29, 31, 33
+$spanel[1]						= $split.panel2
+$spanel[1].BackColor			= 29, 31, 33
+
+$tx	= $sys.Object()
+$lb	= $sys.Object()
+$gp	= $sys.Object()
+$cb	= $sys.Object()
+$pn	= $sys.Object()
+$ck	= $sys.Object()
+$bt	= $sys.Object()
+
+;;<PAINEL DO TOPO(NOME COMISSÃO)>
+	$lb.GridTitle					= $spanel[0].Label()
+	$lb.GridTitle.Size				= 280, 18
+	$lb.GridTitle.BackColor			= "Black"
+	$lb.GridTitle.ForeColor			= "White"
+	$lb.GridTitle.Text				= "Lista de comissões"
+	$lb.GridTitle.font				= $sys.Font("Segeo UI", 11)
+	
+	$grid1							= $spanel[0].GridView()
+	$grid1.Anchor					= 1 + 2 + 4
+	$grid1.BorderStyle				= 0
+	$grid1.ReadOnly					= 1
+	$grid1.FullRowSelect			= 1
+	$grid1.ScrollBars				= 2
+	$grid1.Fontsize					= 15
+	$grid1.SelectionForeColor		= 0,0,0
+	$grid1.size						= $lb.GridTitle.Width, $spanel[0].ClientHeight-$lb.GridTitle.Height-1
+	$grid1.Location					= $lb.GridTitle.Left, $lb.GridTitle.Bottom
+	$grid1.HeaderStyle				= 1
+	$grid1.AlternatingBackColor		= &0F7EBE7
+	$grid1.SelectionBackColor		= 169,178,202
+	$grid1.BackColor				= "White";"GhostWhite"
+	$grid1.GridLineColor			= &E7BE94 ;"RoyalBlue"
+	$grid1.ForeColor				= "Black" ;"MidnightBlue"
+	$grid1.Font						= $Sys.Font("Segeo UI", 10)
+	$=$grid1.Columns.Add("ID")
+	$grid1.Columns(0).ValueType = 8
+	$grid1.Columns(0).Width = 50
+	$=$grid1.Columns.Add("Nome do perfil")
+	$grid1.Columns(1).Width = 230
+	$grid1.Columns(1).ValueType = 8
+	$grid1.Columns(1).TextAlign = 2
+	
+	$bt.Add					= $spanel[0].ToolButton()
+	$bt.Add.Text			= "+"
+	$bt.Add.ToolTipText		= "Adicionar um nome para o perfil de comissão."
+	$bt.Add.FlatStyle		= 1
+	$bt.Add.BorderStyle		= 2
+	$bt.Add.font			= $Sys.font("Consolas", 15, 1)
+	$bt.Add.ForeColor		= 0, 198, 0
+	$bt.Add.HotForeColor	= 45, 31, 36
+	$bt.Add.BackColor		= 45, 31, 36
+	$bt.Add.HotBackColor	= 0, 198, 0
+	$bt.Add.Width			= 40
+	$bt.Add.Location		= $grid1.Right+1, $grid1.Top
+
+	$bt.del					= $spanel[0].ToolButton()
+	$bt.del.Text			= "-"
+	$bt.del.ToolTipText		= "Remover um perfil de comissão."
+	$bt.del.FlatStyle		= 1
+	$bt.del.BorderStyle		= 2
+	$bt.del.font			= $Sys.font("Consolas", 18, 1)
+	$bt.del.ForeColor		= 230, 0, 0
+	$bt.del.HotForeColor	= 45, 31, 36
+	$bt.del.BackColor		= 45, 31, 36
+	$bt.del.HotBackColor	= 230, 0, 0
+	$bt.del.Width			= 40
+	$bt.del.Location		= $bt.Add.Left, $bt.Add.Bottom+1
+	
+	$bt.edt					= $spanel[0].ToolButton()
+	$bt.edt.Text			= "^"
+	$bt.edt.ToolTipText		= "Edita um perfil de comissão."
+	$bt.edt.FlatStyle		= 1
+	$bt.edt.BorderStyle		= 2
+	$bt.edt.font			= $Sys.font("Consolas", 16, 1)
+	$bt.edt.ForeColor		= 0, 198, 0
+	$bt.edt.HotForeColor	= 45, 31, 36
+	$bt.edt.BackColor		= 45, 31, 36
+	$bt.edt.HotBackColor	= 0, 198, 0
+	$bt.edt.Width			= 40
+	$bt.edt.Location		= $bt.del.Left, $bt.del.Bottom+1
+;;<PAINEL DO TOPO(NOME COMISSÃO)>
+
+$frm.Show()
+while $frm.visible
+	$=Execute($frm.DoEvents())
+loop

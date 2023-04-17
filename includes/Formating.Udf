@@ -1,0 +1,64 @@
+;;Author			: André Luiz
+;;Version			: 1.0.0.0
+function Format($argument, $data)
+	dim
+		$i, $y, $max,
+		$start
+	if (ubound($data) = -1)
+		dim $tmp $tmp = $data
+		redim $data[0]
+		$data[0] = cstr($tmp)
+	endif
+	$y=0
+	$max = len($argument)
+	for $i=0 to $max
+		$start		= instr($argument, "{")
+		if ($start > 0)
+			select
+				case (Substr($argument, $start+1, 2) = ".f")
+					Dim $tmp, $end
+					$end = instr($argument, "}")
+					$tmp = Cint(Trim(Substr($argument, $start+3, $end-($start+3))))
+					$argument = Substr($argument, 1, $start-1)+ formatnumber($data[$y], $tmp) +Substr($argument, $end+1)
+				case (Substr($argument, $start+1, 2) = ".s")
+					$argument = Substr($argument, 1, $start-1)+ cstr($data[$y]) +Substr($argument, $start+4)
+				case (Substr($argument, $start+1, 2) = ".l")
+					$argument = Substr($argument, 1, $start-1)+ cint($data[$y]) +Substr($argument, $start+4)
+				case (Substr($argument, $start+1, 2) = ".i")
+					$argument = Substr($argument, 1, $start-1)+ int($data[$y]) +Substr($argument, $start+4)
+				case (Substr($argument, $start+1, 2) = ".d")
+					$argument = Substr($argument, 1, $start-1)+ Cdbl($data[$y]) +Substr($argument, $start+4)
+					
+				case (Substr($argument, $start+1, 1) = ":")
+					Dim $end, $tmp, $val
+					$end = instr($argument, "}")
+					;;<VALOR 'START', 'END'>
+						$val		= Split(Trim(Substr($argument, $start+2, $end-($start+2))), ",")
+						$tmp		= $val[0], len($data[$y])
+						$val		= iif(ubound($val)=0, $tmp, $val)
+						;;<VALOR.0>
+							$val[0]	= Replace($val[0], "#", len($data[$y]))
+							$=execute("$$tmp = "+$val[0])
+							$val[0]	= $tmp
+						;;</VALOR.0>
+						;;<VALOR.1>
+							$val[1]	= iif(trim($val[1])="", "#", $val[1])
+							$val[1]	= Replace($val[1], "#", len($data[$y]))
+							$=execute("$$tmp = "+$val[1])
+							$val[1]	= $tmp
+						;;</VALOR.1>
+					;;</VALOR 'START', 'END'>
+					$tmp		= Substr($data[$y], $val[0], $val[1])
+					$argument	= Substr($argument, 1, $start-1)+ cstr($tmp) +Substr($argument, $end+1)
+				case (1)
+					dim $end
+					$end = instr($argument, "}")
+					$argument = Substr($argument, 1, $start-1)+ cstr($data[$y]) +Substr($argument, $end+1)
+			endselect
+			$y=$y+1
+		else
+			$i=$max
+		endif
+	next
+	$format = $argument
+endfunction

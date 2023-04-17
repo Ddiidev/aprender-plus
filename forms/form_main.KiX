@@ -1,0 +1,7 @@
+$form.Menu 					= $System.MainMenu()
+$form.Menu.Style			= 1
+
+$form.Cadastro				= $form.Menu.MenuItems.Add("Cadastro")
+$form.CadastroFunc			= $form.Cadastro.MenuItems.Add("Ver contrato")
+$form.CadastroFunc			= $form.Cadastro.MenuItems.Add("-")
+$form.CadastroFunc			= $form.Cadastro.MenuItems.Add("Ver funcionário")

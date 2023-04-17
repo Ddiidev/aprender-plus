@@ -1,0 +1,1520 @@
+function VerContrato($frmherdado)
+	Dim
+		$frm, $ck, $gp, $tx, $lb,
+		$grid, $cb, $pn, $bt, $i, $k
+	Dim $temp
+	Dim $CONTRATO_ID, $CONTRATO_IDALUNO, $DATA
+
+	$frmherdado.Enabled = not $frmherdado.Enabled
+	$frmherdado.BeginUpdate()
+	$frm					= $System.Form($frmherdado)
+	$frm.text				= tb_getData("empresa.NOME-FANTASIA", 1)+" - Contratos"
+	$frm.size				= 896, 620
+	$frm.ForeColor			= 255, 255, 255
+	$frm.BackColor			= 51, 51, 51
+	$frm.MaximizeBox		= 0
+	$frm.MinimizeBox		= 0
+	$frm.FormBorderStyle	= 1
+	$frm.icon				= $frmherdado.icon
+	$frm.OnKeyDown			= "if ($$frm.KeyCode = 27) $$frm.hide() exit 1 endif"
+	$frm.Center()
+	$frm.Show()
+	$frm.BeginUpdate()
+
+	$tx	= $System.Object()
+	$lb	= $System.Object()
+	$gp	= $System.Object()
+	$cb	= $System.Object()
+	$pn	= $System.Object()
+	$ck	= $System.Object()
+	$bt	= $System.Object()
+	$gp.Contrato	= $System.Object()
+	$gp.DadosAluno	= $System.Object()
+
+	$lb.GridTitle					= $frm.Label()
+	$lb.GridTitle.Size				= 340, 18
+	$lb.GridTitle.Location			= 0, 10
+	$lb.GridTitle.BackColor			= "Black"
+	$lb.GridTitle.ForeColor			= "White"
+	$lb.GridTitle.Text				= "Lista de contratos"
+	$lb.GridTitle.font				= $System.Font("Segeo UI", 11)
+
+	$grid							= $frm.GridView()
+	$grid.Anchor					= 1 + 2 + 4
+	$grid.BorderStyle				= 0
+	$grid.ReadOnly					= 1
+	$grid.FullRowSelect				= 1
+	$grid.ScrollBars				= 2
+	$grid.Top						= $lb.GridTitle.Bottom+2
+	$grid.Fontsize					= 15
+	$grid.SelectionForeColor		= 0,0,0
+	$grid.size						= $lb.GridTitle.Width, 322
+	$grid.HeaderStyle				= 1
+	$grid.AlternatingBackColor		= &0F7EBE7
+	$grid.SelectionBackColor		= 169,178,202
+	$grid.BackColor					= "White";"GhostWhite"
+	$grid.GridLineColor				= &E7BE94 ;"RoyalBlue"
+	$grid.ForeColor					= "Black" ;"MidnightBlue"
+	$grid.Font						= $System.Font("Segeo UI", 10)
+	$grid.OnKeyUp					= "if ($$grid.KeyCode = 27) $$frm.hide() exit 1 endif"
+	$grid.OnKeyDown					= "$$=Execute($$grid.OnClick)"
+	$grid.OnClick					=
+	'
+		$$frm.BeginUpdate()
+		if ($$grid.CurrentColumn.Index <> -1)
+			if not isdeclared($$temp_ID) dim $$temp_ID endif
+			if not isdeclared($$temp_data) dim $$temp_data endif
+			$$temp_ID = $$grid.Cells($$grid.CurrentRow.Index, 0).Text
+			$$temp_data = tb_getdataRowFull("CONTRATO.IDCODIGO", $$temp_ID)
+
+			$$bt.CursosAluno.tag	= tb_getdata("cadastro-aluno.cursos",, "IDCODIGO", $$temp_data[1])
+			$$tx.NomeAluno.Text		= tb_getdata("cadastro-aluno.nome-aluno",, "IDCODIGO", $$temp_data[1])
+			$$tx.Nasc.Text			= tb_getdata("cadastro-aluno.nascimento",, "IDCODIGO", $$temp_data[1])
+			$$tx.email.Text			= tb_getdata("cadastro-aluno.E-Mail",, "IDCODIGO", $$temp_data[1])
+			$$tx.bairro.Text		= tb_getdata("cadastro-aluno.bairro",, "IDCODIGO", $$temp_data[1])
+			$$tx.escolaridade.Text	= tb_getdata("cadastro-aluno.escolaridade",, "IDCODIGO", $$temp_data[1])
+			$$tx.num.Text			= tb_getdata("cadastro-aluno.num",, "IDCODIGO", $$temp_data[1])
+			$$tx.endr.Text			= tb_getdata("cadastro-aluno.endr",, "IDCODIGO", $$temp_data[1])
+			$$tx.cpf.Text			= tb_getdata("cadastro-aluno.cpf-aluno",, "IDCODIGO", $$temp_data[1])
+			$$tx.cep.Text			= tb_getdata("cadastro-aluno.cep",, "IDCODIGO", $$temp_data[1])
+			$$tx.rg.Text			= tb_getdata("cadastro-aluno.rg-aluno",, "IDCODIGO", $$temp_data[1])
+			$$tx.tel.Text			= tb_getdata("cadastro-aluno.tel-aluno",, "IDCODIGO", $$temp_data[1])
+			$$tx.NomeRESP.Text		= tb_getdata("cadastro-aluno.nome-resp",, "IDCODIGO", $$temp_data[1])
+			$$tx.rgRESP.Text		= tb_getdata("cadastro-aluno.rg-resp",, "IDCODIGO", $$temp_data[1])
+			$$tx.cpfRESP.Text 		= tb_getdata("cadastro-aluno.cpf-resp",, "IDCODIGO", $$temp_data[1])
+			$$tx.cepRESP.Text 		= tb_getdata("cadastro-aluno.cep-resp",, "IDCODIGO", $$temp_data[1])
+			$$tx.telRESP.Text 		= tb_getdata("cadastro-aluno.tel-resp",, "IDCODIGO", $$temp_data[1])
+			$$ck.AlunoResp.checked	= iif(replace($$tx.NomeAluno.text, " ", "") = replace($$tx.NomeRESP.text, " ", ""), -1, 0)
+			;;CONTRATO
+			$$tx.VALMatri.Text				= Flip_Currency($$temp_data[5])
+			$$tx.VALMensal.Text				= Flip_Currency($$temp_data[6])
+			$$tx.DiaVence.Text				= $$temp_data[7]
+			$$tx.DiaCurso.Text				= NDiaToTexto($$temp_data[2])
+			$$tx.DiaCurso.Tag				= $$temp_data[2]
+			$$tx.HoraCursoIni1.Visible		= false
+			$$tx.HoraCursoIni.Enabled		= false
+			$$tx.HoraCursoIni.Visible		= true
+			$$tx.HoraCursoIni.Text			= Split($$temp_data[3], ",")[0]
+			$$tx.HoraCursoFim1.Visible		= false
+			$$tx.HoraCursoFim.Enabled		= false
+			$$tx.HoraCursoFim.Visible		= true
+			$$tx.HoraCursoFim.Text			= Split($$temp_data[3], ",")[1]
+			$$tx.DuraCurso1.Visible			= true
+			$$bt.CursosAluno.Enabled		= true
+			$$tx.DuraCurso1.Text			= $$temp_data[4]
+			$$tx.DuraCurso.Text				= $$temp_data[4]
+			$$tx.DataContrato.Text			= $$temp_data[8]
+			$$tx.StatusContrato.Text		= $$temp_data[10]
+			$$temp_data[9]					= Cint(tb_getdata("funcionario.IDCODIGO",, "IDCODIGO", $$temp_data[9]))
+			for $$=0 to $$cb.Contratante.ListCount
+				$$cb.Contratante.SelectedIndex = $$
+				if (Split($$cb.Contratante.Text, " ")[0] = $$temp_data[9])
+					$$ = $$cb.Contratante.ListCount
+				endif
+			next
+			$$tx.Contratante.Text			= $$cb.Contratante.Text
+		else
+			$$tx.DuraCurso.Text 		= ""
+			$$tx.DuraCurso1.Text 		= "__ meses"
+			$$tx.NomeAluno.Text 		= ""
+			$$tx.Nasc.Text				= ""
+			$$tx.email.Text				= ""
+			$$tx.bairro.Text			= ""
+			$$tx.escolaridade.Text		= ""
+			$$tx.num.Text				= ""
+			$$tx.endr.Text				= ""
+			$$tx.cpf.Text				= ""
+			$$tx.cep.Text				= ""
+			$$tx.rg.Text				= ""
+			$$tx.tel.Text				= ""
+			$$tx.NomeRESP.Text			= ""
+			$$tx.rgRESP.Text			= ""
+			$$tx.cpfRESP.Text			= ""
+			$$tx.cepRESP.Text			= ""
+			$$tx.telRESP.Text			= ""
+			$$ck.AlunoResp.checked		= 0
+			$$bt.CursosAluno.Enabled	= false
+			$$tx.VALMatri.Text			= ""
+			$$tx.VALMensal.Text			= ""
+			$$tx.DiaVence.Text			= ""
+			$$tx.DiaCurso.Text			= ""
+			$$tx.HoraCursoIni.Text		= ""
+			$$tx.HoraCursoFim.Text		= ""
+			$$tx.DataContrato.Text		= ""
+			$$tx.StatusContrato.Text	= ""
+			$$cb.Contratante.Text		= ""
+			$$tx.Contratante.Text		= ""
+		endif
+		$$frm.EndUpdate()
+	'
+
+	$lb.GridRodaPe					= $frm.Label()
+	$lb.GridRodaPe.Size				= $grid.Width, 18
+	$lb.GridRodaPe.Location			= $grid.left, $grid.bottom
+	$lb.GridRodaPe.BackColor		= "Black"
+	$lb.GridRodaPe.ForeColor		= "White"
+	$lb.GridRodaPe.Text				= "Você possui "+Cstr(ubound(tb_FindTextInSequenceData("Contrato.IDCODIGO", "STATUS-CONTRATO", "ABERTO"))+1)+" contrato(s)"
+	$lb.GridRodaPe.font				= $System.Font("Segeo UI", 11, 1)
+
+	$=$grid.Columns.Add("ID")
+	$grid.Columns(0).ValueType = 8
+	$grid.Columns(0).Width = 40
+	$=$grid.Columns.Add("Nome do aluno")
+	$grid.Columns(1).Width = 140
+	$grid.Columns(1).ValueType = 8
+	$grid.Columns(1).TextAlign = 2
+	$=$grid.Columns.Add("Nome do responsável")
+	$grid.Columns(2).Width = 140
+	$grid.Columns(2).ValueType = 8
+	$grid.Columns(2).TextAlign = 2
+
+;;<ALUNO E RESPONSÁVEL>
+	$gp.Aluno				= $frm.GroupBox()
+	$gp.Aluno.Anchor		= 1+2+4+8
+	$gp.Aluno.Size			= 545, 370
+	$gp.Aluno.Location		= $grid.Right+4, $grid.Top-30
+	$gp.Aluno.font			= $System.Font("Consolas", 12)
+	$gp.Aluno.Text			= "Cadastro de aluno"
+	$gp.Aluno.BeginUpdate()
+
+	;;<DADOS ALUNO>
+		$gp.DadosAluno				= $gp.Aluno.GroupBox()
+		$gp.DadosAluno.Size			= 335, 345
+		$gp.DadosAluno.location		= 5, 20
+		$gp.DadosAluno.font			= $System.Font("Consolas", 10.5)
+		$gp.DadosAluno.Text			= "Dados do aluno"
+
+		$lb.NomeAluno				= $gp.DadosAluno.Label()
+		$lb.NomeAluno.Size			= 120, 18
+		$lb.NomeAluno.Location		= 5, 20
+		$lb.NomeAluno.ForeColor		= "White"
+		$lb.NomeAluno.Text			= "Nome do aluno"
+		$lb.NomeAluno.font			= $System.Font("Segeo UI", 11)
+
+		$tx.NomeAluno				= $gp.DadosAluno.TextBox()
+		$tx.NomeAluno.BorderStyle	= 0
+		$tx.NomeAluno.ReadOnly		= 1
+		$tx.NomeAluno.Size			= 180, 26
+		$tx.NomeAluno.Location		= 5, $lb.NomeAluno.Bottom+2
+		$tx.NomeAluno.BackColor		= 35, 35, 35
+		$tx.NomeAluno.ForeColor		= "White"
+		$tx.NomeAluno.font			= $System.Font("Segeo UI", 14)
+		$tx.NomeAluno.OnKeyDown		=
+		"
+			if ($$bt.NovoContrato.Tag) or ($$bt.AlteContrato.Tag)
+				$$grid.Cells($$grid.CurrentRowIndex, 1).Text = $$tx.NomeAluno.Text
+			endif
+		"
+
+		$lb.NASC					= $gp.DadosAluno.Label()
+		$lb.NASC.Size				= 120, 18
+		$lb.NASC.Location			= $tx.NomeAluno.Right+2, $lb.NomeAluno.Top
+		$lb.NASC.ForeColor			= "White"
+		$lb.NASC.Text				= "Nascimento"
+		$lb.NASC.font				= $System.Font("Segeo UI", 11)
+
+		$tx.NASC					= $gp.DadosAluno.TextBox()
+		$tx.NASC.BorderStyle		= 0
+		$tx.NASC.ReadOnly			= 1
+		$tx.NASC.Size				= 130, 26
+		$tx.NASC.Location			= $lb.NASC.left, $lb.NASC.Bottom+2
+		$tx.NASC.BackColor			= 35, 35, 35
+		$tx.NASC.ForeColor			= "White"
+		$tx.NASC.font				= $System.Font("Segeo UI", 14)
+
+		$lb.eMail					= $gp.DadosAluno.Label()
+		$lb.eMail.Size				= 80, 18
+		$lb.eMail.Location			= $tx.NomeAluno.Left, $tx.NomeAluno.Bottom+4
+		$lb.eMail.ForeColor			= "White"
+		$lb.eMail.Text				= "E-mail"
+		$lb.eMail.font				= $System.Font("Segeo UI", 11)
+
+		$tx.eMail					= $gp.DadosAluno.TextBox()
+		$tx.eMail.ReadOnly			= 1
+		$tx.eMail.BorderStyle		= 0
+		$tx.eMail.Size				= 180, 26
+		$tx.eMail.Location			= $lb.eMail.left, $lb.eMail.Bottom+2
+		$tx.eMail.BackColor			= 35, 35, 35
+		$tx.eMail.ForeColor			= "White"
+		$tx.eMail.font				= $System.Font("Segeo UI", 14)
+
+		$lb.Tel						= $gp.DadosAluno.Label()
+		$lb.Tel.Size				= 120, 18
+		$lb.Tel.Location			= $tx.eMail.Right+2, $lb.eMail.Top
+		$lb.Tel.ForeColor			= "White"
+		$lb.Tel.Text				= "Telefone"
+		$lb.Tel.font				= $System.Font("Segeo UI", 11)
+
+		$tx.Tel						= $gp.DadosAluno.TextBox()
+		$tx.Tel.ReadOnly			= 1
+		$tx.Tel.BorderStyle			= 0
+		$tx.Tel.Size				= 130, 26
+		$tx.Tel.Location			= $lb.Tel.left, $lb.Tel.Bottom+2
+		$tx.Tel.BackColor			= 35, 35, 35
+		$tx.Tel.ForeColor			= "White"
+		$tx.Tel.font				= $System.Font("Segeo UI", 14)
+
+		$lb.Escolaridade			= $gp.DadosAluno.Label()
+		$lb.Escolaridade.Size		= 85, 18
+		$lb.Escolaridade.Location	= $tx.eMail.Left, $tx.eMail.Bottom+4
+		$lb.Escolaridade.ForeColor	= "White"
+		$lb.Escolaridade.Text		= "Escolaridade"
+		$lb.Escolaridade.font		= $System.Font("Segeo UI", 11)
+
+		$tx.Escolaridade			= $gp.DadosAluno.TextBox()
+		$tx.Escolaridade.ReadOnly	= 1
+		$tx.Escolaridade.BorderStyle= 0
+		$tx.Escolaridade.Size		= 85, 26
+		$tx.Escolaridade.Location	= $lb.Escolaridade.left, $lb.Escolaridade.Bottom+2
+		$tx.Escolaridade.BackColor	= 35, 35, 35
+		$tx.Escolaridade.ForeColor	= "White"
+		$tx.Escolaridade.font		= $System.Font("Segeo UI", 14)
+
+		$lb.RG						= $gp.DadosAluno.Label()
+		$lb.RG.Size					= 120, 18
+		$lb.RG.Location				= $tx.Escolaridade.Right+2, $lb.Escolaridade.Top
+		$lb.RG.ForeColor			= "White"
+		$lb.RG.Text					= "RG"
+		$lb.RG.font					= $System.Font("Segeo UI", 11)
+
+		$tx.RG						= $gp.DadosAluno.TextBox()
+		$tx.RG.ReadOnly				= 1
+		$tx.RG.BorderStyle			= 0
+		$tx.RG.Size					= 225, 26
+		$tx.RG.Location				= $lb.RG.left, $lb.RG.Bottom+2
+		$tx.RG.BackColor			= 35, 35, 35
+		$tx.RG.ForeColor			= "White"
+		$tx.RG.font					= $System.Font("Segeo UI", 14)
+
+		$lb.CPF						= $gp.DadosAluno.Label()
+		$lb.CPF.Size				= 120, 18
+		$lb.CPF.Location			= $tx.Escolaridade.Left, $tx.Escolaridade.bottom+4
+		$lb.CPF.ForeColor			= "White"
+		$lb.CPF.Text				= "CPF"
+		$lb.CPF.font				= $System.Font("Segeo UI", 11)
+
+		$tx.CPF						= $gp.DadosAluno.TextBox()
+		$tx.CPF.ReadOnly			= 1
+		$tx.CPF.BorderStyle			= 0
+		$tx.CPF.Size				= 130, 26
+		$tx.CPF.Location			= $lb.CPF.left, $lb.CPF.Bottom+2
+		$tx.CPF.BackColor			= 35, 35, 35
+		$tx.CPF.ForeColor			= "White"
+		$tx.CPF.font				= $System.Font("Segeo UI", 14)
+
+		$lb.AlunoResp				= $gp.DadosAluno.Label()
+		$lb.AlunoResp.BorderStyle	= 0
+		$lb.AlunoResp.Size			= 130, 24
+		$lb.AlunoResp.Location		= $tx.CPF.Right+2, $lb.CPF.Top
+		$lb.AlunoResp.Text			= "Responsabilidade"
+		$lb.AlunoResp.font			= $System.Font("Segeo UI", 11)
+
+		$ck.AlunoResp				= $gp.DadosAluno.CheckBox()
+		$ck.AlunoResp.BorderStyle	= 0
+		$ck.AlunoResp.Enabled		= 0
+		$ck.AlunoResp.Size			= 170, 26
+		$ck.AlunoResp.FlatStyle		= 0
+		$ck.AlunoResp.Location		= $lb.AlunoResp.Left, $lb.AlunoResp.Bottom+2
+		$ck.AlunoResp.ForeColor		= "White"
+		$ck.AlunoResp.Text			= "Responde por si próprio."
+		$ck.AlunoResp.font			= $System.Font("Segeo UI", 10)
+		$ck.AlunoResp.OnClick		=
+		"
+			if ($$ck.AlunoResp.Checked = -1)
+				$$tx.NomeRESP.Text = $$tx.NomeAluno.Text
+				$$tx.CPFRESP.Text = $$tx.CPF.Text
+				$$tx.TELRESP.Text = $$tx.TEL.Text
+				$$tx.RGRESP.Text = $$tx.RG.Text
+				$$gp.DadosRESP.Enabled = 0
+				$$=Execute($$tx.NomeRESP.OnKeyDown)
+			else
+				$$tx.NomeRESP.Text = ''
+				$$tx.CPFRESP.Text = ''
+				$$tx.TELRESP.Text = ''
+				$$tx.RGRESP.Text = ''
+				$$gp.DadosRESP.Enabled = 1
+				$$=Execute($$tx.NomeRESP.OnKeyDown)
+			endif
+		"
+
+		$gp.Aluno.EndUpdate()
+		$gp.DadosAluno.Endr				= $gp.DadosAluno.GroupBox()
+		$gp.DadosAluno.Endr.Size		= 310, 120
+		$gp.DadosAluno.Endr.location	= $tx.CPF.left, $tx.CPF.bottom+4
+		$gp.DadosAluno.Endr.font		= $System.Font("Consolas", 11)
+		$gp.DadosAluno.Endr.Text		= "Endereço"
+		$gp.DadosAluno.Endr.BeginUpdate()
+
+		$lb.CEP						= $gp.DadosAluno.Endr.Label()
+		$lb.CEP.Size				= 100, 18
+		$lb.CEP.Location			= 5, 18
+		$lb.CEP.ForeColor			= "White"
+		$lb.CEP.Text				= "CEP"
+		$lb.CEP.font				= $System.Font("Segeo UI", 11)
+
+		$tx.CEP						= $gp.DadosAluno.Endr.TextBox()
+		$tx.CEP.ReadOnly			= 1
+		$tx.CEP.BorderStyle			= 0
+		$tx.CEP.Size				= 100, 26
+		$tx.CEP.Location			= $lb.CEP.left, $lb.CEP.Bottom+2
+		$tx.CEP.BackColor			= 35, 35, 35
+		$tx.CEP.ForeColor			= "White"
+		$tx.CEP.font				= $System.Font("Segeo UI", 14)
+
+		$lb.ENDR					= $gp.DadosAluno.Endr.Label()
+		$lb.ENDR.Size				= 100, 18
+		$lb.ENDR.Location			= $tx.CEP.Right+2, $lb.CEP.Top
+		$lb.ENDR.ForeColor			= "White"
+		$lb.ENDR.Text				= "Endereço"
+		$lb.ENDR.font				= $System.Font("Segeo UI", 11)
+
+		$tx.ENDR					= $gp.DadosAluno.Endr.TextBox()
+		$tx.ENDR.ReadOnly			= 1
+		$tx.ENDR.BorderStyle		= 0
+		$tx.ENDR.Size				= 200, 26
+		$tx.ENDR.Location			= $lb.ENDR.left, $lb.ENDR.Bottom+2
+		$tx.ENDR.BackColor			= 35, 35, 35
+		$tx.ENDR.ForeColor			= "White"
+		$tx.ENDR.font				= $System.Font("Segeo UI", 14)
+
+		$lb.Num						= $gp.DadosAluno.Endr.Label()
+		$lb.Num.Size				= 60, 18
+		$lb.Num.Location			= $tx.CEP.left, $tx.CEP.Bottom+4
+		$lb.Num.ForeColor			= "White"
+		$lb.Num.Text				= "Nº"
+		$lb.Num.font				= $System.Font("Segeo UI", 11)
+
+		$tx.Num						= $gp.DadosAluno.Endr.TextBox()
+		$tx.Num.ReadOnly			= 1
+		$tx.Num.BorderStyle			= 0
+		$tx.Num.Size				= 60, 26
+		$tx.Num.Location			= $lb.Num.left, $lb.Num.Bottom+2
+		$tx.Num.BackColor			= 35, 35, 35
+		$tx.Num.ForeColor			= "White"
+		$tx.Num.font				= $System.Font("Segeo UI", 14)
+
+		$lb.Bairro					= $gp.DadosAluno.Endr.Label()
+		$lb.Bairro.Size				= 70, 18
+		$lb.Bairro.Location			= $tx.Num.Right+2, $lb.Num.Top
+		$lb.Bairro.ForeColor		= "White"
+		$lb.Bairro.Text				= "Bairro"
+		$lb.Bairro.font				= $System.Font("Segeo UI", 11)
+
+		$tx.Bairro					= $gp.DadosAluno.Endr.TextBox()
+		$tx.Bairro.ReadOnly			= 1
+		$tx.Bairro.BorderStyle		= 0
+		$tx.Bairro.Size				= 100, 26
+		$tx.Bairro.Location			= $lb.Bairro.left, $lb.Bairro.Bottom+2
+		$tx.Bairro.BackColor		= 35, 35, 35
+		$tx.Bairro.ForeColor		= "White"
+		$tx.Bairro.font				= $System.Font("Segeo UI", 14)
+		$gp.DadosAluno.Endr.EndUpdate()
+	;;</DADOS ALUNO>
+	;;<DADOS DO RESPONSÁVEL>
+		$gp.DadosRESP				= $gp.Aluno.GroupBox()
+		$gp.DadosRESP.Size			= 198, 300
+		$gp.DadosRESP.location		= $gp.DadosAluno.Right+4, 20
+		$gp.DadosRESP.font			= $System.Font("Consolas", 10.5)
+		$gp.DadosRESP.Text			= "Dados do responsável"
+		$gp.DadosRESP.BeginUpdate()
+
+		$lb.NomeRESP				= $gp.DadosRESP.Label()
+		$lb.NomeRESP.Size			= 150, 18
+		$lb.NomeRESP.Location		= 5, 20
+		$lb.NomeRESP.ForeColor		= "White"
+		$lb.NomeRESP.Text			= "Nome"
+		$lb.NomeRESP.font			= $System.Font("Segeo UI", 11)
+
+		$tx.NomeRESP				= $gp.DadosRESP.TextBox()
+		$tx.NomeRESP.ReadOnly		= 1
+		$tx.NomeRESP.BorderStyle	= 0
+		$tx.NomeRESP.Size			= 190, 26
+		$tx.NomeRESP.Location		= $lb.NomeRESP.Left, $lb.NomeRESP.Bottom+2
+		$tx.NomeRESP.ForeColor		= "White"
+		$tx.NomeRESP.font			= $System.Font("Segeo UI", 14)
+		$tx.NomeRESP.BackColor		= 35, 35, 35
+		$tx.NomeRESP.ForeColor		= "White"
+		$tx.NomeRESP.OnKeyDown		=
+		"
+			if ($$bt.NovoContrato.Tag) or ($$bt.AlteContrato.Tag)
+				$$grid.Cells($$grid.CurrentRowIndex, 2).Text = $$tx.NomeRESP.Text
+			endif
+		"
+
+		$lb.RGRESP					= $gp.DadosRESP.Label()
+		$lb.RGRESP.Size				= 150, 18
+		$lb.RGRESP.Location			= $tx.NomeRESP.Left, $tx.NomeRESP.Bottom+4
+		$lb.RGRESP.ForeColor		= "White"
+		$lb.RGRESP.Text				= "RG"
+		$lb.RGRESP.font				= $System.Font("Segeo UI", 11)
+
+		$tx.RGRESP					= $gp.DadosRESP.TextBox()
+		$tx.RGRESP.ReadOnly			= 1
+		$tx.RGRESP.BorderStyle		= 0
+		$tx.RGRESP.Size				= 190, 26
+		$tx.RGRESP.Location			= $lb.RGRESP.Left, $lb.RGRESP.Bottom+2
+		$tx.RGRESP.ForeColor		= "White"
+		$tx.RGRESP.font				= $System.Font("Segeo UI", 14)
+		$tx.RGRESP.BackColor		= 35, 35, 35
+		$tx.RGRESP.ForeColor		= "White"
+
+		$lb.CPFRESP					= $gp.DadosRESP.Label()
+		$lb.CPFRESP.Size			= 150, 18
+		$lb.CPFRESP.Location		= $tx.RGRESP.Left, $tx.RGRESP.Bottom+4
+		$lb.CPFRESP.ForeColor		= "White"
+		$lb.CPFRESP.Text			= "CPF"
+		$lb.CPFRESP.font			= $System.Font("Segeo UI", 11)
+
+		$tx.CPFRESP					= $gp.DadosRESP.TextBox()
+		$tx.CPFRESP.ReadOnly		= 1
+		$tx.CPFRESP.BorderStyle		= 0
+		$tx.CPFRESP.Size			= 190, 26
+		$tx.CPFRESP.Location		= $lb.CPFRESP.Left, $lb.CPFRESP.Bottom+2
+		$tx.CPFRESP.ForeColor		= "White"
+		$tx.CPFRESP.font			= $System.Font("Segeo UI", 14)
+		$tx.CPFRESP.BackColor		= 35, 35, 35
+		$tx.CPFRESP.ForeColor		= "White"
+
+		$lb.TELRESP					= $gp.DadosRESP.Label()
+		$lb.TELRESP.Size			= 150, 18
+		$lb.TELRESP.Location		= $tx.CPFRESP.Left, $tx.CPFRESP.Bottom+4
+		$lb.TELRESP.ForeColor		= "White"
+		$lb.TELRESP.Text			= "Telefone"
+		$lb.TELRESP.font			= $System.Font("Segeo UI", 11)
+
+		$tx.TELRESP					= $gp.DadosRESP.TextBox()
+		$tx.TELRESP.ReadOnly		= 1
+		$tx.TELRESP.BorderStyle		= 0
+		$tx.TELRESP.Size			= 190, 26
+		$tx.TELRESP.Location		= $lb.TELRESP.Left, $lb.TELRESP.Bottom+2
+		$tx.TELRESP.ForeColor		= "White"
+		$tx.TELRESP.font			= $System.Font("Segeo UI", 14)
+		$tx.TELRESP.BackColor		= 35, 35, 35
+		$tx.TELRESP.ForeColor		= "White"
+		$gp.DadosRESP.EndUpdate()
+	;;</DADOS DO RESPONSÁVEL>
+	;;<CURSOS>
+		$bt.CursosAluno				= $gp.Aluno.ToolButton()
+		$bt.CursosAluno.Enabled		= 0
+		$bt.CursosAluno.Size		= $gp.DadosRESP.Width, 25
+		$bt.CursosAluno.font		= $System.font("Segeo UI", 11, 1)
+		$bt.CursosAluno.BorderStyle	= 0
+		$bt.CursosAluno.FlatStyle	= 0
+		$bt.CursosAluno.BackColor	= 33, 33, 33
+		$bt.CursosAluno.HotBackColor= 15, 15, 15
+		$bt.CursosAluno.ForeColor	= 0, 102, 204
+		$bt.CursosAluno.HotForeColor= 0, 102, 204
+		$bt.CursosAluno.cursor		= 16
+		$bt.CursosAluno.icon		= $icon.images(5)
+		$bt.CursosAluno.text		= "Ver/Add Cursos"
+		$bt.CursosAluno.Location	= $gp.DadosRESP.left, $gp.DadosRESP.bottom+2
+		$bt.CursosAluno.OnClick		=
+		"
+			$$bt.CursosAluno.Tag = frmCursosAluno($$system, $$frm, $$bt.CursosAluno.Tag, $$grid.Enabled)
+		"
+	;;</CURSOS>
+;;</ALUNO E RESPONSÁVEL>
+	$gp.Contrato				= $frm.GroupBox()
+	$gp.Contrato.Anchor			= 4+8
+	$gp.Contrato.Size			= $frm.ClientWidth, 190
+	$gp.Contrato.Location		= $lb.GridRodaPe.left, $lb.GridRodaPe.bottom
+	$gp.Contrato.font			= $System.Font("Consolas", 12)
+	$gp.Contrato.Text			= "Contrato"
+
+	/*
+		GRUPO DE VALORES
+	*/
+	$gp.Contrato.Valores				= $gp.Contrato.GroupBox()
+	$gp.Contrato.Valores.Size			= 300, $gp.Contrato.ClientHeight-15-40
+	$gp.Contrato.Valores.Location		= 5, 18
+	$gp.Contrato.Valores.BorderStyle	= 1
+	$gp.Contrato.Valores.ForeColor		= 0, 191, 0
+	$gp.Contrato.Valores.font			= $System.Font("Consolas", 12)
+	$gp.Contrato.Valores.Text			= "Valores"
+	
+	$lb.VALMatri					= $gp.Contrato.Valores.Label()
+	$lb.VALMatri.ForeColor			= "White"
+	$lb.VALMatri.Text				= "Matrícula:"
+	$lb.VALMatri.Size				= 130, 20
+	$lb.VALMatri.Location			= 5, 18
+	
+	$tx.VALMatri					= $gp.Contrato.Valores.TextBox()
+	$tx.VALMatri.ReadOnly			= 1
+	$tx.VALMatri.Size				= 120, 20
+	$tx.VALMatri.BorderStyle		= 0
+	$tx.VALMatri.BackColor			= 35, 35, 35
+	$tx.VALMatri.ForeColor			= 0, 191, 0
+	$tx.VALMatri.Location			= 5, $lb.VALMatri.Bottom+2
+
+	$lb.ValMensal					= $gp.Contrato.Valores.Label()
+	$lb.ValMensal.Text				= "Mensalidade:"
+	$lb.ValMensal.ForeColor			= "White"
+	$lb.ValMensal.Size				= 130, 20
+	$lb.ValMensal.Location			= 5, $tx.VALMatri.Bottom+2
+	
+	$tx.ValMensal					= $gp.Contrato.Valores.TextBox()
+	$tx.ValMensal.ReadOnly			= 1
+	$tx.ValMensal.BorderStyle		= 0
+	$tx.ValMensal.Size				= 120, 20
+	$tx.ValMensal.BackColor			= 35, 35, 35
+	$tx.ValMensal.ForeColor			= 0, 191, 0
+	$tx.ValMensal.Location			= 5, $lb.ValMensal.Bottom+2
+	
+	$lb.DiaVence					= $gp.Contrato.Valores.Label()
+	$lb.DiaVence.Text				= "Dia de vencimento:"
+	$lb.DiaVence.ForeColor			= "White"
+	$lb.DiaVence.Size				= 165, 20
+	$lb.DiaVence.Location			= $lb.VALMatri.Right-2, 18
+	
+	$tx.DiaVence					= $gp.Contrato.Valores.TextBox()
+	$tx.DiaVence.ReadOnly			= 1
+	$tx.DiaVence.BorderStyle		= 0
+	$tx.DiaVence.Size				= 165, 20
+	$tx.DiaVence.ForeColor			= "White"
+	$tx.DiaVence.BackColor			= 35, 35, 35
+	$tx.DiaVence.Location			= $lb.DiaVence.Left, $lb.DiaVence.Bottom+2
+	
+	/*
+		GRUPO DE DATA E HORÁRIO
+	*/
+	$gp.Contrato.DiaHrCurso					= $gp.Contrato.GroupBox()
+	$gp.Contrato.DiaHrCurso.Size			= 360, $gp.Contrato.ClientHeight-15-40
+	$gp.Contrato.DiaHrCurso.Location		= $gp.Contrato.Valores.Right+2, 18
+	$gp.Contrato.DiaHrCurso.font			= $System.Font("Consolas", 12)
+	$gp.Contrato.DiaHrCurso.BorderStyle		= 1
+	$gp.Contrato.DiaHrCurso.ForeColor		= 129, 162, 196
+	$gp.Contrato.DiaHrCurso.Text			= "Dias e horário do curso"
+	
+	$lb.DiaCurso					= $gp.Contrato.DiaHrCurso.Label()
+	$lb.DiaCurso.Text				= "Dias de curso:"
+	$lb.DiaCurso.Size				= 130, 20
+	$lb.DiaCurso.ForeColor			= "White"
+	$lb.DiaCurso.Location			= 5, 18
+
+	$bt.DiaCurso					= $gp.Contrato.DiaHrCurso.ToolButton()
+	$bt.DiaCurso.Enabled			= true
+	$bt.DiaCurso.Size				= 70, 20
+	$bt.DiaCurso.font				= $System.font("Segeo UI", 11, 1)
+	$bt.DiaCurso.BorderStyle		= 0
+	$bt.DiaCurso.FlatStyle			= 0
+	$bt.DiaCurso.BackColor			= 33, 33, 33
+	$bt.DiaCurso.HotBackColor		= 15, 15, 15
+	$bt.DiaCurso.ForeColor			= 0, 102, 204
+	$bt.DiaCurso.HotForeColor		= 0, 120, 224
+	$bt.DiaCurso.Location			= $lb.DiaCurso.Right, $lb.DiaCurso.Top
+	$bt.DiaCurso.cursor				= 16
+	$bt.DiaCurso.icon				= $icon.images(5)
+	$bt.DiaCurso.Text				= "Add"
+	$bt.DiaCurso.OnClick			=
+	"
+		select
+			case ($$bt.NovoContrato.Tag = 1)
+				$$temp = frmDiaAluno($$System, $$frm, $$tx.DiaCurso.Tag, 1)
+			case ($$bt.AlteContrato.Tag = 1)
+				$$temp = frmDiaAluno($$System, $$frm, $$tx.DiaCurso.Tag, 1)
+			case 1
+				$$temp = frmDiaAluno($$System, $$frm, $$tx.DiaCurso.Tag, 0)
+				$$temp = ''
+		endselect
+		if (ubound($$temp) = 1)
+			$$tx.DiaCurso.tag	= $$temp[0]
+			$$tx.DiaCurso.text	= $$temp[1]
+		endif
+	"
+	
+	$tx.DiaCurso					= $gp.Contrato.DiaHrCurso.TextBox()
+	$tx.DiaCurso.ReadOnly			= 1
+	$tx.DiaCurso.BorderStyle		= 0
+	$tx.DiaCurso.Size				= 200, 20
+	$tx.DiaCurso.ForeColor			= 129, 162, 196
+	$tx.DiaCurso.BackColor			= 35, 35, 35
+	$tx.DiaCurso.Location			= 5, $lb.DiaCurso.Bottom+2
+
+	$lb.DuraCurso					= $gp.Contrato.DiaHrCurso.Label()
+	$lb.DuraCurso.Text				= "Duração do curso: "
+	$lb.DuraCurso.ForeColor			= "White"
+	$lb.DuraCurso.Size				= 180, 20
+	$lb.DuraCurso.Location			= 5, $tx.DiaCurso.Bottom+6
+	
+	$tx.DuraCurso1					= $gp.Contrato.DiaHrCurso.TextBox()
+	$tx.DuraCurso1.ReadOnly			= 1
+	$tx.DuraCurso1.BorderStyle		= 0
+	$tx.DuraCurso1.Size				= 200, 20
+	$tx.DuraCurso1.ForeColor		= 129, 162, 196
+	$tx.DuraCurso1.BackColor		= 35, 35, 35
+	$tx.DuraCurso1.Text				= "__ meses"
+	$tx.DuraCurso1.Location			= 5, $lb.DuraCurso.Bottom+2
+	
+	$tx.DuraCurso					= $gp.Contrato.DiaHrCurso.MaskedTextBox()
+	$tx.DuraCurso.Visible			= 0
+	$tx.DuraCurso.BorderStyle		= 0
+	$tx.DuraCurso.Size				= 200, 20
+	$tx.DuraCurso.ForeColor			= 129, 162, 196
+	$tx.DuraCurso.BackColor			= 35, 35, 35
+	$tx.DuraCurso.Mask				= "00 meses"
+	$tx.DuraCurso.Location			= 5, $lb.DuraCurso.Bottom+2
+	
+	$lb.HoraCurso					= $gp.Contrato.DiaHrCurso.Label()
+	$lb.HoraCurso.Text				= "Horário do curso"
+	$lb.HoraCurso.ForeColor			= "White"
+	$lb.HoraCurso.Size				= 150, 20
+	$lb.HoraCurso.Location			= $bt.DiaCurso.Right+4, $lb.DiaCurso.Top
+
+	$tx.HoraCursoIni1					= $gp.Contrato.DiaHrCurso.TextBox()
+	$tx.HoraCursoIni1.ReadOnly			= 1
+	$tx.HoraCursoIni1.BorderStyle		= 0
+	$tx.HoraCursoIni1.Size				= 125, 20
+	$tx.HoraCursoIni1.Text				= "Chegada __:__"
+	$tx.HoraCursoIni1.ForeColor			= 129, 162, 196
+	$tx.HoraCursoIni1.BackColor			= 35, 35, 35
+	$tx.HoraCursoIni1.Location			= $bt.DiaCurso.Right+4, $lb.HoraCurso.Bottom+2
+	
+	$tx.HoraCursoIni					= $gp.Contrato.DiaHrCurso.MaskedTextBox()
+	$tx.HoraCursoIni.Visible			= 0
+	$tx.HoraCursoIni.BorderStyle		= 0
+	$tx.HoraCursoIni.Size				= 125, 20
+	$tx.HoraCursoIni.Mask				= "Chegada 00:00"
+	$tx.HoraCursoIni.ForeColor			= 129, 162, 196
+	$tx.HoraCursoIni.BackColor			= 35, 35, 35
+	$tx.HoraCursoIni.Location			= $bt.DiaCurso.Right+4, $lb.HoraCurso.Bottom+2
+
+	$tx.HoraCursoFim1					= $gp.Contrato.DiaHrCurso.TextBox()
+	$tx.HoraCursoFim1.ReadOnly			= 1
+	$tx.HoraCursoFim1.BorderStyle		= 0
+	$tx.HoraCursoFim1.Size				= 125, 20
+	$tx.HoraCursoFim1.Text				= "Término __:__"
+	$tx.HoraCursoFim1.ForeColor			= 129, 162, 196
+	$tx.HoraCursoFim1.BackColor			= 35, 35, 35
+	$tx.HoraCursoFim1.Location			= $bt.DiaCurso.Right+4, $tx.HoraCursoIni.Bottom
+	
+	$tx.HoraCursoFim					= $gp.Contrato.DiaHrCurso.MaskedTextBox()
+	$tx.HoraCursoFim.Visible			= 0
+	$tx.HoraCursoFim.BorderStyle		= 0
+	$tx.HoraCursoFim.Size				= 125, 20
+	$tx.HoraCursoFim.Mask				= "Término 00:00"
+	$tx.HoraCursoFim.ForeColor			= 129, 162, 196
+	$tx.HoraCursoFim.BackColor			= 35, 35, 35
+	$tx.HoraCursoFim.Location			= $bt.DiaCurso.Right+4, $tx.HoraCursoIni.Bottom
+
+	/*
+		GRUPO DE INFORMAÇÕES ADICIONAIS
+	*/
+	$gp.Contrato.InfoAdd				= $gp.Contrato.GroupBox()
+	$gp.Contrato.InfoAdd.Size			= 219, $gp.Contrato.ClientHeight-15-40
+	$gp.Contrato.InfoAdd.Location		= $gp.Contrato.DiaHrCurso.Right+2, 18
+	$gp.Contrato.InfoAdd.font			= $System.Font("Consolas", 12)
+	$gp.Contrato.InfoAdd.BorderStyle	= 1
+	$gp.Contrato.InfoAdd.ForeColor		= 181, 184, 104
+	$gp.Contrato.InfoAdd.Text			= "Informações adicionais"
+	
+	$lb.DataContrato					= $gp.Contrato.InfoAdd.Label()
+	$lb.DataContrato.Text				= "Data de contrato:"
+	$lb.DataContrato.ForeColor			= "White"
+	$lb.DataContrato.Size				= 180, 20
+	$lb.DataContrato.Location			= 5, 18
+	
+	$tx.DataContrato					= $gp.Contrato.InfoAdd.TextBox()
+	$tx.DataContrato.ReadOnly			= true
+	$tx.DataContrato.BorderStyle		= 0
+	$tx.DataContrato.Size				= 200, 20
+	$tx.DataContrato.ForeColor			= "White"
+	$tx.DataContrato.BackColor			= 35, 35, 35
+	$tx.DataContrato.Location			= 5, $lb.DataContrato.Bottom+2
+	
+	$lb.StatusContrato					= $gp.Contrato.InfoAdd.Label()
+	$lb.StatusContrato.Text				= "Status do contrato:"
+	$lb.StatusContrato.ForeColor		= "White"
+	$lb.StatusContrato.Size				= 180, 20
+	$lb.StatusContrato.Location			= $tx.DataContrato.left, $tx.DataContrato.bottom+2
+
+	$tx.StatusContrato					= $gp.Contrato.InfoAdd.TextBox()
+	$tx.StatusContrato.ReadOnly			= 1
+	$tx.StatusContrato.BorderStyle		= 0
+	$tx.StatusContrato.Size				= 200, 20
+	$tx.StatusContrato.ForeColor		= "White"
+	$tx.StatusContrato.BackColor		= 35, 35, 35
+	$tx.StatusContrato.Location			= 5, $lb.StatusContrato.Bottom+2
+	/*
+		Informação da contratante
+	*/
+	$lb.Contratante					= $gp.Contrato.Label()
+	$lb.Contratante.Text			= "Contratante do aluno:"
+	$lb.Contratante.font			= $System.font("Segeo UI", 16)
+	$lb.Contratante.Size			= 220, 25
+	$lb.Contratante.Location		= $gp.Contrato.Valores.Left, $gp.Contrato.Valores.Bottom+2
+	
+	$tx.Contratante					= $gp.Contrato.TextBox()
+	$tx.Contratante.Visible			= true
+	$tx.Contratante.ReadOnly		= 1
+	$tx.Contratante.BorderStyle		= 0
+	$tx.Contratante.font			= $System.font("Segeo UI", 18)
+	$tx.Contratante.Size			= $gp.Contrato.ClientWidth-230, 32
+	$tx.Contratante.ForeColor		= "White"
+	$tx.Contratante.BackColor		= 35, 35, 35
+	$tx.Contratante.Location		= $lb.Contratante.Right+2, $lb.Contratante.Top
+
+	$cb.Contratante					= $gp.Contrato.ComboBox()
+	$cb.Contratante.Visible			= false
+	$cb.Contratante.FlatStyle		= 0
+	$cb.Contratante.BorderStyle		= 0
+	$cb.Contratante.font			= $System.font("Segeo UI", 15)
+	$cb.Contratante.Size			= $gp.Contrato.ClientWidth-230, 23
+	$cb.Contratante.ForeColor		= "White"
+	$cb.Contratante.BackColor		= 35, 35, 35
+	$cb.Contratante.Location		= $lb.Contratante.Right+2, $lb.Contratante.Top
+
+	;;<PANEL DE CONTROLE>
+		$pn.Controle			= $frm.Panel()
+		$pn.Controle.Height		= 30
+		$pn.Controle.Dock		= 2
+		$pn.Controle.BackColor	= "white";53, 129, 142
+		
+		$bt.NovoContrato				= $pn.Controle.ToolButton()
+		$bt.NovoContrato.Size			= 160, 30
+		$bt.NovoContrato.font			= $System.font("Segeo UI", 11, 1)
+		$bt.NovoContrato.BorderStyle	= 0
+		$bt.NovoContrato.FlatStyle		= 0
+		$bt.NovoContrato.BackColor		= 33, 33, 33
+		$bt.NovoContrato.HotBackColor	= 80, 80, 80
+		$bt.NovoContrato.ForeColor		= "white"
+		$bt.NovoContrato.HotForeColor	= "white"
+		$bt.NovoContrato.Tag			= 0
+		$bt.NovoContrato.Cursor			= 16
+		$bt.NovoContrato.icon			= $icon.images(1)
+		$bt.NovoContrato.Text			= "Novo contrato"
+		$bt.NovoContrato.OnClick		=
+		'
+			if ($$bt.NovoContrato.Tag = 0)
+				if (msg("Tem certeza do que está fazendo?", "Você deseja realmente criar um novo contrato?", 4096 + 32 + 4 + 256) <> 6)
+					exit 1
+				endif
+				$$bt.NovoContrato.tag						= true
+				$$bt.AlteContrato.Enabled					= false
+				$$bt.CanceContrato.Visible					= true
+				$$bt.DelContrato.Visible					= false
+				Contrato_LimpaCampos($$ck, $$gp, $$tx, $$lb, $$grid, $$cb, $$pn, $$bt, $$frm)
+				Contrato_BoqueiaCampos($$ck, $$gp, $$tx, $$lb, $$grid, $$cb, $$pn, $$bt, $$frm)
+
+				$$frm.BeginUpdate()
+				$$bt.NovoContrato.Text						= "Concluir"
+				$$bt.NovoContrato.BackColor					= 33, 33, 33
+				$$bt.NovoContrato.HotBackColor				= 15, 15, 15
+				$$bt.NovoContrato.ForeColor					= 0, 198, 0
+				$$bt.NovoContrato.HotForeColor				= 0, 198, 0
+				$$bt.NovoContrato.Icon						= $$icon.images(0)
+				$$grid.Rows.Count							= $$grid.Rows.Count + 1
+				$$grid.CurrentRowIndex						= $$grid.Rows.Count-1
+				$$tx.StatusContrato.text					= "ABERTO"
+				$$grid.Cells($$grid.CurrentRowIndex, 0).Text= cint(tb_getData("gen.contrato", 1))+1
+				$$frm.EndUpdate()
+				$$tx.NomeAluno.SetFocus()
+			else
+				$$frm.BeginUpdate()
+				if (msg("Atenção!", "Você tem certeza de que @@crlf quer salvar esse novo contrato, no nome de "+chr(34)+Substr($$cb.Contratante.Text, instr($$cb.Contratante.Text, "-")+2)+chr(34)+"(contratante)?", 4096+32+4+256) <> 6)
+					exit 1
+				endif
+				$$bt.NovoContrato.text			= "Novo contrato"
+				$$bt.NovoContrato.BackColor		= 33, 33, 33
+				$$bt.NovoContrato.HotBackColor	= 80, 80, 80
+				$$bt.NovoContrato.ForeColor		= "white"
+				$$bt.NovoContrato.HotForeColor	= "white"
+				$$bt.NovoContrato.Icon			= $$icon.images(1)
+				$$bt.NovoContrato.tag			= false
+				$$bt.AlteContrato.Enabled		= true
+				$$bt.DelContrato.Visible		= true
+				$$bt.CanceContrato.Visible		= false
+				$$DATA =
+					tb_increment("gen.cadastro-aluno", 1),
+					$$tx.NomeAluno.Text,
+					$$tx.CPF.Text,
+					$$tx.rg.Text,
+					$$tx.tel.Text,
+					$$tx.cep.Text,
+					$$tx.endr.Text,
+					$$tx.num.Text,
+					$$tx.escolaridade.Text,
+					$$tx.bairro.Text,
+					$$tx.nasc.Text,
+					$$tx.email.Text,
+					$$bt.CursosAluno.Tag,
+					$$tx.nomeRESP.Text,
+					$$tx.rgRESP.Text,
+					$$tx.cpfRESP.Text,
+					$$tx.telRESP.Text
+				tb_insertData("Cadastro-Aluno", $$DATA)
+
+				$$DATA[1] = Split(Replace($$tx.HoraCursoIni.Text, ":", ""), " ")[1]
+				$$DATA[2] = Split(Replace($$tx.HoraCursoFim.Text, ":", ""), " ")[1]
+				$$DATA =
+					$$grid.Cells($$grid.CurrentRowIndex, 0).Text,
+					$$DATA[0],
+					$$tx.DiaCurso.tag,
+					$$DATA[1]+","+$$DATA[2],
+					$$tx.DuraCurso.Text,
+					$$tx.VALMatri.Text,
+					$$tx.VALMensal.Text,
+					$$tx.DiaVence.Text,
+					$$tx.DataContrato.Text,
+					Trim(Split($$cb.Contratante.Text, "-")[0]),
+					$$tx.StatusContrato.Text,
+					false /*	SABER SE A COMISSÃO FOI PAGA	*/
+				tb_insertData("Contrato", $$DATA)
+				
+				tb_save2("cadastro-aluno")
+				tb_save2("contrato")
+				$$=tb_increment("gen.contrato", 1)
+				$$frm.EndUpdate()
+				$$grid.Enabled = true
+				$$=Execute($$grid.OnClick)
+			endif
+		'
+		
+		$bt.AlteContrato				= $pn.Controle.ToolButton()
+		$bt.AlteContrato.Size			= 160, 30
+		$bt.AlteContrato.Location		= $bt.NovoContrato.Right+210, 0
+		$bt.AlteContrato.font			= $System.font("Segeo UI", 11, 1)
+		$bt.AlteContrato.BorderStyle	= 0
+		$bt.AlteContrato.FlatStyle		= 0
+		$bt.AlteContrato.BackColor		= 33, 33, 33
+		$bt.AlteContrato.HotBackColor	= 80, 80, 80
+		$bt.AlteContrato.ForeColor		= "white";204, 102, 102
+		$bt.AlteContrato.HotForeColor	= "white";33, 33, 33
+		$bt.AlteContrato.Cursor			= 16
+		$bt.AlteContrato.icon			= $icon.images(3)
+		$bt.AlteContrato.Text			= "Alterar contrato"
+		$bt.AlteContrato.OnClick		=
+		'
+			if ($$grid.CurrentColumnIndex = -1) exit 1 endif
+			if (msg("Tem certeza do que está fazendo?", "Você deseja realmente alterar este contrato?", 4096 + 32 + 4 + 256) <> 6)
+				exit 1
+			endif
+			; if (msg("Atenção!", "Me desculpe, mas esses dados só podem ser alterados com a senha da responsável", 4096 + 32 + 4 + 256) <> 6)
+				; exit 1
+			; endif
+			if ($$bt.AlteContrato.Tag = 0)
+				$$frm.BeginUpdate()
+				$$bt.AlteContrato.Text 			= "Concluir"
+				$$bt.AlteContrato.BackColor		= 33, 33, 33
+				$$bt.AlteContrato.HotBackColor	= 15, 15, 15
+				$$bt.AlteContrato.ForeColor		= 0, 198, 0
+				$$bt.AlteContrato.HotForeColor	= 0, 198, 0
+				$$bt.AlteContrato.Icon			= $$icon.images(0)
+				$$bt.NovoContrato.Enabled		= false
+				$$bt.DelContrato.Visible		= false
+				$$bt.AlteContrato.Tag 			= true
+				$$bt.CanceContrato.Visible		= true
+				$$frm.EndUpdate()
+				Contrato_BoqueiaCampos($$ck, $$gp, $$tx, $$lb, $$grid, $$cb, $$pn, $$bt, $$frm)
+				$$tx.NomeAluno.SetFocus()
+			else
+				$$frm.BeginUpdate()
+				/*SALVAR*/
+				$$DATA =
+					tb_getdata("contrato.id-aluno",, "idcodigo", $$grid.Cells($$grid.CurrentRow.Index, 0).text),
+					$$tx.NomeAluno.Text,
+					$$tx.CPF.Text,
+					$$tx.rg.Text,
+					$$tx.tel.Text,
+					$$tx.cep.Text,
+					$$tx.endr.Text,
+					$$tx.num.Text,
+					$$tx.escolaridade.Text,
+					$$tx.bairro.Text,
+					$$tx.nasc.Text,
+					$$tx.email.Text,
+					$$bt.CursosAluno.Tag,
+					$$tx.nomeRESP.Text,
+					$$tx.rgRESP.Text,
+					$$tx.cpfRESP.Text,
+					$$tx.telRESP.Text
+				tb_updata("cadastro-aluno",
+					Split("IDCODIGO;NOME-ALUNO;CPF-ALUNO;RG-ALUNO;TEL-ALUNO;CEP;ENDR;NUM;ESCOLARIDADE;BAIRRO;NASCIMENTO;E-MAIL;CURSOS;NOME-RESP;RG-RESP;CPF-RESP;TEL-RESP", ";"),
+					$$DATA,
+					"IDCODIGO", $$DATA[0]
+				)
+
+				$$DATA[1] = Split(Replace($$tx.HoraCursoIni.Text, ":", ""), " ")[1]
+				$$DATA[2] = Split(Replace($$tx.HoraCursoFim.Text, ":", ""), " ")[1]
+
+				$$DATA =
+					$$grid.Cells($$grid.CurrentRowIndex, 0).Text,
+					$$tx.DiaCurso.tag,
+					$$DATA[1]+","+$$DATA[2],
+					$$tx.DuraCurso.Text,
+					Trim(Replace($$tx.VALMatri.Text, "R$ ", "")),
+					Trim(Replace($$tx.VALMensal.Text, "R$ ", "")),
+					$$tx.DiaVence.Text,
+					$$tx.DataContrato.Text,
+					Trim(Split($$cb.Contratante.Text, "-")[0]),
+					$$tx.StatusContrato.Text
+
+				tb_updata("Contrato",
+					Split("IDCODIGO;DIAS-CURSO;HORA-CURSO;DURACAO-CURSO;VAL-MATRICULA;VAL-MENSALIDADE;DIA-VENCIMENTO;DATA-CONTRATO;FUNC-CONTRATO;STATUS-CONTRATO", ";"),
+					$$DATA,
+					"IDCODIGO", $$DATA[0]
+				)
+				tb_save2("cadastro-aluno")
+				tb_save2("contrato")
+				Contrato_BoqueiaCampos($$ck, $$gp, $$tx, $$lb, $$grid, $$cb, $$pn, $$bt, $$frm)
+				$$bt.AlteContrato.text			= "Alterar contrato"
+				$$bt.AlteContrato.BackColor		= 33, 33, 33
+				$$bt.AlteContrato.HotBackColor	= 80, 80, 80
+				$$bt.AlteContrato.ForeColor		= "white"
+				$$bt.AlteContrato.HotForeColor	= "white"
+				$$bt.AlteContrato.Icon			= $$icon.images(3)
+				$$bt.NovoContrato.Enabled		= true
+				$$bt.DelContrato.Visible		= true
+				$$bt.AlteContrato.Tag 			= false
+				$$bt.CanceContrato.Visible		= false
+				$$frm.EndUpdate()
+				$$=Execute($$grid.OnClick)
+				$$grid.SetFocus()
+			endif
+		'
+
+	$bt.DelContrato					= $pn.Controle.ToolButton()
+	$bt.DelContrato.Visible			= 1
+	$bt.DelContrato.Size			= 160, 30
+	$bt.DelContrato.font			= $System.font("Segeo UI", 11, 1)
+	$bt.DelContrato.BorderStyle		= 0
+	$bt.DelContrato.FlatStyle		= 0
+	$bt.DelContrato.BackColor		= 33, 33, 33
+	$bt.DelContrato.HotBackColor	= 80, 80, 80
+	$bt.DelContrato.ForeColor		= "white";204, 102, 102
+	$bt.DelContrato.HotForeColor	= "white";33, 33, 33
+	$bt.DelContrato.Tag				= 0
+	$bt.DelContrato.Location		= $bt.AlteContrato.Right+200, $bt.AlteContrato.Top
+	$bt.DelContrato.Cursor			= 16
+	$bt.DelContrato.icon			= $icon.images(2)
+	$bt.DelContrato.Text			= "Deletar contrato"
+	$bt.DelContrato.OnClick			=
+	'
+		if ($$grid.CurrentColumnIndex <> -1)
+			if (msg("Atenção!", "Você tem certeza de que quer deletar este contrato?", 4096 + 32 + 4 + 256) = 6)
+				tb_deleteRow("Cadastro-Aluno", "idcodigo", tb_getData("contrato.id-aluno",, "idcodigo", $$grid.Cells($$grid.CurrentRowIndex, 0).Text))
+				tb_deleteRow("contrato", "idcodigo", $$grid.Cells($$grid.CurrentRowIndex, 0).Text)
+				$$grid.Rows.RemoveAt($$grid.CurrentRowIndex)
+				$$grid.CurrentRowIndex = $$grid.Rows.Count-1
+				tb_save2("contrato")
+				tb_save2("cadastro-aluno")
+				$$=Execute($$grid.OnClick)
+				$$=msg("Contrato excluído com sucesso!", "O contrato foi excluído com sucesso!@@crlfCaso precise desse contrato novamente contate o suporte.", 64 + 4096)
+				$$grid.SetFocus()
+			endif
+		endif
+	'
+
+	$bt.CanceContrato				= $pn.Controle.ToolButton()
+	$bt.CanceContrato.Visible		= 0
+	$bt.CanceContrato.Size			= 160, 30
+	$bt.CanceContrato.font			= $System.font("Segeo UI", 11, 1)
+	$bt.CanceContrato.BorderStyle	= 0
+	$bt.CanceContrato.FlatStyle		= 0
+	$bt.CanceContrato.BackColor		= 33, 33, 33
+	$bt.CanceContrato.HotBackColor	= 80, 80, 80
+	$bt.CanceContrato.ForeColor		= "white";204, 102, 102
+	$bt.CanceContrato.HotForeColor	= "white";33, 33, 33
+	$bt.CanceContrato.Tag			= 0
+	$bt.CanceContrato.Location		= $bt.AlteContrato.Right+200, $bt.AlteContrato.Top
+	$bt.CanceContrato.Cursor		= 16
+	$bt.CanceContrato.icon			= $icon.images(4)
+	$bt.CanceContrato.Text			= "Cancelar contrato"
+	$bt.CanceContrato.OnClick		=
+	'
+		if (msg("Atenção", "Se fizer isso irá perder todo os dados de contrato preenchido,@@crlfvocê tem certeza do que está fazendo?@@crlf@@crlfClick em sim para cancelar de fato este contrato", 4096 + 256 + 32 + 4) = 6)
+			$$bt.DelContrato.Visible	= true
+			$$bt.CanceContrato.Visible	= false
+			Contrato_LimpaCampos($$ck, $$gp, $$tx, $$lb, $$grid, $$cb, $$pn, $$bt, $$frm)
+			Contrato_BoqueiaCampos($$ck, $$gp, $$tx, $$lb, $$grid, $$cb, $$pn, $$bt, $$frm)
+			if ($$bt.AlteContrato.Tag)
+				$$bt.AlteContrato.Tag			= false
+				$$bt.AlteContrato.Enabled		= true
+				$$bt.NovoContrato.Enabled		= true
+				$$bt.AlteContrato.Text			= "Alterar Contrato"
+				$$bt.AlteContrato.BackColor		= 33, 33, 33
+				$$bt.AlteContrato.HotBackColor	= 80, 80, 80
+				$$bt.AlteContrato.ForeColor		= "white"
+				$$bt.NovoContrato.HotForeColor	= "white"
+			else if ($$bt.NovoContrato.Tag)
+				$$bt.NovoContrato.Tag			= false
+				$$bt.NovoContrato.Enabled 		= true
+				$$bt.AlteContrato.Enabled 		= true
+				$$bt.NovoContrato.Text			= "Novo Contrato"
+				$$bt.NovoContrato.BackColor		= 33, 33, 33
+				$$bt.NovoContrato.HotBackColor	= 80, 80, 80
+				$$bt.NovoContrato.ForeColor		= "white"
+				$$bt.NovoContrato.HotForeColor	= "white"
+				$$grid.Rows.RemoveAt($$grid.CurrentRowIndex)
+			endif endif
+			$$=Execute($$grid.OnClick)
+			$$grid.SetFocus()
+		endif
+	'
+	;;</PANEL DE CONTROLE>
+	
+	$frm.EndUpdate()
+	$frmherdado.EndUpdate()
+	$k=-1
+	for $i=1 to tb_CountRow("funcionario")
+		if (tb_getData('funcionario.tipo-func', $i) = 1)
+			$k=$k+1
+			$=$cb.Contratante.AddItem(tb_getData("funcionario.IDCODIGO", $i)+" - "+tb_getData("funcionario.NOME", $i), $k)
+		endif
+	next
+
+	if (tb_CountRow("contrato") > 0)
+		$CONTRATO_ID		= tb_getData("CONTRATO.IDCODIGO", 'all')
+		$CONTRATO_IDALUNO	= tb_getData("CONTRATO.ID-ALUNO", 'all')
+		$grid.Rows.Count	= ubound($CONTRATO_ID)+1
+		for $i=0 to ubound($CONTRATO_ID)
+			$grid.Cells($i, 0).Text = $CONTRATO_ID[$i]
+			$grid.Cells($i, 1).Text = tb_getData("Cadastro-Aluno.nome-aluno",,"IDCODIGO", $CONTRATO_IDALUNO[$i])
+			$grid.Cells($i, 2).Text = tb_getData("Cadastro-Aluno.nome-resp",,"IDCODIGO", $CONTRATO_IDALUNO[$i])
+		next
+	endif
+
+	$grid.SetFocus()
+	While $frm.Visible
+		$=Execute($frm.DoEvents())
+	loop
+	$frmherdado.Enabled = not $frmherdado.Enabled
+endfunction
+
+function Contrato_LimpaCampos($ck, $gp, $tx, $lb, $grid, $cb, $pn, $bt, $frm)
+	select
+		case ($bt.NovoContrato.tag)
+			$ck.AlunoResp.checked	 = 0
+		case ($bt.AlteContrato.tag)
+	endselect
+	$bt.CursosAluno.tag				= false
+	$tx.NomeAluno.Text				= ""
+	$tx.Nasc.Text					= ""
+	$tx.email.Text					= ""
+	$tx.bairro.Text					= ""
+	$tx.escolaridade.Text			= ""
+	$tx.num.Text					= ""
+	$tx.endr.Text					= ""
+	$tx.cpf.Text					= ""
+	$tx.cep.Text					= ""
+	$tx.rg.Text						= ""
+	$tx.tel.Text					= ""
+	$tx.NomeRESP.Text				= ""
+	$tx.rgRESP.Text					= ""
+	$tx.cpfRESP.Text 				= ""
+	$tx.cepRESP.Text 				= ""
+	$tx.telRESP.Text 				= ""
+	$tx.VALMatri.Text				= ""
+	$tx.VALMensal.Text				= ""
+	$tx.DiaVence.Text				= ""
+	$bt.DiaCurso.tag				= ""
+	$tx.DiaCurso.Text				= ""
+	$tx.DiaCurso.Tag				= ""
+	$tx.HoraCursoIni1.Visible		= false
+	$tx.HoraCursoIni.Text			= ""
+	$tx.HoraCursoIni.Enabled		= true
+	$tx.HoraCursoIni.Visible		= true
+	$tx.HoraCursoFim1.Visible		= false
+	$tx.HoraCursoFim.Text			= ""
+	$tx.HoraCursoFim.Enabled		= true
+	$tx.HoraCursoFim.Visible		= true
+	$tx.DuraCurso1.Visible			= false
+	$tx.DuraCurso.Visible			= true
+	$bt.CursosAluno.Enabled			= true
+	$tx.DuraCurso1.Text				= ""
+	$tx.DuraCurso.Text				= ""
+	$tx.DataContrato.Text			= ""
+	$tx.StatusContrato.Text			= ""
+	$tx.Contratante.Text			= ""
+	$cb.Contratante.SelectedIndex	= -1
+	; $frm.EndUpdate()
+endfunction
+
+function Contrato_BoqueiaCampos($ck, $gp, $tx, $lb, $grid, $cb, $pn, $bt, $frm)
+	if ($bt.NovoContrato.tag) or ($bt.AlteContrato.tag)
+		if ($bt.AlteContrato.tag)
+			$tx.HoraCursoIni1.Visible	= false
+			$tx.HoraCursoIni.Enabled	= true
+			$tx.HoraCursoIni.Visible	= true
+			$tx.HoraCursoFim1.Visible	= false
+			$tx.HoraCursoFim.Enabled	= true
+			$tx.HoraCursoFim.Visible	= true
+			$tx.DuraCurso1.Visible		= false
+			$tx.DuraCurso.Visible		= true
+		endif
+		; $frm.BeginUpdate()
+		$grid.Enabled				= not $grid.Enabled
+		$tx.DataContrato.ReadOnly	= not $tx.DataContrato.ReadOnly
+		$tx.NomeAluno.ReadOnly		= not $tx.NomeAluno.ReadOnly
+		$tx.Nasc.ReadOnly			= not $tx.Nasc.ReadOnly
+		$tx.email.ReadOnly			= not $tx.email.ReadOnly
+		$tx.bairro.ReadOnly			= not $tx.bairro.ReadOnly
+		$tx.escolaridade.ReadOnly	= not $tx.escolaridade.ReadOnly
+		$tx.num.ReadOnly			= not $tx.num.ReadOnly
+		$tx.endr.ReadOnly			= not $tx.endr.ReadOnly
+		$tx.cpf.ReadOnly			= not $tx.cpf.ReadOnly
+		$tx.cep.ReadOnly			= not $tx.cep.ReadOnly
+		$tx.rg.ReadOnly 			= not $tx.rg.ReadOnly
+		$tx.tel.ReadOnly			= not $tx.tel.ReadOnly
+		$tx.NomeRESP.ReadOnly		= not $tx.NomeRESP.ReadOnly
+		$tx.rgRESP.ReadOnly			= not $tx.rgRESP.ReadOnly
+		$tx.cpfRESP.ReadOnly 		= not $tx.cpfRESP.ReadOnly
+		$tx.telRESP.ReadOnly		= not $tx.telRESP.ReadOnly
+		$ck.AlunoResp.enabled		= not $ck.AlunoResp.enabled
+		$tx.VALMatri.ReadOnly		= not $tx.VALMatri.ReadOnly
+		$tx.VALMensal.ReadOnly		= not $tx.VALMensal.ReadOnly
+		$tx.DiaVence.ReadOnly		= not $tx.DiaVence.ReadOnly
+		$bt.CursosAluno.Enabled		= not $bt.CursosAluno.Enabled
+		$cb.Contratante.Visible		= not $cb.Contratante.Visible
+		$tx.Contratante.Visible		= not $tx.Contratante.Visible
+		$bt.CursosAluno.Enabled		= not $bt.CursosAluno.Enabled
+		; $frm.EndUpdate()
+	endif
+endfunction
+
+function frmDiaAluno($sys, $frmParent, Optional $data, $enabled)
+	Dim
+		$frm, $grid, $barra, $dias, $i,
+		$insert, $remove, $diaCursoAluno,
+		$Concluir
+	$frmParent.Enabled	= false
+	Redim $frmDiaAluno[1]
+	$frmDiaAluno[0] = $data
+	$frmDiaAluno[1] = NDiaToTexto($data)
+	$frm				= $sys.form($frmParent)
+	$frm.text			= "Dias de curso do Aluno"
+	$frm.minimizebox	= 0
+	$frm.maximizebox	= 0
+	$frm.resizable		= 0
+	$frm.size			= 426, 250
+	$frm.icon			= $frmParent.icon
+	$frm.BeginUpdate()
+	
+	$grid						= $frm.GridView()
+	$grid.Anchor				= 1 + 2 + 4
+	$grid.BorderStyle			= 0
+	$grid.ReadOnly				= 1
+	$grid.FullRowSelect			= 1
+	$grid.ScrollBars			= 2
+	$grid.Fontsize				= 15
+	$grid.SelectionForeColor	= 0,0,0
+	$grid.size					= 195, 197
+	$grid.HeaderStyle			= 1
+	$grid.AlternatingBackColor	= &0F7EBE7
+	$grid.SelectionBackColor	= 169,178,202
+	$grid.BackColor				= "White";"GhostWhite"
+	$grid.GridLineColor			= &E7BE94 ;"RoyalBlue"
+	$grid.ForeColor				= "Black" ;"MidnightBlue"
+	$grid.Font					= $Sys.Font("Segeo UI", 10, 1)
+	$grid.OnKeyUp				= "if ($$grid.KeyCode = 27) $$frm.Hide() endif"
+	if ($enabled)
+		$grid.OnKeyDown =
+		"
+			$$diaCursoAluno.currentRowIndex = $$grid.currentRowIndex
+			if ($$grid.keyCode = 107)
+				$$=Execute($$insert.OnClick)
+			endif
+			if ($$grid.keyCode = 109) and ($$diaCursoAluno.Cells($$grid.currentRowIndex, 0).text <> '')
+				$$grid.Cells($$grid.currentRowIndex, 0).text =
+					$$diaCursoAluno.Cells($$grid.currentRowIndex, 0).text
+				$$grid.Cells($$grid.currentRowIndex, 1).text =
+					$$diaCursoAluno.Cells($$grid.currentRowIndex, 1).Text
+		
+				$$diaCursoAluno.Cells($$grid.currentRowIndex, 0).Text = ''
+				$$diaCursoAluno.Cells($$grid.currentRowIndex, 1).Text = ''
+			endif
+		"
+		$grid.OnClick = "$$diaCursoAluno.currentRowIndex = $$grid.currentRowIndex"
+	else
+		$grid.OnKeyDown = "$$diaCursoAluno.currentRowIndex = $$grid.currentRowIndex"
+		$grid.OnClick = $grid.OnKeyDown
+	endif
+	
+	$=$grid.columns.add("ID")
+	$grid.columns(0).width = 15
+	$=$grid.columns.add("Dias de curso")
+	$grid.columns(1).width = 180
+	$grid.columns(1).TextAlign = 2
+	$grid.Rows.Count = 7
+	$dias = Split(NDiaToTexto("1,2,3,4,5,6,7,"), ",")
+	for $i=0 to $grid.Rows.Count
+		$grid.Cells($i, 0).text = $i+1
+		$grid.Cells($i, 1).text = $dias[$i]
+	next
+	
+	$barra				= $frm.Panel()
+	$barra.BackColor	= "black"
+	$barra.size			= 28, $grid.Height
+	$barra.left			= $grid.Right+1
+	$barra.Enabled		= $enabled
+	
+	$insert				= $barra.ToolButton()
+	$insert.BorderStyle	= 1
+	$insert.FlatStyle	= 0
+	$insert.ForeColor	= "Black"
+	$insert.BackColor	= 128, 162, 190
+	$insert.Text		= ">"
+	$insert.size		= 26, 26
+	$insert.location	= 1, 46
+	$insert.font		= $sys.font("Consolas", 16, 1)
+	$insert.OnClick		=
+	"
+		if ($$grid.Cells($$grid.currentRowIndex, 0).Text <> '')
+			$$diaCursoAluno.Cells($$grid.currentRowIndex, 0).text =
+				$$grid.Cells($$grid.currentRowIndex, 0).Text
+			$$diaCursoAluno.Cells($$grid.currentRowIndex, 1).text =
+				$$grid.Cells($$grid.currentRowIndex, 1).Text
+	
+			$$grid.Cells($$grid.currentRowIndex, 0).Text = ''
+			$$grid.Cells($$grid.currentRowIndex, 1).Text = ''
+		endif
+	"
+	
+	$remove				= $barra.ToolButton()
+	$remove.BorderStyle	= 1
+	$remove.FlatStyle	= 0
+	$remove.ForeColor	= "Black"
+	$remove.BackColor	= 128, 162, 190
+	$remove.Text		= "<"
+	$remove.size		= 26, 26
+	$remove.location	= 1, $insert.bottom+24
+	$remove.font		= $sys.font("Consolas", 16, 1)
+	
+	$remove.OnClick		=
+	"
+		if ($$diaCursoAluno.Cells($$diaCursoAluno.currentRowIndex, 0).Text <> '')
+			$$grid.Cells($$diaCursoAluno.currentRowIndex, 0).text =
+				$$diaCursoAluno.Cells($$diaCursoAluno.currentRowIndex, 0).Text
+			$$grid.Cells($$diaCursoAluno.currentRowIndex, 1).text =
+				$$diaCursoAluno.Cells($$diaCursoAluno.currentRowIndex, 1).Text
+	
+			$$diaCursoAluno.Cells($$diaCursoAluno.currentRowIndex, 0).Text = ''
+			$$diaCursoAluno.Cells($$diaCursoAluno.currentRowIndex, 1).Text = ''
+		endif
+	"
+	
+	$diaCursoAluno						= $frm.GridView()
+	$diaCursoAluno.Anchor				= 1 + 2 + 4
+	$diaCursoAluno.BorderStyle			= 0
+	$diaCursoAluno.ReadOnly				= 1
+	$diaCursoAluno.FullRowSelect		= 1
+	$diaCursoAluno.ScrollBars			= 2
+	$diaCursoAluno.Fontsize				= 15
+	$diaCursoAluno.SelectionForeColor	= 0,0,0
+	$diaCursoAluno.size					= 195, 197
+	$diaCursoAluno.HeaderStyle			= 1
+	$diaCursoAluno.AlternatingBackColor	= &0F7EBE7
+	$diaCursoAluno.SelectionBackColor	= 169,178,202
+	$diaCursoAluno.BackColor			= "White";"GhostWhite"
+	$diaCursoAluno.GridLineColor		= &E7BE94 ;"RoyalBlue"
+	$diaCursoAluno.ForeColor			= "Black" ;"MidnightBlue"
+	$diaCursoAluno.left					= $barra.right
+	$diaCursoAluno.Font					= $Sys.Font("Segeo UI", 10, 1)
+	if ($enabled)
+		$diaCursoAluno.OnKeyDown =
+		"
+			$$grid.currentRowIndex = $$diaCursoAluno.currentRowIndex
+			if ($$diaCursoAluno.keyCode = 107) and ($$grid.Cells($$diaCursoAluno.currentRowIndex, 0).Text <> '')
+				$$diaCursoAluno.Cells($$diaCursoAluno.currentRowIndex, 0).text =
+					$$grid.Cells($$diaCursoAluno.currentRowIndex, 0).Text
+				$$diaCursoAluno.Cells($$diaCursoAluno.currentRowIndex, 1).text =
+					$$grid.Cells($$diaCursoAluno.currentRowIndex, 1).Text
+		
+				$$grid.Cells($$diaCursoAluno.currentRowIndex, 0).Text = ''
+				$$grid.Cells($$diaCursoAluno.currentRowIndex, 1).Text = ''
+				$$grid.OnClick = $$grid.OnKeyDown
+			endif
+			if ($$diaCursoAluno.keyCode = 109)
+				$$=Execute($$remove.OnClick)
+			endif
+		"
+		$diaCursoAluno.OnClick	= "$$grid.currentRowIndex = $$grid.currentRowIndex"
+	else
+		$diaCursoAluno.OnKeyDown= "$$grid.currentRowIndex = $$grid.currentRowIndex"
+		$diaCursoAluno.OnClick	= $diaCursoAluno.OnKeyDown
+	endif
+
+	$=$diaCursoAluno.columns.add("ID")
+	$diaCursoAluno.columns(0).width = 15
+	$=$diaCursoAluno.columns.add("Dias de curso do aluno")
+	$diaCursoAluno.columns(1).width = 180
+	$diaCursoAluno.columns(1).TextAlign = 2
+	$diaCursoAluno.Rows.Count = 7
+	
+	$Concluir				= $frm.ToolButton()
+	$Concluir.BorderStyle	= 0
+	$Concluir.FlatStyle		= 0
+	$Concluir.ForeColor		= "Black"
+	$Concluir.HotForeColor	= 0, 100, 0
+	$Concluir.BackColor		= 0, 100, 0
+	$Concluir.HotBackColor	= "Black"
+	$Concluir.Text			= "Concluir"
+	$Concluir.top			= $Concluir.top-4
+	$Concluir.size			= $frm.ClientWidth+2, 28
+	$Concluir.location		= 0, $diaCursoAluno.bottom+1
+	$Concluir.font			= $sys.font("Consolas", 16, 1)
+	$Concluir.cursor		= 16
+	$Concluir.icon			= $icon.images(0)
+	if ($enabled)
+		$Concluir.OnClick =
+		"
+			if (msg('Atenção', 'Você tem certeza das datas selecionadas?', 4096 + 32 + 4 + 256) <> 6)
+				exit 1
+			endif
+			redim $$frmDiaAluno[1]
+			for $$i=0 to $$diaCursoAluno.Rows.Count
+				if ($$diaCursoAluno.Cells($$i, 0).text <> '')
+					$$frmDiaAluno[0] = $$frmDiaAluno[0] + ',' + $$diaCursoAluno.Cells($$i, 0).text
+					$$frmDiaAluno[1] = $$frmDiaAluno[1] + ',' + $$diaCursoAluno.Cells($$i, 1).text
+				endif
+			next
+			$$frmDiaAluno[0] = Substr($$frmDiaAluno[0], 2)
+			$$frmDiaAluno[1] = Substr($$frmDiaAluno[1], 2)
+			$$frm.Hide()
+		"
+	else
+		$Concluir.OnClick = "$$frm.Visible = false $$frm.Hide()"
+	endif
+	
+	$data = split($data, ",")
+	for $i=0 to $grid.Rows.Count
+		if (Ascan($data, $grid.Cells($i, 0).text) <> -1)
+			$diaCursoAluno.Cells($i, 0).text = $grid.Cells($i, 0).text
+			$diaCursoAluno.Cells($i, 1).text = $grid.Cells($i, 1).text
+			$grid.Cells($i, 0).text = ""
+			$grid.Cells($i, 1).text = ""
+		endif
+	next
+	
+	$frm.Center()
+	$grid.SetFocus()
+	$frm.EndUpdate()
+	$frm.Show()
+	while $frm.Visible
+		$=Execute($frm.doevents())
+	loop
+	$frmParent.Enabled	= true
+endfunction
+
+function frmCursosAluno($sys, $frmParent, Optional $paramCurso, $enabled)
+	Dim
+		$frm, $grid, $barra, $i,
+		$id, $Concluir
+	$frmParent.Enabled	= false
+	$frmCursosAluno		= $paramCurso
+	$frm				= $sys.form($frmParent)
+	$frm.text			= "Curso do Aluno"
+	$frm.minimizebox	= 0
+	$frm.maximizebox	= 0
+	$frm.resizable		= 0
+	$frm.size			= 550, 300
+	$frm.icon			= $frmParent.icon
+	
+	$grid						= $frm.GridView()
+	$grid.Anchor				= 1 + 2 + 4
+	$grid.BorderStyle			= 0
+	$grid.ReadOnly				= 1
+	$grid.FullRowSelect			= 1
+	$grid.ScrollBars			= 2
+	$grid.Fontsize				= 15
+	$grid.SelectionForeColor	= 0,0,0
+	$grid.size					= 425, 245
+	$grid.Dock					= 1
+	$grid.HeaderStyle			= 1
+	$grid.AlternatingBackColor	= &0F7EBE7
+	$grid.SelectionBackColor	= 169,178,202
+	$grid.BackColor				= "White";"GhostWhite"
+	$grid.GridLineColor			= &E7BE94 ;"RoyalBlue"
+	$grid.ForeColor				= "Black" ;"MidnightBlue"
+	$grid.Font					= $Sys.Font("Segeo UI", 10, 1)
+	$grid.OnKeyUp				= "if ($$grid.KeyCode = 27) $$frm.Hide() endif"
+	if (not $enabled)
+		$grid.OnClick =
+		"
+			if ($$grid.CurrentColumnIndex = 3)
+				if ($$grid.Cells($$grid.CurrentRowIndex, $$grid.CurrentColumnIndex).Text = 'Adicionado')
+					$$grid.Cells($$grid.CurrentRowIndex, $$grid.CurrentColumnIndex).Text = 'Não adicionado'
+				else
+					$$grid.Cells($$grid.CurrentRowIndex, $$grid.CurrentColumnIndex).Text = 'Adicionado'
+				endif
+			endif
+			if ($$grid.currentColumnIndex = 2)
+				ViewText($$sys, $$frm, 'Módulos deste curso', tb_getdata('cursos.modulos-curso',, 'idcodigo', $$grid.Cells($$grid.currentRowIndex, 0).Text))
+			endif
+		"
+	else
+		$grid.OnClick =
+		"
+			if ($$grid.currentColumnIndex = 2)
+				ViewText($$sys, $$frm, 'Módulos deste curso', tb_getdata('cursos.modulos-curso',, 'idcodigo', $$grid.Cells($$grid.currentRowIndex, 0).Text))
+			endif
+		"
+	endif
+
+	$=$grid.columns.add("ID")
+	$grid.columns(0).width = 20
+	$=$grid.columns.add("Cursos")
+	$grid.columns(1).width = 300
+	$grid.columns(1).TextAlign = 2
+	$=$grid.columns.add("Detalhes")
+	$grid.columns(2).width = 80
+	$grid.columns(2).TextAlign = 2
+	$=$grid.columns.add("Adicionar")
+	$grid.columns(3).width = 120
+	$grid.columns(3).TextAlign = 2
+	$grid.Rows.Count = tb_CountRow("Cursos")
+	$ID = tb_getData("CURSOS.IDCODIGO", "ALL")
+	for $i=0 to $grid.Rows.Count-1
+		$grid.Cells($i, 0).text = $ID[$i]
+		$grid.Cells($i, 1).text = tb_getData("CURSOS.NOME-CURSO",, "IDCODIGO", $ID[$i])
+		$grid.Cells($i, 2).text = "Ver"
+		$grid.Cells($i, 3).text = "Não adicionado"
+	next
+	
+	$paramCurso = Split($paramCurso, ",")
+	for $i=0 to $grid.Rows.Count
+		if (Ascan($paramCurso, $grid.Cells($i, 0).Text) <> -1)
+			$grid.Cells($i, 3).Text = "Adicionado"
+		endif
+	next
+	
+	$Concluir				= $frm.ToolButton()
+	$Concluir.Dock			= 2
+	$Concluir.BorderStyle	= 0
+	$Concluir.FlatStyle		= 0
+	$Concluir.ForeColor		= "Black"
+	$Concluir.HotForeColor	= 0, 100, 0
+	$Concluir.BackColor		= 0, 100, 0
+	$Concluir.HotBackColor	= "Black"
+	$Concluir.Text			= "Concluir"
+	$Concluir.top			= $Concluir.top-4
+	$Concluir.size			= $frm.ClientWidth+2, 28
+	$Concluir.font			= $sys.font("Consolas", 16, 1)
+	$Concluir.cursor		= 16
+	$Concluir.icon			= $icon.images(0)
+	if (not $enabled)
+		$Concluir.OnClick		=
+		"
+			if (msg('Atenção', 'Você tem certeza dos cursos adicionados?', 4096 + 32 + 4 + 256) <> 6)
+				exit 1
+			endif
+			$$paramCurso = ''
+			for $$i=0 to $$grid.Rows.Count
+				if ($$grid.Cells($$i, 3).text = 'Adicionado')
+					$$paramCurso = $$paramCurso + ',' + $$grid.Cells($$i, 0).text
+				endif
+			next
+			$$frmCursosAluno = substr($$paramCurso, 2)
+			$$frm.Hide()
+		"
+	else
+		$Concluir.OnClick = "$$frm.Hide()"
+	endif
+	
+	$frm.Center()
+	$grid.SetFocus()
+	$frm.Show()
+	while $frm.Visible
+		$=Execute($frm.doevents())
+	loop
+	$frmParent.Enabled	= true
+endfunction

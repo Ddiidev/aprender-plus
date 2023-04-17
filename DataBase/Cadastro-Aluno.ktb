@@ -1,0 +1,74 @@
+##20:56:39,301 | 2018/10/14##
+##23:14:23,456 | 2023/04/16##
+####
+##CADASTRO-ALUNO##
+##1.1.0.2018##
+##
+<idcodigo>
+|1
+|2
+</idcodigo>
+<nome-aluno>
+|André Luiz
+|André Luiz 2
+</nome-aluno>
+<cpf-aluno>
+|
+|-----
+</cpf-aluno>
+<rg-aluno>
+|
+|-----
+</rg-aluno>
+<tel-aluno>
+|---------
+|---
+</tel-aluno>
+<cep>
+|
+|
+</cep>
+<endr>
+|
+|
+</endr>
+<num>
+|
+|
+</num>
+<escolaridade>
+|
+|
+</escolaridade>
+<bairro>
+|
+|
+</bairro>
+<nascimento>
+|29/06/1997
+|29/06/1997
+</nascimento>
+<e-mail>
+|.com
+|.com
+</e-mail>
+<cursos>
+|1,4
+|1,4
+</cursos>
+<nome-resp>
+|André Luiz
+|André Luiz 2
+</nome-resp>
+<rg-resp>
+|
+|----
+</rg-resp>
+<cpf-resp>
+|
+|------
+</cpf-resp>
+<tel-resp>
+|-------
+|----
+</tel-resp>

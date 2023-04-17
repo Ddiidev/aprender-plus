@@ -1,0 +1,144 @@
+;FUNCTION         DateCalc()
+;
+;AUTHOR           Jochen Polster (jochenDOTpolsterATgmxDOTnet)
+;                 based on date algorithms by Peter Baum to be found here :
+;                 http://www.capecod.net/~pbaum/date/date0.htm
+;
+;VERSION          1.12
+;
+;VERSION HISTORY  1.0  2001/12/10 Initial release
+;
+;                 1.1  2004/02/18 Added support for single digit month/day input
+;                                 and optional single digit month/day date return
+;
+;                 1.11 2004/02/20 Minor Variable handling fix
+;
+;                 1.12 2005/03/31 Finally supports "NoVarsInStrings" and "Explicit" set to "ON" in
+;                                 all possible variations
+;
+;ACTION           Calculates days between 2 dates or returns a date string calculated from
+;                 a given date and a given amount of days ( Addition of positive or negative
+;                 integer value )
+;
+;SYNTAX           DateCalc( Date1, Date2|Modifier, [SingleDigit] )
+;
+;PARAMETERS       Date1 (Required)
+;                  -  (Gregorian) Date string in Format : YYYY/M[M]/D[D]
+;
+;                 Date2|Modifier (Required)
+;                  - either a second (Gregorian) date string (YYYY/M[M]/D[D]) to calculate days between
+;                    or a positive/negative amount of days to calculate with
+;
+;                 SingleDigit (Optional)
+;                  - if not zero date will be returned unpadded, eg. 2004/2/9
+;
+;REMARKS          Date format must be KiX friendly : YYYY/M[M]/D[D] (2001/11/20)
+;                 To calculate a date less than given assign a negative integer (ie. -45 )
+;
+;RETURNS          Either a positive integer value of days between two given dates,
+;                 or a (Gregorian) date string.
+;
+;DEPENDENCIES     None !
+;
+;EXAMPLES
+;                 break on
+;                 call "[path]DateCalc.udf"
+;
+;                 "boot.ini last modified : " + DateCalc(@date,substr(getfiletime("c:\boot.ini"),1,10))
+;                  + " days ago ..." ? ?
+;
+;                 $mod = 60
+;                 "in/before $mod day(s) it was/will be " + DateCalc(@date,$mod) ? ?
+;
+;                 get $
+function DateCalc_Br($date1, $DateOrMod, optional $SingleDigit)
+	redim $DateCalc_Br[2]
+	$date1			= Split(DateCalc($date1, $DateOrMod, $SingleDigit), '/')
+	$DateCalc_Br[0]	= $date1[2]
+	$DateCalc_Br[1]	= $date1[1]
+	$DateCalc_Br[2]	= $date1[0]
+	$DateCalc_Br	= join($DateCalc_Br, '/')
+endfunction
+
+function DateCalc($date1, $DateOrMod, optional $SingleDigit)
+	dim $_intDate1, $_intYear1, $_intMonth1, $_intDay1
+	dim $_intDate2, $_intYear2, $_intMonth2, $_intDay2
+
+	$date1 = split($date1,'/')
+	if ubound($date1) <> 2
+		exit 1
+	endif
+
+	$_intYear1  = val($date1[0])
+	$_intMonth1 = val($date1[1])
+	$_intDay1   = val($date1[2])
+
+	if $_intMonth1 < 3
+		$_intMonth1 = $_intMonth1 + 12
+		$_intYear1  = $_intYear1  - 1
+	endif
+
+	$_intDate1 = $_intDay1 + ( 153 * $_intMonth1 - 457 ) / 5 + 365 * $_intYear1 +
+				$_intYear1 / 4 - $_intYear1 / 100 + $_intYear1 / 400 - 306
+
+	select
+		case vartype($DateOrMod) = 3
+
+			$_intDate2  = $_intDate1 + $DateOrMod
+			if instr($_intDate2,'-') $_intDate2 = val(substr($_intDate2,2,len($_intDate2)-1)) endif
+
+			$_intYear2  = ( 100 * ( ( ( 100*($_intDate2+306)-25)/3652425)
+									- ( ((100*($_intDate2+306)-25)/3652425)/4)
+								) + (100*($_intDate2+306)-25)
+						) / 36525
+
+			$_intMonth2 = (   5 * ( ( ( 100*($_intDate2+306)-25)/3652425)
+									- ( ((100*($_intDate2+306)-25)/3652425)/4)
+									+ ($_intDate2+306) - 365 * $_intYear2 - $_intYear2 / 4
+								) + 456
+						) / 153
+
+			$_intDay2   = ( ( ( 100*($_intDate2+306)-25)/3652425)
+									- ( ((100*($_intDate2+306)-25)/3652425)/4)
+									+ ($_intDate2+306) - 365 * $_intYear2 - $_intYear2 / 4
+						)         - ( 153 * $_intMonth2 - 457
+										) / 5
+
+			if $_intMonth2 > 12 $_intYear2 = $_intYear2 + 1 $_intMonth2 = $_intMonth2 - 12 endif
+
+			if not $SingleDigit
+				if len($_intYear2 ) < 4
+					$_ = execute("for $i=1 to 4-len($$_intYear2) $$_intYear2 = '0' + $$_intYear2 next")
+				endif
+				$_intMonth2 = right("0" + $_intMonth2,2)
+				$_intDay2   = right("0" + $_intDay2,2)
+			endif
+
+			$DateCalc = '' + $_intYear2 + '/' + $_intMonth2 + '/' + $_intDay2
+
+		case vartype($DateOrMod) = 8
+
+			$DateOrMod = split($DateOrMod,'/')
+
+			if ubound($DateOrMod) <> 2
+				exit 1
+			endif
+
+			$_intYear2  = val($DateOrMod[0])
+			$_intMonth2 = val($DateOrMod[1])
+			$_intDay2   = val($DateOrMod[2])
+
+			if $_intMonth2 < 3
+				$_intMonth2 = $_intMonth2 + 12
+				$_intYear2  = $_intYear2  - 1
+			endif
+
+			$_intDate2 = $_intDay2 + ( 153 * $_intMonth2 - 457 ) / 5 + 365 * $_intYear2 +
+						$_intYear2 / 4 - $_intYear2 / 100 + $_intYear2 / 400 - 306
+			$DateCalc  = $_intDate1 - $_intDate2
+			;comment the next line if you wish to return negative results also !!!
+			if instr($DateCalc,'-') $DateCalc = val(substr($DateCalc,2,len($DateCalc)-1)) endif
+		case 1
+			exit 1
+	endselect
+endfunction

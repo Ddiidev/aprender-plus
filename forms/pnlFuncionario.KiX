@@ -1,0 +1,1280 @@
+function VerFuncionario($frmherdado)
+	Dim
+		$frm, $grid,
+		$DATA, $i
+	Dim
+		$tx, $lb, $gp, $cb,
+		$pn, $ck, $bt
+	$frm					= $System.Form($frmherdado)
+	$frm.Size				= 685, 432
+	$frm.ForeColor			= 255, 255, 255
+	$frm.BackColor			= 51, 51, 51
+	$frm.MaximizeBox		= 0
+	$frm.MinimizeBox		= 0
+	$frm.FormBorderStyle	= 1
+	$frm.icon				= $frmherdado.icon
+	$frm.Text				= tb_getData("empresa.NOME-FANTASIA", 1)+" - Lista de funcionários"
+	$frm.Center()
+	$frm.ShowModal()
+	; $frm.Show()
+	$frm.BeginUpdate()
+
+	$tx	= $System.Object()
+	$lb	= $System.Object()
+	$gp	= $System.Object()
+	$cb	= $System.Object()
+	$pn	= $System.Object()
+	$ck	= $System.Object()
+	$bt	= $System.Object()
+
+	$lb.GridTitle					= $frm.Label()
+	$lb.GridTitle.Size				= 280, 18
+	$lb.GridTitle.Location			= 0, 10
+	$lb.GridTitle.BackColor			= "Black"
+	$lb.GridTitle.ForeColor			= "White"
+	$lb.GridTitle.Text				= "Lista de funcionários"
+	$lb.GridTitle.font				= $System.Font("Segeo UI", 11)
+
+	$grid							= $frm.GridView()
+	$grid.Anchor					= 1 + 2 + 4
+	$grid.BorderStyle				= 0
+	$grid.ReadOnly					= 1
+	$grid.FullRowSelect				= 1
+	$grid.ScrollBars				= 2
+	$grid.Top						= $lb.GridTitle.Bottom+2
+	$grid.Fontsize					= 15
+	$grid.SelectionForeColor		= 0,0,0
+	$grid.size						= $lb.GridTitle.Width, 322
+	$grid.HeaderStyle				= 1
+	$grid.AlternatingBackColor		= &0F7EBE7
+	$grid.SelectionBackColor		= 169,178,202
+	$grid.BackColor					= "White";"GhostWhite"
+	$grid.GridLineColor				= &E7BE94 ;"RoyalBlue"
+	$grid.ForeColor					= "Black" ;"MidnightBlue"
+	$grid.Font						= $System.Font("Segeo UI", 10)
+	$grid.OnKeyDown					= "$$=Execute($$grid.OnClick)"
+	$grid.OnClick					=
+	'
+		if ($$grid.CurrentColumnIndex <> -1)
+			$$DATA = tb_getDataRowFull("funcionario.idcodigo", $$grid.Cells($$grid.CurrentRowIndex, 0).Text)
+			$$tx.NomeFuncionario.Text = $$DATA[1]
+			$$tx.DataInscri.Text = $$DATA[2]
+			$$tx.DataPag.Text = $$DATA[3]
+			$$tx.Salario.Text = Flip_Currency(FormatNumber($$DATA[4], 2))
+			for $$i=0 to $$cb.TipoComisao.ListCount
+				$$cb.TipoComisao.SelectedIndex = $$i
+				if (Split($$cb.TipoComisao.Text, " ")[0] = $$DATA[5])
+					$$i = $$cb.TipoComisao.ListCount
+				endif
+			next
+
+			for $$i=0 to $$cb.TipoSalario.ListCount
+				$$cb.TipoSalario.SelectedIndex = $$i
+				if (Split($$cb.TipoSalario.Text, " ")[0] = $$DATA[6])
+					$$i = $$cb.TipoSalario.ListCount
+				endif
+			next
+			
+			for $$i=0 to $$cb.PeriodoPag.ListCount
+				$$cb.PeriodoPag.SelectedIndex = $$i
+				if (Split($$cb.PeriodoPag.Text, " ")[0] = $$DATA[7])
+					$$i = $$cb.PeriodoPag.ListCount
+				endif
+			next
+			$$cb.TipoFunc.SelectedIndex = $$DATA[8]
+			$$=execute($$cb.PeriodoPag.OnSelectedIndexChanged)
+		else
+			$$tx.NomeFuncionario.Text = ""
+			$$tx.DataInscri.Text = ""
+			$$tx.DataPag.Text = ""
+			$$tx.Salario.Text = ""
+			$$cb.TipoComisao.SelectedIndex = -1
+			$$tx.ValComisao.Text = ""
+			$$cb.PeriodoPag.SelectedIndex = -1
+			$$cb.TipoFunc.SelectedIndex = -1
+		endif
+	'
+	
+	$=$grid.Columns.Add("ID")
+	$grid.Columns(0).ValueType = 8
+	$grid.Columns(0).Width = 50
+	$=$grid.Columns.Add("Nome do funcionário")
+	$grid.Columns(1).Width = 230
+	$grid.Columns(1).ValueType = 8
+	$grid.Columns(1).TextAlign = 2
+	
+	$lb.GridRodaPe					= $frm.Label()
+	$lb.GridRodaPe.Size				= $grid.Width, 18
+	$lb.GridRodaPe.Location			= $grid.left, $grid.bottom
+	$lb.GridRodaPe.BackColor		= "Black"
+	$lb.GridRodaPe.ForeColor		= "White"
+	$lb.GridRodaPe.Text				= "Você possui "+Cstr(tb_CountRow("funcionario"))+" funcionário(s)"
+	$lb.GridRodaPe.font				= $System.Font("Segeo UI", 11, 1)
+
+	/*
+		GRUPO DE DADOS DO FUNCIONÁRIO
+	*/
+	$gp.DadosFunc					= $frm.GroupBox()
+	$gp.DadosFunc.Location			= $grid.Right+2, $lb.GridTitle.Top
+	$gp.DadosFunc.font				= $system.font("Segeo UI", 11)
+	$gp.DadosFunc.width				= 395
+	$gp.DadosFunc.bottom			= $lb.GridRodaPe.Bottom
+	$gp.DadosFunc.Text				= "Dados do funcionário"
+	$gp.DadosFunc.BeginUpdate()
+
+	$lb.NomeFuncionario				= $gp.DadosFunc.Label()
+	$lb.NomeFuncionario.Text		= "Nome do funcionário"
+	$lb.NomeFuncionario.fontsize	= 12
+	$lb.NomeFuncionario.Location	= 10, 20
+	$lb.NomeFuncionario.Size		= 150, 25
+
+	$tx.NomeFuncionario				= $gp.DadosFunc.TextBox()
+	$tx.NomeFuncionario.ReadOnly	= 1
+	$tx.NomeFuncionario.BackColor	= 35, 35, 35
+	$tx.NomeFuncionario.ForeColor	= "White"
+	$tx.NomeFuncionario.BorderStyle	= 0
+	$tx.NomeFuncionario.FlatStyle	= 0
+	$tx.NomeFuncionario.fontsize	= 14
+	$tx.NomeFuncionario.Location	= $lb.NomeFuncionario.Left, $lb.NomeFuncionario.Bottom
+	$tx.NomeFuncionario.Size		= 235, 25
+	$tx.NomeFuncionario.OnKeyDown	=
+	"
+		if ($$bt.NovoFunc.Tag) or ($$bt.AlteFunc.Tag)
+			$$grid.Cells($$grid.CurrentRowIndex, 1).Text = $$tx.NomeFuncionario.Text
+		endif
+	"
+
+	$lb.TipoFunc				= $gp.DadosFunc.Label()
+	$lb.TipoFunc.Text			= "Tipo do funcionário"
+	$lb.TipoFunc.fontsize		= 12
+	$lb.TipoFunc.Location		= $tx.NomeFuncionario.right+5, $lb.NomeFuncionario.top
+	$lb.TipoFunc.Size			= 140, 20
+
+	$pn.TipoFunc				= $gp.DadosFunc.Panel()
+	$pn.TipoFunc.Location		= $lb.TipoFunc.Left, $tx.NomeFuncionario.top
+	$pn.TipoFunc.Size			= 140, 25
+	$pn.TipoFunc.Enabled		= 0
+
+	$cb.TipoFunc				= $pn.TipoFunc.ComboBox()
+	$cb.TipoFunc.BackColor		= 35, 35, 35
+	$cb.TipoFunc.ForeColor		= "White"
+	$cb.TipoFunc.BorderStyle	= 0
+	$cb.TipoFunc.FlatStyle		= 0
+	$cb.TipoFunc.DropDownWidth	= 260
+	$cb.TipoFunc.fontsize		= 14
+	$cb.TipoFunc.Size			= $pn.TipoFunc.Width+4, $pn.TipoFunc.Height+2
+	$cb.TipoFunc.Location		= -2, -2
+	$cb.TipoFunc.List			= "1 - Professor", "2 - Não Professor"
+
+	$gp.DadosFunc.EndUpdate()
+	/*
+		GRUPO DE DATAS
+	*/
+	$gp.Datas					= $gp.DadosFunc.GroupBox()
+	$gp.Datas.Location			= $tx.NomeFuncionario.Left, $tx.NomeFuncionario.Bottom+4
+	$gp.Datas.font				= $system.font("Segeo UI", 10)
+	$gp.Datas.Text				= "Datas do funcionário"
+	$gp.Datas.size				= 190, 205
+	$gp.Datas.BeginUpdate()
+	; $gp.Datas.Bottom			= $gp.Valores.Bottom
+	
+	$lb.DataInscri				= $gp.Datas.Label()
+	$lb.DataInscri.Text			= "Data de inscrição"
+	$lb.DataInscri.fontsize		= 12
+	$lb.DataInscri.Location		= 10, 15
+	$lb.DataInscri.Size			= 130, 20
+
+	$tx.DataInscri				= $gp.Datas.TextBox()
+	$tx.DataInscri.ReadOnly		= 1
+	$tx.DataInscri.BackColor	= 35, 35, 35
+	$tx.DataInscri.ForeColor	= "White"
+	$tx.DataInscri.BorderStyle	= 0
+	$tx.DataInscri.FlatStyle	= 0
+	$tx.DataInscri.fontsize		= 14
+	$tx.DataInscri.Location		= $lb.DataInscri.Left, $lb.DataInscri.Bottom
+	$tx.DataInscri.Size			= $gp.Datas.Width-20, 25
+	;;---------
+	$lb.PeriodoPag				= $gp.Datas.Label()
+	$lb.PeriodoPag.Text			= "Dias trabalhado pagamento"
+	$lb.PeriodoPag.fontsize		= 12
+	$lb.PeriodoPag.Location		= $tx.DataInscri.Left, $tx.DataInscri.Bottom+4
+	$lb.PeriodoPag.Size			= $gp.Datas.Width-20, 22
+
+	;;<único botão>
+		$pn.PeriodoPag				= $gp.Datas.Panel()
+		$pn.PeriodoPag.Location		= $lb.PeriodoPag.Left, $lb.PeriodoPag.Bottom+2
+		$pn.PeriodoPag.Size			= $gp.Datas.Width-20, 22
+		$pn.PeriodoPag.Enabled		= 0
+
+		$cb.PeriodoPag				= $pn.PeriodoPag.ComboBox()
+		$cb.PeriodoPag.BackColor	= 35, 35, 35
+		$cb.PeriodoPag.ForeColor	= "White"
+		$cb.PeriodoPag.BorderStyle	= 0
+		$cb.PeriodoPag.List			= "1 - Diária", "7 - Semanal", "15 - Quizena", "30 - Mensal"
+		$cb.PeriodoPag.fontsize		= 13
+		$cb.PeriodoPag.Location		= -2, -2
+		$cb.PeriodoPag.Size			= $gp.Datas.Width-16, 22
+		$cb.PeriodoPag.OnSelectedIndexChanged=
+		'
+			$$lb.DataPag.Visible = iif($$cb.PeriodoPag.SelectedIndex > 2, 1, 0)
+			$$tx.DataPag.Visible = iif($$cb.PeriodoPag.SelectedIndex > 2, 1, 0)
+		'
+	;;</único botão>
+	
+	$lb.DataPag					= $gp.Datas.Label()
+	$lb.DataPag.Text			= "Data de pagamento"
+	$lb.DataPag.fontsize		= 12
+	$lb.DataPag.Location		= $pn.PeriodoPag.Left, $pn.PeriodoPag.Bottom+4
+	$lb.DataPag.Size			= $gp.Datas.Width-20, 20
+
+	$tx.DataPag					= $gp.Datas.TextBox()
+	$tx.DataPag.Enabled			= 0
+	$tx.DataPag.ReadOnly		= 1
+	$tx.DataPag.BackColor		= 35, 35, 35
+	$tx.DataPag.ForeColor		= "White"
+	$tx.DataPag.BorderStyle		= 0
+	$tx.DataPag.FlatStyle		= 0
+	$tx.DataPag.fontsize		= 14
+	$tx.DataPag.Location		= $lb.DataPag.Left, $lb.DataPag.Bottom+2
+	$tx.DataPag.Size			= $gp.Datas.Width-20, 25
+
+	$gp.Datas.EndUpdate()
+	/*
+		GRUPO DE VALORES
+	*/
+	$gp.Valores					= $gp.DadosFunc.GroupBox()
+	$gp.Valores.Location		= $gp.Datas.Right+2, $gp.Datas.Top
+	$gp.Valores.font			= $system.font("Segeo UI", 10)
+	$gp.Valores.Text			= "Valores do funcionário"
+	$gp.Valores.size			= 190, 205
+	$gp.Valores.BeginUpdate()
+	
+	$lb.Salario					= $gp.Valores.Label()
+	$lb.Salario.Text			= "Salário do funcionário"
+	$lb.Salario.fontsize		= 12
+	$lb.Salario.Location		= 10, 20
+	$lb.Salario.Size			= 170, 20
+
+	$tx.Salario					= $gp.Valores.TextBox()
+	$tx.Salario.ReadOnly		= 1
+	$tx.Salario.BackColor		= 35, 35, 35
+	$tx.Salario.ForeColor		= "White"
+	$tx.Salario.BorderStyle		= 0
+	$tx.Salario.FlatStyle		= 0
+	$tx.Salario.ForeColor		= 0, 191, 0
+	$tx.Salario.fontsize		= 14
+	$tx.Salario.Location		= $lb.Salario.Left, $lb.Salario.Bottom
+	$tx.Salario.Size			= $gp.Valores.Width-20, 25
+
+	$lb.TipoSalario				= $gp.Valores.Label()
+	$lb.TipoSalario.Text		= "Tipo de pagamento"
+	$lb.TipoSalario.fontsize	= 12
+	$lb.TipoSalario.Location	= $tx.Salario.Left, $tx.Salario.Bottom+2
+	$lb.TipoSalario.Size		= 170, 20
+
+	$pn.TipoSalario					= $gp.Valores.Panel()
+	$pn.TipoSalario.Location		= $lb.TipoSalario.Left,  $lb.TipoSalario.Bottom+2
+	$pn.TipoSalario.Size			= $lb.TipoSalario.Width, 25
+	$pn.TipoSalario.Enabled			= 0
+
+	$cb.TipoSalario					= $pn.TipoSalario.ComboBox()
+	$cb.TipoSalario.BackColor		= 35, 35, 35
+	$cb.TipoSalario.ForeColor		= "White"
+	$cb.TipoSalario.BorderStyle		= 0
+	$cb.TipoSalario.FlatStyle		= 0
+	$cb.TipoSalario.DropDownWidth	= 260
+	$cb.TipoSalario.fontsize		= 14
+	$cb.TipoSalario.Size			= $lb.TipoSalario.Width+4, $lb.TipoSalario.Height+2
+	$cb.TipoSalario.Location		= -2, -2
+	$cb.TipoSalario.AddItem("1 - Pagamento por hora", 0)
+	$cb.TipoSalario.AddItem("2 - Valor fixo", 1)
+
+	$gp.Valores.EndUpdate()
+	/*
+		GRUPO COMISSAO
+	*/
+	$gp.Comisao					= $gp.DadosFunc.GroupBox()
+	$gp.Comisao.Location		= $gp.Valores.Left, $gp.Valores.Bottom
+	$gp.Comisao.font			= $system.font("Segeo UI", 10)
+	$gp.Comisao.Text			= "Valores de comissão"
+	$gp.Comisao.size			= 190, 75
+	$gp.Comisao.BeginUpdate()
+	
+	$lb.TipoComisao				= $gp.Comisao.Label()
+	$lb.TipoComisao.Text		= "Tipo da comissão"
+	$lb.TipoComisao.fontsize	= 12
+	$lb.TipoComisao.Location	= 10, 20
+	$lb.TipoComisao.Size		= 130, 20
+
+	$pn.TipoComisao				= $gp.Comisao.Panel()
+	$pn.TipoComisao.Location	= $lb.TipoComisao.Left, $lb.TipoComisao.Bottom
+	$pn.TipoComisao.Size		= $gp.Comisao.Width-60, 25
+	$pn.TipoComisao.Enabled		= 0
+
+	$cb.TipoComisao					= $pn.TipoComisao.ComboBox()
+	$cb.TipoComisao.BackColor		= 35, 35, 35
+	$cb.TipoComisao.ForeColor		= "White"
+	$cb.TipoComisao.BorderStyle		= 0
+	$cb.TipoComisao.FlatStyle		= 0
+	$cb.TipoComisao.DropDownWidth	= 260
+	$cb.TipoComisao.fontsize		= 14
+	$cb.TipoComisao.Size			= $pn.TipoComisao.Width+4, $pn.TipoComisao.Height+2
+	$cb.TipoComisao.Location		= -2, -2
+	for $i=1 to tb_CountRow("perfil-comissao")
+		$cb.TipoComisao.AddItem(
+			tb_getData("perfil-comissao.idcodigo", $i)+" - "+tb_getData("perfil-comissao.nome-perfil", $i),
+			$i-1
+		)
+	next
+	
+	$bt.TipoComisaoVer				= $gp.Comisao.ToolButton()
+	$bt.TipoComisaoVer.Text			= "Add"
+	$bt.TipoComisaoVer.ToolTipText	= "Adicionar um perfil de comissão."
+	$bt.TipoComisaoVer.Enabled		= 0
+	$bt.TipoComisaoVer.FlatStyle	= 0
+	$bt.TipoComisaoVer.BorderStyle	= 0
+	$bt.TipoComisaoVer.font			= $System.font("Segeo UI", 11, 1)
+	$bt.TipoComisaoVer.ForeColor	= "White"
+	$bt.TipoComisaoVer.HotForeColor	= 29, 31, 33
+	$bt.TipoComisaoVer.BackColor	= 29, 31, 33
+	$bt.TipoComisaoVer.HotBackColor	= "White"
+	$bt.TipoComisaoVer.Width		= 45
+	$bt.TipoComisaoVer.Location		= $pn.TipoComisao.Right+2, $pn.TipoComisao.Top
+	$bt.TipoComisaoVer.OnClick		=
+	"
+		frmPerfil_Comissao($$frm)
+		$$cb.TipoComisao.Clear()
+		for $$i=1 to tb_CountRow('perfil-comissao')
+			$$cb.TipoComisao.AddItem(
+				tb_getData('perfil-comissao.idcodigo', $$i)+' - '+tb_getData('perfil-comissao.nome-perfil', $$i),
+				$$i-1
+			)
+		next
+	"
+	
+	$pn.Controle				= $frm.Panel()
+	$pn.Controle.Height			= 30
+	$pn.Controle.Dock			= 2
+	$pn.Controle.BackColor		= "white";53, 129, 142
+	
+	$bt.NovoFunc				= $pn.Controle.ToolButton()
+	$bt.NovoFunc.Size			= 160, 30
+	$bt.NovoFunc.font			= $System.font("Segeo UI", 11, 1)
+	$bt.NovoFunc.BorderStyle	= 0
+	$bt.NovoFunc.FlatStyle		= 0
+	$bt.NovoFunc.BackColor		= 33, 33, 33
+	$bt.NovoFunc.HotBackColor	= 80, 80, 80
+	$bt.NovoFunc.ForeColor		= "white";204, 102, 102
+	$bt.NovoFunc.HotForeColor	= "white";33, 33, 33
+	$bt.NovoFunc.Tag			= 0
+	$bt.NovoFunc.Text			= "Novo funcionário"
+	$bt.NovoFunc.OnClick		=
+	'
+		if ($$bt.NovoFunc.Tag = 0)
+				$$grid.Enabled								= 0
+				$$pn.TipoSalario.Enabled					= 1
+				$$bt.CanceFunc.Visible						= 1
+				$$bt.DelFunc.Visible						= 0
+				$$grid.Rows.Count							= $$grid.Rows.Count+1
+				$$grid.Cells($$grid.Rows.Count-1, 0).Text	= cint(tb_GetData("gen.funcionario", 1))+1
+				$$grid.CurrentRowIndex						= $$grid.Rows.Count-1
+				$$bt.NovoFunc.Tag							= 1
+				$$bt.AlteFunc.Enabled						= 0
+				$$tx.NomeFuncionario.ReadOnly				= 0
+				$$tx.DataInscri.ReadOnly					= 0
+				$$tx.DataPag.ReadOnly						= 0
+				$$tx.Salario.ReadOnly						= 0
+				$$pn.TipoComisao.Enabled					= 1
+				$$pn.PeriodoPag.Enabled						= 1
+				$$pn.TipoFunc.Enabled						= 1
+				$$bt.DelFunc.Visible						= 0
+				$$bt.CanceFunc.Visible						= 1
+				$$tx.DataPag.Enabled						= 1
+			;;<LIMPANDO CAMPOS>
+				$$tx.NomeFuncionario.Text		= ""
+				$$tx.DataInscri.Text			= ""
+				$$tx.DataPag.Text				= ""
+				$$tx.Salario.Text				= ""
+				$$tx.TipoComisao.Text			= ""
+				$$cb.TipoSalario.SelectedIndex	= -1
+				$$cb.PeriodoPag.SelectedIndex	= -1
+				$$cb.TipoFunc.SelectedIndex		= -1
+				$$bt.TipoComisaoVer.Enabled		= 1
+			;;</LIMPANDO CAMPOS>
+			$$bt.NovoFunc.Text			= "Concluir"
+			$$bt.NovoFunc.BackColor		= 33, 33, 33
+			$$bt.NovoFunc.HotBackColor	= 0, 198, 0
+			$$bt.NovoFunc.ForeColor		= 0, 198, 0
+			$$bt.NovoFunc.HotForeColor	= 33, 33, 33
+			$$tx.NomeFuncionario.SetFocus()
+		else
+			$$grid.Enabled					= 1
+			$$bt.CanceFunc.Visible			= 0
+			$$bt.DelFunc.Visible			= 1
+			$$bt.NovoFunc.Tag				= 0
+			$$bt.AlteFunc.Enabled			= 1
+			$$tx.NomeFuncionario.ReadOnly	= 1
+			$$tx.DataInscri.ReadOnly		= 1
+			$$tx.DataPag.ReadOnly			= 1
+			$$tx.Salario.ReadOnly			= 1
+			$$pn.TipoSalario.Enabled		= 0
+			$$pn.TipoComisao.Enabled		= 0
+			$$pn.PeriodoPag.Enabled			= 0
+			$$pn.TipoFunc.Enabled			= 0
+			$$bt.NovoFunc.Text				= "Novo funcionário"
+			$$bt.NovoFunc.BackColor			= 33, 33, 33
+			$$bt.NovoFunc.HotBackColor		= 80, 80, 80
+			$$bt.NovoFunc.ForeColor			= "white";204, 102, 102
+			$$bt.NovoFunc.HotForeColor		= "white";33, 33, 33
+			$$tx.DataPag.Enabled			= 0
+			$$bt.TipoComisaoVer.Enabled		= 0
+			$$Data =
+				$$grid.Cells($$grid.CurrentRowIndex, 0).Text,
+				$$tx.NomeFuncionario.Text,
+				$$tx.DataInscri.Text,
+				$$tx.DataPag.Text,
+				$$tx.Salario.Text,
+				Split($$cb.TipoComisao.Text, " ")[0],
+				Split($$cb.TipoSalario.Text, " ")[0],
+				Split($$cb.PeriodoPag.Text, " ")[0],
+				$$cb.TipoFunc.SelectedIndex
+				
+			tb_insertData("funcionario", $$DATA)
+			tb_UpDataIndex("gen.funcionario", 1, $$DATA[0])
+			tb_save2("funcionario")
+			tb_save2("gen")
+			$$lb.GridRodaPe.Text	= "Você possui "+Cstr(tb_CountRow("funcionario"))+" funcionário(s)"
+		endif
+	'
+	
+	$bt.AlteFunc				= $pn.Controle.ToolButton()
+	$bt.AlteFunc.Size			= 160, 30
+	$bt.AlteFunc.Location		= $bt.NovoFunc.Right+100, 0
+	$bt.AlteFunc.font			= $System.font("Segeo UI", 11, 1)
+	$bt.AlteFunc.BorderStyle	= 0
+	$bt.AlteFunc.FlatStyle		= 0
+	$bt.AlteFunc.BackColor		= 33, 33, 33
+	$bt.AlteFunc.HotBackColor	= 80, 80, 80
+	$bt.AlteFunc.ForeColor		= "white";204, 102, 102
+	$bt.AlteFunc.HotForeColor	= "white";33, 33, 33
+	$bt.AlteFunc.Text			= "Alterar funcionário"
+	$bt.AlteFunc.OnClick		=
+	'
+		if ($$grid.CurrentColumnIndex <> -1)
+			if (msg("Atenção!", "Você tem certeza do que está fazendo?", 4096 + 32 + 256 + 4) = 6)
+				if ($$bt.AlteFunc.Tag = 0)
+					$$pn.TipoSalario.Enabled		= 1
+					$$grid.Enabled					= 0
+					$$bt.CanceFunc.Visible			= 1
+					$$bt.DelFunc.Visible			= 0
+					$$bt.AlteFunc.Text				= "Concluir"
+					$$bt.AlteFunc.BackColor			= 33, 33, 33
+					$$bt.AlteFunc.HotBackColor		= 0, 198, 0
+					$$bt.AlteFunc.ForeColor			= 0, 198, 0
+					$$bt.AlteFunc.HotForeColor		= 33, 33, 33
+					$$bt.NovoFunc.Enabled			= 0
+					$$bt.DelFunc.Visible			= 0
+					$$bt.AlteFunc.Tag				= 1
+					$$bt.CanceFunc.Visible			= 1
+					$$tx.NomeFuncionario.ReadOnly	= 0
+					$$tx.DataInscri.ReadOnly		= 0
+					$$tx.DataPag.ReadOnly			= 0
+					$$tx.Salario.ReadOnly			= 0
+					$$tx.Salario.Text				= Replace($$tx.Salario.Text, "R$ ", "")
+					$$pn.TipoComisao.Enabled 		= 1
+					$$pn.PeriodoPag.Enabled			= 1
+					$$pn.TipoFunc.Enabled			= 1
+					$$tx.DataPag.Enabled			= 1
+					$$bt.TipoComisaoVer.Enabled		= 1
+				else
+					$$pn.TipoSalario.Enabled		= 0
+					$$grid.Enabled					= 1
+					$$bt.CanceFunc.Visible			= 0
+					$$bt.DelFunc.Visible			= 1
+					$$bt.AlteFunc.Text				= "Alterar funcionário"
+					$$bt.AlteFunc.BackColor			= 33, 33, 33
+					$$bt.AlteFunc.HotBackColor		= 80, 80, 80
+					$$bt.AlteFunc.ForeColor			= "white"
+					$$bt.AlteFunc.HotForeColor		= "white"
+					$$bt.NovoFunc.Enabled			= 1
+					$$bt.DelFunc.Visible			= 1
+					$$bt.AlteFunc.Tag				= 0
+					$$bt.CanceFunc.Visible			= 0
+					$$tx.NomeFuncionario.ReadOnly	= 1
+					$$tx.DataInscri.ReadOnly		= 1
+					$$tx.DataPag.ReadOnly			= 1
+					$$tx.Salario.ReadOnly			= 1
+					$$pn.TipoComisao.Enabled		= 0
+					$$pn.PeriodoPag.Enabled			= 0
+					$$pn.TipoFunc.Enabled			= 0
+					$$tx.DataPag.Enabled			= 0
+					$$bt.TipoComisaoVer.Enabled		= 0
+					$$DATA =
+						$$grid.Cells($$grid.CurrentRowIndex, 0).Text,
+						$$tx.NomeFuncionario.Text,
+						$$tx.DataInscri.Text,
+						$$tx.DataPag.Text,
+						$$tx.Salario.Text,
+						Split($$cb.TipoComisao.Text, " ")[0],
+						Split($$cb.TipoSalario.Text, " ")[0],
+						Split($$cb.PeriodoPag.Text, " ")[0],
+						$$cb.TipoFunc.SelectedIndex
+
+					tb_UpData("funcionario",
+						split("idcodigo;nome;data-inscr;data-pagamento;val-salario;tipo-comisao;tipo-pagamento;periodo-pagamento;tipo-func", ";"),
+						$$DATA,
+						"idcodigo", $$DATA[0]
+					)
+					tb_save2("funcionario")
+					$$=execute($$Grid.OnClick)
+				endif
+			endif
+		endif
+	'
+	
+	$bt.DelFunc					= $pn.Controle.ToolButton()
+	$bt.DelFunc.Size			= 160, 30
+	$bt.DelFunc.Location		= $bt.AlteFunc.Right+100, 0
+	$bt.DelFunc.font			= $System.font("Segeo UI", 11, 1)
+	$bt.DelFunc.BorderStyle		= 0
+	$bt.DelFunc.FlatStyle		= 0
+	$bt.DelFunc.BackColor		= 33, 33, 33
+	$bt.DelFunc.HotBackColor	= 80, 80, 80
+	$bt.DelFunc.ForeColor		= "white";204, 102, 102
+	$bt.DelFunc.HotForeColor	= "white";33, 33, 33
+	$bt.DelFunc.Text			= "Deletar funcionário"
+	$bt.DelFunc.OnClick			=
+	'
+		if ($$grid.CurrentColumnIndex <> -1)
+			if (msg("Atenção!", "Você tem certeza de que quer deletar este funcionário?", 4096 + 32 + 4 + 256) = 6)
+				tb_deleteRow("funcionario", "idcodigo", $$grid.Cells($$grid.CurrentRowIndex, 0).Text)
+				$$grid.Rows.RemoveAt($$grid.CurrentRowIndex)
+				$$=msg("Funcionário excluído com sucesso!", "O funcionário foi excluído com sucesso!", 64 + 4096)
+				tb_save2("funcionario")
+				$$lb.GridRodaPe.Text = "Você possui "+Cstr(tb_CountRow("funcionario"))+" funcionário(s)"
+			endif
+		endif
+	'
+
+	$bt.CanceFunc				= $pn.Controle.ToolButton()
+	$bt.CanceFunc.Size			= 160, 30
+	$bt.CanceFunc.Location		= $bt.AlteFunc.Right+100, 0
+	$bt.CanceFunc.font			= $System.font("Segeo UI", 11, 1)
+	$bt.CanceFunc.BorderStyle	= 0
+	$bt.CanceFunc.FlatStyle		= 0
+	$bt.CanceFunc.BackColor		= 33, 33, 33
+	$bt.CanceFunc.HotBackColor	= 80, 80, 80
+	$bt.CanceFunc.ForeColor		= "white";204, 102, 102
+	$bt.CanceFunc.HotForeColor	= "white";33, 33, 33
+	$bt.CanceFunc.Text			= "Cancelar"
+	$bt.CanceFunc.OnClick		=
+	'
+		if ($$bt.NovoFunc.Tag)
+			if (msg("Atenção", "Se fizer isso irá perderá todos os dados preenchido,@@crlfvocê tem certeza do que está fazendo?@@crlf@@crlfClick em sim para cancelar de fato este funcionário", 4096 + 256 + 32 + 4) = 6)
+				$$grid.Rows.RemoveAt($$grid.CurrentRowIndex)
+				$$grid.Enabled					= 1
+				$$bt.CanceFunc.Visible			= 0
+				$$bt.DelFunc.Visible			= 1
+				$$bt.CanceFunc.Visible			= 0
+				$$bt.DelFunc.Visible			= 1
+				$$bt.NovoFunc.Tag				= 0
+				$$bt.AlteFunc.Enabled			= 1
+				$$tx.NomeFuncionario.Text		= ""
+				$$tx.DataInscri.Text			= ""
+				$$tx.DataPag.Text				= ""
+				$$tx.Salario.Text				= ""
+				$$pn.TipoComisao.Enabled		= 0
+				$$tx.TipoComisao.Text			= ""
+				$$tx.ValComisao.Text			= ""
+				$$pn.PeriodoPag.Enabled 		= 0
+				$$cb.PeriodoPag.SelectedIndex	= -1
+				$$cb.TipoFunc.SelectedIndex		= -1
+				$$pn.TipoFunc.Enabled 			= 0
+				$$bt.NovoFunc.Text				= "Novo funcionário"
+				$$bt.NovoFunc.BackColor			= 33, 33, 33
+				$$bt.NovoFunc.HotBackColor		= 80, 80, 80
+				$$bt.NovoFunc.ForeColor			= "white"
+				$$bt.NovoFunc.HotForeColor		= "white"
+			endif
+		else if ($$bt.AlteFunc.Tag)
+			if (msg("Atenção", "Se fizer isso irá perderá todos os dados alterado deste funcionário,@@crlfvocê tem certeza do que está fazendo?@@crlf@@crlfClick em sim para cancelar de fato estas alterações", 4096 + 256 + 32 + 4) = 6)
+				$$grid.Enabled				= 1
+				$$bt.CanceFunc.Visible		= 0
+				$$bt.DelFunc.Visible		= 1
+				$$bt.AlteFunc.Tag			= 0
+				$$bt.NovoFunc.Enabled		= 1
+				$$bt.AlteFunc.Enabled		= 1
+				$$pn.TipoComisao.Enabled	= 0
+				$$pn.TipoFunc.Enabled		= 0
+				$$bt.AlteFunc.Text			= "Alterar funcionário"
+				$$bt.AlteFunc.BackColor		= 33, 33, 33
+				$$bt.AlteFunc.HotBackColor	= 80, 80, 80
+				$$bt.AlteFunc.ForeColor		= "white";204, 102, 102
+				$$bt.AlteFunc.HotForeColor	= "white";33, 33, 33
+			endif
+		endif endif
+		$$bt.TipoComisaoVer.Enabled = 0
+		$$=Execute($$grid.OnClick)
+		$$lb.GridRodaPe.Text	= "Você possui "+Cstr(tb_CountRow("funcionario"))+" funcionário(s)"
+	'
+
+	$gp.Comisao.EndUpdate()
+	$frm.EndUpdate()
+	;;<ADCIONANDO DADOS AO GRID>
+		$grid.Rows.Count = tb_CountRow("funcionario")
+		for $i=0 to tb_CountRow("funcionario")
+			$grid.Cells($i, 0).Text = tb_getData("funcionario.idcodigo", $i+1)
+			$grid.Cells($i, 1).Text = tb_getData("funcionario.nome", $i+1)
+		next
+	;;</ADCIONANDO DADOS AO GRID>
+
+	while $frm.Visible
+		$=Execute($frm.DoEvents())
+	loop
+endfunction
+
+function frmPerfil_Comissao($frmherdado)
+	dim
+		$frm, $i, $data, $temp
+	dim
+		$split, $panel[1], $grid,
+		$bt, $lb, $tx, $ck, $pn
+	
+	$grid	= $system.Object()
+	$bt		= $system.Object()
+	$lb		= $system.Object()
+	$tx		= $system.Object()
+	$ck		= $system.Object()
+	$pn		= $system.Object()
+	
+	$frm					= $system.form($frmherdado)
+	$frm.BackColor			= $frmherdado.BackColor
+	$frm.size				= 550, 450
+	$frm.MaximizeBox		= 0
+	$frm.MinimizeBox		= 0
+	$frm.FormBorderStyle	= 1
+	$frm.Icon				= $frmherdado.Icon
+	$frm.Text				= "Comissão do funcionário"
+	
+	$split					= $frm.SplitContainer()
+	$split.Size				= $frm.ClientWidth, $frm.ClientHeight-30
+	$split.Anchor			= 1+2+4+8
+	$split.Orientation		= 0
+
+	$panel[0]				= $split.Panel1
+	$panel[0].ForeColor		= "white"
+	$panel[0].BackColor		= 51, 51, 51
+	$panel[0].Font			= $System.Font(, 12)
+	$panel[0].OnResize		= "$$split.SplitterDistance = $$frm.ClientHeight/2-$$pn.Controle.ClientHeight+11"
+
+	$panel[1]				= $split.Panel2
+	$panel[1].ForeColor		= "white"
+	$panel[1].BackColor		= 51, 51, 51
+	$panel[1].Font			= $System.Font(, 12)
+	
+	;;<NOMES COMISSÃO>
+		$grid.NomesCom						= $panel[0].GridView()
+		$grid.NomesCom.Anchor				= 1 + 2 + 4
+		$grid.NomesCom.BorderStyle			= 0
+		$grid.NomesCom.ReadOnly				= 1
+		$grid.NomesCom.FullRowSelect		= 1
+		$grid.NomesCom.ScrollBars			= 2
+		$grid.NomesCom.Fontsize				= 15
+		$grid.NomesCom.SelectionForeColor	= 0,0,0
+		$grid.NomesCom.size					= 250, $panel[0].ClientHeight
+		$grid.NomesCom.HeaderStyle			= 1
+		$grid.NomesCom.AlternatingBackColor	= &0F7EBE7
+		$grid.NomesCom.SelectionBackColor	= 169,178,202
+		$grid.NomesCom.BackColor			= "White"
+		$grid.NomesCom.GridLineColor		= &E7BE94
+		$grid.NomesCom.ForeColor			= "Black"
+		$grid.NomesCom.Font					= $System.Font("Segeo UI", 10)
+		$grid.NomesCom.OnClick				=
+		"
+			/*
+				DADOS DO PERFIL
+			*/
+			if (tb_CountRow('dados-comissao') > 0)
+				if ($$grid.NomesCom.CurrentColumnIndex <> -1)
+					$$tx.NomesCom.Text = $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 1).Text
+	
+					$$DATA = $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text
+					$$DATA = tb_FindTextinSequenceData('dados-comissao.idcodigo', 'id-perfil', $$DATA, '==')
+					$$grid.DadosCom.Rows.Count = ubound($$data)+1
+					for $$i=0 to ubound($$data)
+						$$grid.DadosCom.Cells($$i, 0).Text	= $$DATA[$$i]
+						$$grid.DadosCom.Cells($$i, 0).Tag	= tb_getData('dados-comissao.TRABALHA-PORCEN',, 'IDCODIGO', $$Data[$$i])
+						$$grid.DadosCom.Cells($$i, 1).Text	= tb_getData('dados-comissao.VALOR-COND',, 'IDCODIGO', $$Data[$$i])
+						$$grid.DadosCom.Cells($$i, 2).Text	= tb_getData('dados-comissao.VALOR/PORCE-COMI',, 'IDCODIGO', $$Data[$$i])
+					next
+				else
+					$$grid.DadosCom.Rows.Count = 0
+					$$tx.NomesCom.Text = ''
+				endif
+				$$=Execute($$grid.DadosCom.OnClick)
+			endif
+		"
+		$=$grid.NomesCom.Columns.Add("ID")
+		$grid.NomesCom.Columns(0).Width=30
+		$=$grid.NomesCom.Columns.Add("Nome do perfil")
+		$grid.NomesCom.Columns(1).Width=150
+		
+		$pn.NomesCom						= $panel[0].Panel()
+		$pn.NomesCom.Enabled				= 0
+		$pn.NomesCom.Size					= 25, $grid.NomesCom.Height
+		$pn.NomesCom.ForeColor				= $panel[0].ForeColor
+		$pn.NomesCom.BackColor				= 20, 20, 20
+		$pn.NomesCom.Location				= $grid.NomesCom.Right, 0
+
+		$lb.NomesCom						= $panel[0].Label()
+		$lb.NomesCom.Text					= "Nome do perfil de comisão"
+		$lb.NomesCom.Size					= 200, 25
+		$lb.NomesCom.Location				= $pn.NomesCom.Right+7, 0
+
+		$tx.NomesCom						= $panel[0].TextBox()
+		$tx.NomesCom.ReadOnly				= 1
+		$tx.NomesCom.BorderStyle			= 0
+		$tx.NomesCom.FlatStyle				= 0
+		$tx.NomesCom.BackColor				= 35, 35, 35
+		$tx.NomesCom.ForeColor				= "white"
+		$tx.NomesCom.fontsize				= 12.5
+		$tx.NomesCom.Location				= $lb.NomesCom.Left, $lb.NomesCom.Bottom
+		$tx.NomesCom.Size					= $lb.NomesCom.Width, 25
+		$tx.NomesCom.OnKeyDown				= "$$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 1).Text = $$tx.NomesCom.Text"
+	;;</NOMES COMISSÃO>
+
+	;;<DADOS COMISSÃO>
+		$grid.DadosCom						= $panel[1].GridView()
+		$grid.DadosCom.Anchor				= 1 + 2 + 4
+		$grid.DadosCom.BorderStyle			= 0
+		$grid.DadosCom.ReadOnly				= 1
+		$grid.DadosCom.FullRowSelect		= 1
+		$grid.DadosCom.ScrollBars			= 2
+		$grid.DadosCom.Fontsize				= 15
+		$grid.DadosCom.SelectionForeColor	= 0,0,0
+		$grid.DadosCom.size					= 250, $panel[0].ClientHeight
+		$grid.DadosCom.HeaderStyle			= 1
+		$grid.DadosCom.AlternatingBackColor	= &0F7EBE7
+		$grid.DadosCom.SelectionBackColor	= 169,178,202
+		$grid.DadosCom.BackColor			= "White"
+		$grid.DadosCom.GridLineColor		= &E7BE94
+		$grid.DadosCom.ForeColor			= "Black"
+		$grid.DadosCom.Font					= $System.Font("Segeo UI", 10)
+		$grid.DadosCom.OnClick				=
+		"
+			if ($$grid.DadosCom.CurrentColumnIndex <> -1)
+				$$tx.PisoValor.Text					= FormatNumber($$Grid.DadosCom.Cells($$Grid.DadosCom.CurrentRowIndex, 1).Value, 2)
+				$$ck.TrabalhaPorcentagem.Checked	= $$grid.DadosCom.Cells($$grid.DadosCom.CurrentRowIndex, 0).Tag ;iif($$DATA=-1, -1, 0)
+				$$tx.ValorComissao.Text				= $$Grid.DadosCom.Cells($$Grid.DadosCom.CurrentRowIndex, 2).Value
+			else
+				$$tx.PisoValor.Text					= ''
+				$$ck.TrabalhaPorcentagem.Checked	= 0
+				$$tx.ValorComissao.Text				= ''
+			endif
+		"
+
+		$=$grid.DadosCom.Columns.Add("ID")
+		$grid.DadosCom.Columns(0).Width=30
+		$=$grid.DadosCom.Columns.Add("Piso da comissão")
+		$grid.DadosCom.Columns(1).Width=110
+		$grid.DadosCom.Columns(1).ValueType='Currency'
+		$grid.DadosCom.Columns(1).Format='R$ 0.00'
+		$=$grid.DadosCom.Columns.Add("Valor de comissão")
+		$grid.DadosCom.Columns(2).Width=110
+		$grid.DadosCom.Columns(2).ValueType='Variant'
+		; $grid.DadosCom.Columns(2).Format='0.00'
+		
+		;;<PAINEL DE CONTROLE>
+			$pn.DadosCom						= $panel[1].Panel()
+			$pn.DadosCom.Enabled				= 0
+			$pn.DadosCom.Size					= 25, $grid.DadosCom.Height
+			$pn.DadosCom.ForeColor				= $panel[1].ForeColor
+			$pn.DadosCom.BackColor				= 20, 20, 20
+			$pn.DadosCom.Location				= $grid.DadosCom.Right, 0
+			
+			$bt.AddDados						= $pn.DadosCom.ToolButton()
+			$bt.AddDados.Size					= 25, 25
+			$bt.AddDados.BorderStyle			= 0
+			$bt.AddDados.FlatStyle				= 0
+			$bt.AddDados.Font					= $system.font("Consolas", 14, 1)
+			$bt.AddDados.BackColor				= 0, 155, 0
+			$bt.AddDados.HotBackColor			= 0, 64, 0
+			$bt.AddDados.ForeColor				= 0, 64, 0
+			$bt.AddDados.HotForeColor			= 0, 155, 0
+			$bt.AddDados.Text					= "+"
+			$bt.AddDados.OnClick				=
+			"
+				$$grid.DadosCom.Enabled			= 0
+				$$grid.DadosCom.Rows.Count		= $$grid.DadosCom.Rows.Count+1
+				$$grid.DadosCom.Cells($$grid.DadosCom.Rows.Count-1, 0).Text = tb_Increment('gen.dados-comissao', 1,,,,false)
+				$$grid.DadosCom.CurrentRowIndex = $$grid.DadosCom.Rows.Count-1
+
+				$$bt.AddDados.Enabled	= 0
+				$$bt.EditDados.Enabled	= 0
+				$$bt.CanceDados.Visible	= 1
+				$$bt.SaveDados.Visible	= 1
+				$$bt.DeleDados.Visible	= 0
+
+				$$tx.PisoValor.Text					= ''
+				$$tx.ValorComissao.Text				= ''
+				$$ck.TrabalhaPorcentagem.Checked	= 0
+				;;<DESBLOQUEANDO CAMPOS>
+					$$tx.PisoValor.ReadOnly				= 0
+					$$tx.ValorComissao.ReadOnly			= 0
+					$$ck.TrabalhaPorcentagem.Enabled	= 1
+				;;</DESBLOQUEANDO CAMPOS>
+				$$tx.PisoValor.SetFocus()
+			"
+
+			$bt.EditDados						= $pn.DadosCom.ToolButton()
+			$bt.EditDados.Size					= 25, 25
+			$bt.EditDados.BorderStyle			= 0
+			$bt.EditDados.FlatStyle				= 0
+			$bt.EditDados.Font					= $system.font("Consolas", 14, 1)
+			$bt.EditDados.BackColor				= 24, 116, 146
+			$bt.EditDados.HotBackColor			= 0, 64, 170
+			$bt.EditDados.ForeColor				= 0, 64, 170
+			$bt.EditDados.HotForeColor			= 24, 116, 146
+			$bt.EditDados.Location				= 0, $bt.AddDados.Bottom
+			$bt.EditDados.Text					= "E"
+			$bt.EditDados.OnClick				=
+			"
+				$$bt.AddDados.Enabled	= 0
+				$$bt.EditDados.Enabled	= 0
+				$$bt.CanceDados.Visible	= 1
+				$$bt.SaveDados.Visible	= 1
+				$$bt.DeleDados.Visible	= 0
+
+				;;<DESBLOQUEANDO CAMPOS>
+					$$tx.PisoValor.ReadOnly				= 0
+					$$tx.ValorComissao.ReadOnly			= 0
+					$$ck.TrabalhaPorcentagem.Enabled	= 1
+				;;</DESBLOQUEANDO CAMPOS>
+			"
+			
+			$bt.SaveDados						= $pn.DadosCom.ToolButton()
+			$bt.SaveDados.Size					= 25, 25
+			$bt.SaveDados.Visible				= 0
+			$bt.SaveDados.BorderStyle			= 0
+			$bt.SaveDados.FlatStyle				= 0
+			$bt.SaveDados.Font					= $system.font("Consolas", 14, 1)
+			$bt.SaveDados.BackColor				= 255, 128, 0
+			$bt.SaveDados.HotBackColor			= 128, 64, 0
+			$bt.SaveDados.ForeColor				= 128, 64, 0
+			$bt.SaveDados.HotForeColor			= 255, 128, 0
+			$bt.SaveDados.Location				= 0, $bt.EditDados.Bottom
+			$bt.SaveDados.Text					= "S"
+			$bt.SaveDados.OnClick				=
+			"
+				$$grid.DadosCom.Cells($$grid.DadosCom.CurrentRowIndex, 0).Tag = $$ck.TrabalhaPorcentagem.Checked
+				$$bt.AddDados.Enabled				= 1
+				$$bt.EditDados.Enabled				= 1
+				$$bt.CanceDados.Visible				= 0
+				$$grid.DadosCom.Enabled				= 1
+				$$tx.PisoValor.ReadOnly				= 1
+				$$tx.ValorComissao.ReadOnly			= 1
+				$$ck.TrabalhaPorcentagem.Enabled	= 0
+				$$bt.DeleDados.Visible				= 1
+				$$bt.SaveDados.Visible				= 0
+				; $$tx.PisoValor.Text					= ''
+				; $$tx.ValorComissao.Text				= ''
+				; $$ck.TrabalhaPorcentagem.Checked	= 0
+			"
+
+			$bt.DeleDados						= $pn.DadosCom.ToolButton()
+			$bt.DeleDados.Size					= 25, 25
+			$bt.DeleDados.BorderStyle			= 0
+			$bt.DeleDados.FlatStyle				= 0
+			$bt.DeleDados.Font					= $system.font("Consolas", 14, 1)
+			$bt.DeleDados.BackColor				= 128, 0, 0
+			$bt.DeleDados.HotBackColor			= 255, 128, 128
+			$bt.DeleDados.ForeColor				= 255, 128, 128
+			$bt.DeleDados.HotForeColor			= 128, 0, 0
+			$bt.DeleDados.Location				= 0, $bt.EditDados.Bottom
+			$bt.DeleDados.Text					= chr(215)
+			$bt.DeleDados.OnClick				=
+			"
+				if ($$grid.DadosCom.CurrentColumnIndex <> -1)
+					if (msg('Atenção!', 'Você tem certeza de que quer deletar este item do perfil de comissão?', 4096 + 32 + 4 + 256) = 6)
+						$$grid.DadosCom.Rows.RemoveAt($$grid.DadosCom.CurrentRowIndex)
+						$$=msg('Item excluído com sucesso!', 'O Item foi excluído com sucesso!', 64 + 4096)
+					endif
+				endif
+			"
+			
+			$bt.CanceDados						= $pn.DadosCom.ToolButton()
+			$bt.CanceDados.Visible				= 0
+			$bt.CanceDados.Size					= 25, 25
+			$bt.CanceDados.BorderStyle			= 0
+			$bt.CanceDados.FlatStyle			= 0
+			$bt.CanceDados.Font					= $system.font("Consolas", 14, 1)
+			$bt.CanceDados.BackColor			= 128, 0, 0
+			$bt.CanceDados.HotBackColor			= 255, 128, 128
+			$bt.CanceDados.ForeColor			= 255, 128, 128
+			$bt.CanceDados.HotForeColor			= 128, 0, 0
+			$bt.CanceDados.Dock					= 2
+			$bt.CanceDados.Text					= chr(215)
+			$bt.CanceDados.OnClick				=
+			"
+				$$grid.DadosCom.Rows.Count			= $$grid.DadosCom.Rows.Count-1
+				$$bt.AddDados.Enabled				= 1
+				$$bt.EditDados.Enabled				= 1
+				$$bt.CanceDados.Visible				= 0
+				$$grid.DadosCom.Enabled				= 1
+				$$tx.PisoValor.ReadOnly				= 1
+				$$tx.ValorComissao.ReadOnly			= 1
+				$$ck.TrabalhaPorcentagem.Enabled	= 0
+				$$bt.DeleDados.Visible				= 1
+				$$bt.SaveDados.Visible				= 0
+				$$tx.PisoValor.Text					= ''
+				$$tx.ValorComissao.Text				= ''
+				$$ck.TrabalhaPorcentagem.Checked	= 0
+			"
+		;;</PAINEL DE CONTROLE>
+
+		$lb.PisoValor						= $panel[1].Label()
+		$lb.PisoValor.Text					= "Valor de piso da comissão"
+		$lb.PisoValor.Size					= 200, 25
+		$lb.PisoValor.Location				= $pn.DadosCom.Right+2, 0
+
+		$tx.PisoValor						= $panel[1].TextBox()
+		$tx.PisoValor.ReadOnly				= 1
+		$tx.PisoValor.BorderStyle			= 0
+		$tx.PisoValor.FlatStyle				= 0
+		$tx.PisoValor.ForeColor				= "white"
+		$tx.PisoValor.BackColor				= 35, 35, 35
+		$tx.PisoValor.fontsize				= 14
+		$tx.PisoValor.Location				= $lb.PisoValor.Left, $lb.PisoValor.Bottom
+		$tx.PisoValor.Size					= $lb.PisoValor.Width, 25
+		$tx.PisoValor.OnKeyDown				= '$$grid.DadosCom.Cells($$grid.DadosCom.CurrentRowIndex, 1).Text = $$tx.PisoValor.Text'
+		$tx.PisoValor.OnKeyUp				=
+		"
+			$$temp							= $$tx.PisoValor.SelectionStart
+			$$tx.PisoValor.Text				= MaskTextBox($$tx.PisoValor.Text, '0123456789,.')
+			$$tx.PisoValor.SelectionStart	= $$temp
+		"
+
+		$ck.TrabalhaPorcentagem				= $panel[1].CheckBox()
+		$ck.TrabalhaPorcentagem.Enabled		= 0
+		$ck.TrabalhaPorcentagem.BorderStyle	= 0
+		$ck.TrabalhaPorcentagem.FlatStyle	= 0
+		$ck.TrabalhaPorcentagem.ForeColor	= "white"
+		; $ck.TrabalhaPorcentagem.BackColor	= 35, 35, 35
+		$ck.TrabalhaPorcentagem.fontsize	= 10
+		$ck.TrabalhaPorcentagem.text		= "Eu trabalho com porcentagem"
+		$ck.TrabalhaPorcentagem.Location	= $tx.PisoValor.Left, $tx.PisoValor.Bottom+4
+		$ck.TrabalhaPorcentagem.Size		= $tx.PisoValor.Width, 25
+		$ck.TrabalhaPorcentagem.OnClick		=
+		"
+			if ($$ck.TrabalhaPorcentagem.Checked = -1)
+				$$tx.ValorComissao.Mask = '%%%%% 000000000'
+			else
+				$$tx.ValorComissao.Mask = 'R$ 000000000'
+			endif
+		"
+		
+		$lb.ValorComissao					= $panel[1].Label()
+		$lb.ValorComissao.Text				= "Valor de comisão"
+		$lb.ValorComissao.Size				= 200, 25
+		$lb.ValorComissao.Location			= $ck.TrabalhaPorcentagem.Left, $ck.TrabalhaPorcentagem.Bottom+4
+
+		$tx.ValorComissao					= $panel[1].TextBox()
+		$tx.ValorComissao.ReadOnly			= 1
+		$tx.ValorComissao.BorderStyle		= 0
+		$tx.ValorComissao.FlatStyle			= 0
+		$tx.ValorComissao.ForeColor			= "white"
+		$tx.ValorComissao.BackColor			= 35, 35, 35
+		$tx.ValorComissao.Font				= $System.Font("Consolas", 16)
+		$tx.ValorComissao.Location			= $lb.ValorComissao.Left, $lb.ValorComissao.Bottom
+		$tx.ValorComissao.Size				= $lb.ValorComissao.Width, 25
+		$tx.ValorComissao.OnKeyDown			= "$$grid.DadosCom.Cells($$grid.DadosCom.CurrentRowIndex, 2).Text = $$tx.ValorComissao.Text"
+		$tx.ValorComissao.OnKeyUp			=
+		"
+			$$temp								= $$tx.ValorComissao.SelectionStart
+			$$tx.ValorComissao.Text				= MaskTextBox($$tx.ValorComissao.Text, '0123456789,.')
+			$$tx.ValorComissao.SelectionStart	= $$temp
+		"
+	;;</DADOS COMISSÃO>
+
+	$pn.Controle				= $frm.Panel()
+	$pn.Controle.Height			= 30
+	$pn.Controle.Dock			= 2
+	; $pn.Controle.BackColor		= $frm.BackColor
+	
+	$bt.NovoPerfil				= $pn.Controle.ToolButton()
+	$bt.NovoPerfil.Size			= 160, 30
+	$bt.NovoPerfil.font			= $System.font("Segeo UI", 11, 1)
+	$bt.NovoPerfil.BorderStyle	= 0
+	$bt.NovoPerfil.FlatStyle	= 0
+	$bt.NovoPerfil.BackColor	= 33, 33, 33
+	$bt.NovoPerfil.HotBackColor	= 80, 80, 80
+	$bt.NovoPerfil.ForeColor	= "white";204, 102, 102
+	$bt.NovoPerfil.HotForeColor	= "white";33, 33, 33
+	$bt.NovoPerfil.Tag			= 0
+	$bt.NovoPerfil.Text			= "Novo perfil"
+	$bt.NovoPerfil.OnClick		=
+	"
+		if not $$bt.NovoPerfil.Tag
+			$$bt.NovoPerfil.Tag				= 1
+			$$bt.NovoPerfil.Text			= 'Concluir'
+			$$bt.NovoPerfil.BackColor		= 33, 33, 33
+			$$bt.NovoPerfil.HotBackColor	= 80, 80, 80
+			$$bt.NovoPerfil.ForeColor		= 'white'
+			$$bt.NovoPerfil.HotForeColor	= 'white'
+			/*----------butões----------*/
+			$$pn.DadosCom.Enabled		= 1
+			$$bt.DelPerfil.Visible		= 0
+			$$bt.DelPerfil.Enabled		= 0
+			$$grid.NomesCom.Enabled		= 0
+			$$bt.AltePerfil.Enabled		= 0
+			$$bt.CancePerfil.Visible	= 1
+			/*-----------grid-----------*/
+			$$grid.NomesCom.Rows.count	= $$grid.NomesCom.Rows.count+1
+			$$grid.NomesCom.Cells($$grid.NomesCom.Rows.Count-1, 0).text = tb_GetMaxData('Perfil-Comissao.idcodigo')+1
+			$$grid.NomesCom.CurrentRowIndex	= $$grid.NomesCom.Rows.Count-1
+			
+			;;<LIMPANDO CAMPOS>
+				$$tx.NomesCom.Text					= ''
+				$$tx.PisoValor.Text					= ''
+				$$tx.ValorComissao.Text				= ''
+				$$grid.DadosCom.Rows.Count			= 0
+				$$ck.TrabalhaPorcentagem.Checked	= 0
+			;;</LIMPANDO CAMPOS>
+			;;<DESBLOQUEANDO CAMPOS>
+				$$tx.NomesCom.ReadOnly				= 0
+			;;</DESBLOQUEANDO CAMPOS>
+			$$tx.NomesCom.SetFocus()
+		else
+			if ($$bt.NovoPerfil.Tag < 2) $$=Execute($$bt.SaveDados.OnClick) endif
+			/*	SALVANDO NO BANCO	*/
+			$$bt.NovoPerfil.Text			= 'Novo perfil'
+			$$bt.NovoPerfil.BackColor		= 33, 33, 33
+			$$bt.NovoPerfil.HotBackColor	= 80, 80, 80
+			$$bt.NovoPerfil.ForeColor		= 'white'
+			$$bt.NovoPerfil.HotForeColor	= 'white'
+			/*----------butões----------*/
+			$$pn.DadosCom.Enabled		= 0
+			$$bt.DelPerfil.Visible		= 1
+			$$bt.DelPerfil.Enabled		= 1
+			$$grid.NomesCom.Enabled		= 1
+			$$bt.AltePerfil.Enabled		= 1
+			$$bt.CancePerfil.Visible	= 0
+			/*-----------grid-----------*/
+			; $$grid.DadosCom.Rows.count		= 0
+			; $$grid.NomesCom.Rows.count		= $$grid.NomesCom.Rows.count-1
+			; $$grid.NomesCom.CurrentRowIndex	= $$grid.NomesCom.Rows.Count-1
+			; $$=Execute($$grid.NomesCom.OnClick)
+
+			;;<BLOQUEANDO CAMPOS>
+				$$grid.DadosCom.Enabled				= 1
+				$$bt.AddDados.Enabled				= 1
+				$$bt.EditDados.Enabled				= 1
+				$$bt.SaveDados.Enabled				= 1
+				$$bt.CanceDados.Visible				= 0
+				$$pn.DadosCom.Enabled				= 0
+				
+				$$tx.NomesCom.ReadOnly				= 1
+				$$tx.PisoValor.ReadOnly				= 1
+				$$tx.ValorComissao.ReadOnly			= 1
+				$$ck.TrabalhaPorcentagem.Enabled	= 0
+			;;</BLOQUEANDO CAMPOS>
+			
+			if ($$bt.NovoPerfil.Tag < 2)
+				$$DATA =
+					$$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text,
+					$$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 1).Text
+				tb_insertData('Perfil-Comissao', $$DATA)
+				
+				$$temp = tb_GetData('gen.dados-comissao', 1), $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text
+				for $$i=0 to $$grid.DadosCom.Rows.Count-1
+					$$DATA =
+						$$grid.DadosCom.Cells($$i, 0).Text,		/*	IDCODIGO			*/
+						$$temp[1],								/*	Perfil-Comissao		*/
+						$$grid.DadosCom.Cells($$i, 1).Value,	/*	VALOR DE PISO		*/
+						$$grid.DadosCom.Cells($$i, 0).Tag,		/*	TRABALHAPORCENTAGEM	*/
+						$$grid.DadosCom.Cells($$i, 2).Value		/*	VALOR/PORCENTAGEM	*/
+	
+					tb_insertData('dados-comissao', $$DATA)
+					if (Cint($$grid.DadosCom.Cells($$i, 0).Text) > $$temp[0])
+						$$temp[0] = $$grid.DadosCom.Cells($$i, 0).Text
+					endif
+				next
+				tb_UpDataIndex('gen.dados-comissao', 1, $$temp[0])
+				tb_UpDataIndex('gen.perfil-comissao', 1, $$temp[1])
+	
+				tb_save2('perfil-comissao')
+				tb_save2('dados-comissao')
+				tb_save2('gen')
+			endif
+			$$bt.NovoPerfil.Tag = 0
+		endif
+	"
+	
+	$bt.AltePerfil				= $pn.Controle.ToolButton()
+	$bt.AltePerfil.Size			= 160, 30
+	$bt.AltePerfil.Location		= $bt.NovoPerfil.Right+30, 0
+	$bt.AltePerfil.font			= $System.font("Segeo UI", 11, 1)
+	$bt.AltePerfil.BorderStyle	= 0
+	$bt.AltePerfil.FlatStyle	= 0
+	$bt.AltePerfil.BackColor	= 33, 33, 33
+	$bt.AltePerfil.HotBackColor	= 80, 80, 80
+	$bt.AltePerfil.ForeColor	= "white";204, 102, 102
+	$bt.AltePerfil.HotForeColor	= "white";33, 33, 33
+	$bt.AltePerfil.Tag			= 0
+	$bt.AltePerfil.Text			= "Alterar perfil"
+	$bt.AltePerfil.OnClick		=
+	"
+		if not $$bt.AltePerfil.Tag
+			$$bt.AltePerfil.Tag				= 1
+			$$bt.AltePerfil.Text			= 'Concluir'
+			$$bt.AltePerfil.BackColor		= 33, 33, 33
+			$$bt.AltePerfil.HotBackColor	= 80, 80, 80
+			$$bt.AltePerfil.ForeColor		= 'white'
+			$$bt.AltePerfil.HotForeColor	= 'white'
+			/*----------butões----------*/
+			$$pn.DadosCom.Enabled		= 1
+			$$bt.DelPerfil.Visible		= 0
+			$$bt.DelPerfil.Enabled		= 0
+			$$grid.NomesCom.Enabled		= 0
+			$$bt.NovoPerfil.Enabled		= 0
+			$$bt.CancePerfil.Visible	= 1
+
+			;;<DESBLOQUEANDO CAMPOS>
+				$$tx.NomesCom.ReadOnly	= 0
+			;;</DESBLOQUEANDO CAMPOS>
+		else
+			/*	SALVANDO NO BANCO	*/
+			if ($$bt.AltePerfil.Tag < 2) $$=Execute($$bt.SaveDados.OnClick) endif
+			$$bt.AltePerfil.Text			= 'Alterar perfil'
+			$$bt.AltePerfil.BackColor		= 33, 33, 33
+			$$bt.AltePerfil.HotBackColor	= 80, 80, 80
+			$$bt.AltePerfil.ForeColor		= 'white'
+			$$bt.AltePerfil.HotForeColor	= 'white'
+			/*----------butões----------*/
+			$$pn.DadosCom.Enabled		= 0
+			$$bt.DelPerfil.Visible		= 1
+			$$bt.DelPerfil.Enabled		= 1
+			$$grid.NomesCom.Enabled		= 1
+			$$bt.NovoPerfil.Enabled		= 1
+			$$bt.CancePerfil.Visible	= 0
+			/*-----------grid-----------*/
+			;;<BLOQUEANDO CAMPOS>
+				$$grid.DadosCom.Enabled				= 1
+				$$bt.AddDados.Enabled				= 1
+				$$bt.EditDados.Enabled				= 1
+				$$bt.SaveDados.Enabled				= 1
+				$$bt.CanceDados.Visible				= 0
+				$$pn.DadosCom.Enabled				= 0
+				
+				$$tx.NomesCom.ReadOnly				= 1
+				$$tx.PisoValor.ReadOnly				= 1
+				$$tx.ValorComissao.ReadOnly			= 1
+				$$ck.TrabalhaPorcentagem.Enabled	= 0
+			;;</BLOQUEANDO CAMPOS>
+
+			if ($$bt.AltePerfil.Tag < 2)
+				tb_UpData('Perfil-Comissao', 'NOME-PERFIL', $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 1).Text, 'IDCODIGO=='+$$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text)
+				for $$i=0 to ubound(tb_FindTextinSequenceData('dados-comissao.idcodigo', 'id-perfil', $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text, '=='))
+					tb_DeleteRow('dados-comissao', 'id-perfil', $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text)
+				next
+	
+				$$temp = tb_GetData('gen.dados-comissao', 1), $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text
+				for $$i=0 to $$grid.DadosCom.Rows.Count-1
+					$$DATA =
+						$$grid.DadosCom.Cells($$i, 0).Text,		/*	IDCODIGO			*/
+						$$temp[1],								/*	Perfil-Comissao		*/
+						$$grid.DadosCom.Cells($$i, 1).Value,	/*	VALOR DE PISO		*/
+						$$grid.DadosCom.Cells($$i, 0).Tag,		/*	TRABALHAPORCENTAGEM	*/
+						$$grid.DadosCom.Cells($$i, 2).Value		/*	VALOR/PORCENTAGEM	*/
+
+					tb_insertData('dados-comissao', $$DATA)
+					if (Cint($$grid.DadosCom.Cells($$i, 0).Text) > $$temp[0])
+						$$temp[0] = $$grid.DadosCom.Cells($$i, 0).Text
+					endif
+				next
+				tb_UpDataIndex('gen.dados-comissao', 1, $$temp[0])
+	
+				tb_save2('perfil-comissao')
+				tb_save2('dados-comissao')
+				tb_save2('gen')
+			endif
+			$$bt.AltePerfil.Tag	= 0
+		endif
+	"
+	
+	$bt.DelPerfil				= $pn.Controle.ToolButton()
+	$bt.DelPerfil.Size			= 160, 30
+	$bt.DelPerfil.Location		= $bt.AltePerfil.Right+30, 0
+	$bt.DelPerfil.font			= $System.font("Segeo UI", 11, 1)
+	$bt.DelPerfil.BorderStyle	= 0
+	$bt.DelPerfil.FlatStyle		= 0
+	$bt.DelPerfil.BackColor		= 33, 33, 33
+	$bt.DelPerfil.HotBackColor	= 80, 80, 80
+	$bt.DelPerfil.ForeColor		= "white"
+	$bt.DelPerfil.HotForeColor	= "white"
+	$bt.DelPerfil.Text			= "Deletar perfil"
+	$bt.DelPerfil.OnClick		=
+	"
+		if ($$grid.NomesCom.CurrentColumnIndex = -1)
+			exit 1
+		endif
+		if (msg('Atenção!', 'Você tem certeza de que quer deletar este perfil de comissão?', 4096 + 32 + 4 + 256) = 6)
+			for $$i=0 to ubound(tb_FindTextinSequenceData('dados-comissao.idcodigo', 'id-perfil', $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text, '=='))
+				tb_DeleteRow('dados-comissao', 'id-perfil', $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text)
+			next
+			tb_DeleteRow('perfil-comissao', 'idcodigo', $$grid.NomesCom.Cells($$grid.NomesCom.CurrentRowIndex, 0).Text)
+			tb_save2('perfil-comissao')
+			tb_save2('dados-comissao')
+			
+			$$grid.DadosCom.Rows.Count = 0
+			$$grid.NomesCom.Rows.RemoveAt($$grid.NomesCom.CurrentRowIndex)
+			$$=msg('Perfil excluído com sucesso!', 'O perfil foi excluído com sucesso!', 64 + 4096)
+		endif
+	"
+
+	$bt.CancePerfil					= $pn.Controle.ToolButton()
+	$bt.CancePerfil.Size			= 160, 30
+	$bt.CancePerfil.Location		= $bt.DelPerfil.Location
+	$bt.CancePerfil.font			= $System.font("Segeo UI", 11, 1)
+	$bt.CancePerfil.BorderStyle		= 0
+	$bt.CancePerfil.FlatStyle		= 0
+	$bt.CancePerfil.BackColor		= 33, 33, 33
+	$bt.CancePerfil.HotBackColor	= 80, 80, 80
+	$bt.CancePerfil.ForeColor		= "white"
+	$bt.CancePerfil.HotForeColor	= "white"
+	$bt.CancePerfil.Text			= "Cancelar"
+	$bt.CancePerfil.OnClick			=
+	"
+		Select
+			Case $$bt.NovoPerfil.Tag
+				$$grid.DadosCom.Rows.count		= 0
+				$$grid.NomesCom.Rows.count		= $$grid.NomesCom.Rows.count-1
+				$$grid.NomesCom.CurrentRowIndex	= $$grid.NomesCom.Rows.Count-1
+				$$bt.NovoPerfil.Tag = 2
+				$$=Execute($$bt.NovoPerfil.OnClick)
+
+			Case $$bt.AltePerfil.Tag
+				$$bt.AltePerfil.Tag = 2
+				$$=Execute($$bt.AltePerfil.OnClick)
+		Endselect
+		$$=Execute($$grid.NomesCom.OnClick)
+		$$=Execute($$grid.DadosCom.OnClick)
+	"
+
+	;;<DADOS DO NOMES DO PERFIL>
+		if (tb_CountRow('perfil-comissao') > 0)
+			$DATA = tb_getData("perfil-comissao.idcodigo", 'all')
+			$grid.NomesCom.Rows.Count = ubound($Data)+1
+			for $i=0 to tb_CountRow('perfil-comissao')-1
+				$grid.NomesCom.Cells($i, 0).Text = $Data[$i]
+				$grid.NomesCom.Cells($i, 1).Text = tb_getData("perfil-comissao.NOME-PERFIL",, "IDCODIGO", $Data[$i])
+			next
+		endif
+	;;</DADOS DO NOMES DO PERFIL>
+	$frm.Center()
+	; $frm.show()
+	$frm.showModal()
+	while $frm.Visible
+		$=Execute($frm.DoEvents())
+	loop
+endfunction

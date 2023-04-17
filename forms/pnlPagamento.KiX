@@ -1,0 +1,1130 @@
+global
+	$objPagamento
+function frmPagamento()
+	Dim
+		$DATA, $i
+	
+	;;<PAGAMENTO>
+	$objPagamento		 			= $System.Object()
+	$objPagamento.pn		 		= $System.Object()
+	$objPagamento.Contas_Pagar		= $System.Object()
+	$objPagamento.Lista_Pagar		= $System.Object()
+	
+	;;<ORGANIZA OS DADOS>
+		$objPagamento.task		 		= $System.Timer()
+		$objPagamento.task.Interval		= 100
+		$objPagamento.task.OnTick		= 'task_Calcula_pagamento()'
+	;;</ORGANIZA OS DADOS>
+	
+	$objPagamento.form					= $System.form($form)
+	$objPagamento.form.Text				= "Pagamento de funcionário"
+	$objPagamento.form.size				= 500, 650
+	$objPagamento.form.icon				= $form.Icon
+	$objPagamento.form.backcolor		= 51, 51, 51
+	$objPagamento.form.MaximizeBox		= 0
+	$objPagamento.form.MinimizeBox		= 0
+	$objPagamento.form.FormBorderStyle	= 1
+	$objPagamento.form.onClosing		= "$$objPagamento.task.Stop() $$objPagamento.form.Hide() $$objPagamento = ''"
+	$objPagamento.form.Center()
+	
+	$objPagamento.Table				= $objPagamento.form.TabControl()
+	$objPagamento.Table.Dock		= 5
+	$objPagamento.Table.Size		= $objPagamento.form.ClientSize
+	$objPagamento.Table.BackColor	= 35, 35, 35
+	$objPagamento.Table.ForeColor	= "white"
+	$objPagamento.Table.Appearance 	= "FlatButtons"
+	
+	;;<CONTAS A PAGAR>
+		/*	CONTAS A PAGAR	*/
+	$objPagamento.Contas_PagarTB				= $objPagamento.Table.TabPages.Add("Contas a pagar")
+	$objPagamento.Contas_Pagar					= $objPagamento.Contas_PagarTB.panel()
+	$objPagamento.Contas_Pagar.Size				= $objPagamento.Contas_PagarTB.ClientSize
+	$objPagamento.Contas_Pagar.BackColor		= 35, 35, 35
+	$objPagamento.Contas_Pagar.ForeColor		= "white"
+	$objPagamento.Contas_Pagar.Font				= $System.font("Segeo UI", 11.5)
+	$objPagamento.Contas_Pagar.lb				= $System.Object()
+	$objPagamento.Contas_Pagar.bt				= $System.Object()
+	$objPagamento.Contas_Pagar.cb				= $System.Object()
+	$objPagamento.Contas_Pagar.ck				= $System.Object()
+	$objPagamento.Contas_Pagar.gb				= $System.Object()
+	$objPagamento.Contas_Pagar.tx				= $System.Object()
+	
+		$objPagamento.Contas_Pagar.lb.func				= $objPagamento.Contas_Pagar.Label()
+		$objPagamento.Contas_Pagar.lb.func.width		= 170
+		$objPagamento.Contas_Pagar.lb.func.Text			= "Selecione o funcionário"
+	
+		$objPagamento.pn.objcb										= $objPagamento.Contas_Pagar.Panel()
+		$objPagamento.pn.objcb.size									= 216, 22
+		$objPagamento.pn.objcb.location								= $objPagamento.Contas_Pagar.lb.func.left, $objPagamento.Contas_Pagar.lb.func.bottom+2
+		$objPagamento.Contas_Pagar.cb.func							= $objPagamento.pn.objcb.ComboBox()
+		$objPagamento.Contas_Pagar.cb.func.size						= 220, 22
+		$objPagamento.Contas_Pagar.cb.func.location					= -2, -1
+		$objPagamento.Contas_Pagar.cb.func.OnSelectedIndexChanged	= "fPagamento_cb_func()"
+		$DATA = tb_GetData('funcionario.idcodigo', 'all')
+		for $i=0 to ubound($DATA)
+			$objPagamento.Contas_Pagar.cb.func.AddItem(
+				$DATA[$i]+" - "+tb_getdata('funcionario.Nome',, 'idcodigo', $DATA[$i]),
+				$i
+			)
+		next
+	
+		/*	DADOS DO FUNCIONÁRIO	*/
+		$objPagamento.Contas_Pagar.gb.func				= $objPagamento.Contas_Pagar.GroupBox()
+		$objPagamento.Contas_Pagar.gb.func.Anchor		= 4+8
+		$objPagamento.Contas_Pagar.gb.func.Text			= "Dados do funcionário"
+		$objPagamento.Contas_Pagar.gb.func.Location		= $objPagamento.Contas_Pagar.cb.func.left+2, $objPagamento.pn.objcb.Bottom+2
+		$objPagamento.Contas_Pagar.gb.func.size			= $objPagamento.form.ClientWidth-7, 175
+		$objPagamento.Contas_Pagar.gb.func.BackColor	= $objPagamento.Contas_Pagar.BackColor
+		$objPagamento.Contas_Pagar.gb.func.ForeColor	= $objPagamento.Contas_Pagar.ForeColor
+		
+		;;<NOME DO FUNCIONÁRIO>
+			$objPagamento.Contas_Pagar.lb.nomefunc				= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.nomefunc.width		= 145
+			$objPagamento.Contas_Pagar.lb.nomefunc.location		= 5, 18
+			$objPagamento.Contas_Pagar.lb.nomefunc.Text			= "Nome do funcionário"
+		
+			$objPagamento.Contas_Pagar.tx.nomefunc				= $objPagamento.Contas_Pagar.gb.func.TextBox()
+			$objPagamento.Contas_Pagar.tx.nomefunc.ReadOnly		= true
+			$objPagamento.Contas_Pagar.tx.nomefunc.BorderStyle	= 0
+			$objPagamento.Contas_Pagar.tx.nomefunc.BackColor	= $objPagamento.Contas_Pagar.gb.func.backcolor;51, 51, 51
+			$objPagamento.Contas_Pagar.tx.nomefunc.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.tx.nomefunc.size			= 220, 25
+			$objPagamento.Contas_Pagar.tx.nomefunc.fontsize		= 14
+			$objPagamento.Contas_Pagar.tx.nomefunc.location		= $objPagamento.Contas_Pagar.lb.nomefunc.left, $objPagamento.Contas_Pagar.lb.nomefunc.bottom
+		;;</NOME DO FUNCIONÁRIO>
+		
+		;;<TIPO DO PAGAMENTO>
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc			= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc.size		= 210, 20
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc.location	= $objPagamento.Contas_Pagar.tx.nomefunc.right+30, $objPagamento.Contas_Pagar.lb.nomefunc.top
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc.Text		= "Tipo de pagamento"
+			
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc1			= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc1.size		= 210, 20
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc1.fontbold	= true
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc1.location	= $objPagamento.Contas_Pagar.lb.TipoPagfunc.left, $objPagamento.Contas_Pagar.lb.TipoPagfunc.bottom+2
+			$objPagamento.Contas_Pagar.lb.TipoPagfunc1.Text		= "Valor fixo"
+		;;</TIPO DO PAGAMENTO>
+		
+		;;<SALÁRIO>
+			$objPagamento.Contas_Pagar.lb.SalarioFunc			= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.SalarioFunc.size		= 220, 20
+			$objPagamento.Contas_Pagar.lb.SalarioFunc.location	= $objPagamento.Contas_Pagar.tx.nomefunc.right+30, $objPagamento.Contas_Pagar.lb.nomefunc.top
+			$objPagamento.Contas_Pagar.lb.SalarioFunc.Text		= "Salário do funcionário"
+			$objPagamento.Contas_Pagar.lb.SalarioFunc.location	= $objPagamento.Contas_Pagar.tx.nomefunc.left, $objPagamento.Contas_Pagar.tx.nomefunc.bottom+5
+		
+			$objPagamento.Contas_Pagar.lb.SalarioFunc1			= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.SalarioFunc1.size		= 210, 20
+			$objPagamento.Contas_Pagar.lb.SalarioFunc1.fontbold	= true
+			$objPagamento.Contas_Pagar.lb.SalarioFunc1.ForeColor= 0, 128, 0
+			$objPagamento.Contas_Pagar.lb.SalarioFunc1.Text		= "R$ 200,00"
+			$objPagamento.Contas_Pagar.lb.SalarioFunc1.location	= $objPagamento.Contas_Pagar.lb.SalarioFunc.left, $objPagamento.Contas_Pagar.lb.SalarioFunc.bottom+2
+		;;</SALÁRIO>
+		
+		;;<TIPO DO FUNCIONÁRIO>
+			$objPagamento.Contas_Pagar.lb.Tipofunc				= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.Tipofunc.size			= 220, 20
+			$objPagamento.Contas_Pagar.lb.Tipofunc.location		= $objPagamento.Contas_Pagar.lb.SalarioFunc.right+30, $objPagamento.Contas_Pagar.lb.SalarioFunc.top
+			$objPagamento.Contas_Pagar.lb.Tipofunc.Text			= "Tipo do funcionário"
+			
+			$objPagamento.Contas_Pagar.lb.Tipofunc1				= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.Tipofunc1.size		= 210, 20
+			$objPagamento.Contas_Pagar.lb.Tipofunc1.fontbold	= true
+			$objPagamento.Contas_Pagar.lb.Tipofunc1.location	= $objPagamento.Contas_Pagar.lb.Tipofunc.left, $objPagamento.Contas_Pagar.lb.SalarioFunc1.top
+			$objPagamento.Contas_Pagar.lb.Tipofunc1.Text		= "Não Professor"
+		;;</TIPO DO FUNCIONÁRIO>
+		
+		;;<TIPO DA COMISSÃO>
+			$objPagamento.Contas_Pagar.lb.TipoComissao			= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.TipoComissao.size		= 220, 20
+			$objPagamento.Contas_Pagar.lb.TipoComissao.location	= $objPagamento.Contas_Pagar.lb.SalarioFunc1.left, $objPagamento.Contas_Pagar.lb.SalarioFunc1.Bottom+5
+			$objPagamento.Contas_Pagar.lb.TipoComissao.Text		= "Tipo da comissão"
+			
+			$objPagamento.Contas_Pagar.lb.TipoComissao1			= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.TipoComissao1.size	= 210, 20
+			$objPagamento.Contas_Pagar.lb.TipoComissao1.fontbold= true
+			$objPagamento.Contas_Pagar.lb.TipoComissao1.location= $objPagamento.Contas_Pagar.lb.TipoComissao.left, $objPagamento.Contas_Pagar.lb.TipoComissao.bottom+3
+			$objPagamento.Contas_Pagar.lb.TipoComissao1.Text	= "1 - Comissão Alta"
+		;;</TIPO DA COMISSÃO>
+		
+		;;<HORAS TRABALHADAS>
+			$objPagamento.Contas_Pagar.lb.HorasTrabalha				= $objPagamento.Contas_Pagar.gb.func.Label()
+			$objPagamento.Contas_Pagar.lb.HorasTrabalha.size		= 220, 20
+			$objPagamento.Contas_Pagar.lb.HorasTrabalha.location	= $objPagamento.Contas_Pagar.lb.TipoComissao.right+30, $objPagamento.Contas_Pagar.lb.TipoComissao.top
+			$objPagamento.Contas_Pagar.lb.HorasTrabalha.Text		= "Horas Trabalhadas"
+			
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1			= $objPagamento.Contas_Pagar.gb.func.MaskedTextBox()
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.ReadOnly	= true
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.BorderStyle= 0
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.BackColor	= 51, 51, 51
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.size		= 150, 25
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.fontsize	= 14
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.Mask		= "00 Hrs"
+			$objPagamento.Contas_Pagar.tx.HorasTrabalha1.location	= $objPagamento.Contas_Pagar.lb.HorasTrabalha.left, $objPagamento.Contas_Pagar.lb.HorasTrabalha.bottom
+		;;</HORAS TRABALHADAS>
+		
+		/*	DADOS DO DO PAGAMENTO	*/
+		$objPagamento.Contas_Pagar.gb.comissao				= $objPagamento.Contas_Pagar.GroupBox()
+		$objPagamento.Contas_Pagar.gb.comissao.Anchor		= 1+4+8
+		$objPagamento.Contas_Pagar.gb.comissao.Text			= "Dados da comissão"
+		$objPagamento.Contas_Pagar.gb.comissao.Location		= $objPagamento.Contas_Pagar.gb.func.left, $objPagamento.Contas_Pagar.gb.func.bottom+2
+		$objPagamento.Contas_Pagar.gb.comissao.size			= $objPagamento.Contas_Pagar.gb.func.width, 120
+		$objPagamento.Contas_Pagar.gb.comissao.BackColor	= $objPagamento.Contas_Pagar.BackColor
+		$objPagamento.Contas_Pagar.gb.comissao.ForeColor	= $objPagamento.Contas_Pagar.ForeColor
+		
+		;;<NÃO PAGO HOJE TODA COMISSÃO>
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao			= $objPagamento.Contas_Pagar.gb.comissao.CheckBox()
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.size		= 220, 20
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.location	= 5, 25
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.Text		= "Não irei pagar toda comissão."
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.OnClick	=
+			'
+				$$objPagamento.Contas_Pagar.lb.ValorComissao1.Enabled		= $$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.Checked
+				$$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.Enabled	= $$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.Checked
+				$$objPagamento.Contas_Pagar.tx.ValorPagComissao1.ReadOnly	= not $$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.Checked
+
+				if ($$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.Checked = -1)
+					$$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Tag	= 0.0
+					$$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Text	= "0,00"
+				else
+					$$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Tag	= $$objPagamento.Contas_Pagar.lb.ValorComissao1.Tag
+					$$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Text	= $$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Tag
+				endif
+			'
+		;;</NÃO PAGO HOJE TODA COMISSÃO>
+		
+		;;<VALOR DA COMISSÃO>
+			$objPagamento.Contas_Pagar.lb.ValorComissao				= $objPagamento.Contas_Pagar.gb.comissao.Label()
+			$objPagamento.Contas_Pagar.lb.ValorComissao.size		= 220, 20
+			$objPagamento.Contas_Pagar.lb.ValorComissao.location	= $objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.Right+35, $objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.top
+			$objPagamento.Contas_Pagar.lb.ValorComissao.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.lb.ValorComissao.Text		= "Total da comissão"
+			
+			$objPagamento.Contas_Pagar.lb.ValorComissao1			= $objPagamento.Contas_Pagar.gb.comissao.Controls.Label()
+			$objPagamento.Contas_Pagar.lb.ValorComissao1.Name		= "ValorComissao"
+			$objPagamento.Contas_Pagar.lb.ValorComissao1.size		= 220, 20
+			$objPagamento.Contas_Pagar.lb.ValorComissao1.Enabled	= false
+			$objPagamento.Contas_Pagar.lb.ValorComissao1.location	= $objPagamento.Contas_Pagar.lb.ValorComissao.left, $objPagamento.Contas_Pagar.lb.ValorComissao.bottom+2
+			$objPagamento.Contas_Pagar.lb.ValorComissao1.FontBold	= true
+			$objPagamento.Contas_Pagar.lb.ValorComissao1.ForeColor	= 0, 128, 0
+			$objPagamento.Contas_Pagar.lb.ValorComissao1.Text		= "R$ 0,00"
+		;;</VALOR DA COMISSÃO>
+		
+		;;<VALOR PAGO DA COMISSÃO>
+			$objPagamento.Contas_Pagar.lb.ValorPagComissao				= $objPagamento.Contas_Pagar.gb.comissao.Label()
+			$objPagamento.Contas_Pagar.lb.ValorPagComissao.size			= 220, 20
+			$objPagamento.Contas_Pagar.lb.ValorPagComissao.location		= 5, $objPagamento.Contas_Pagar.lb.ValorComissao1.Bottom+2
+			$objPagamento.Contas_Pagar.lb.ValorPagComissao.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.lb.ValorPagComissao.Text			= "Quanto será pago de comissão"
+
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1				= $objPagamento.Contas_Pagar.gb.comissao.TextBox()
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.ReadOnly	= false
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.location	= 5, $objPagamento.Contas_Pagar.lb.ValorPagComissao.Bottom
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Font		= $System.font("Segeo UI", 11.5, true)
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.BorderStyle	= 0
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.size		= 150, 20
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.BackColor	= 51, 51, 51
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.ForeColor	= 0, 128, 0
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Text		= "0,00"
+			$objPagamento.Contas_Pagar.tx.ValorPagComissao1.OnTextChanged=
+			'
+				$$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.tag		= Cdbl($$objPagamento.Contas_Pagar.lb.ValorComissao1.tag)-Cdbl($$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Text)
+				$$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.text		=
+					Flip_Currency(FormatNumber(
+						$$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.tag,
+						2
+					))
+			'
+		;;</VALOR PAGO DA COMISSÃO>
+		
+		;;<VALOR FALTANTE DA COMISSÃO>
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao				= $objPagamento.Contas_Pagar.gb.comissao.Label()
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao.size		= 220, 20
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao.location	= $objPagamento.Contas_Pagar.lb.ValorPagComissao.Right+35, $objPagamento.Contas_Pagar.lb.ValorPagComissao.Top
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao.Text		= "Valor faltante da comissão"
+			
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao1			= $objPagamento.Contas_Pagar.gb.comissao.Label()
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.Enabled	= false
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.size		= 220, 20
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.location	= $objPagamento.Contas_Pagar.lb.ValorFaltComissao.Left, $objPagamento.Contas_Pagar.lb.ValorFaltComissao.Bottom
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.ForeColor	= 0, 128, 0
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.Font		= $System.font("Segeo UI", 11.5, true)
+			$objPagamento.Contas_Pagar.lb.ValorFaltComissao1.Text		= "R$ 0,00"
+		;;</VALOR FALTANTE DA COMISSÃO>
+		
+		/*	DADOS DO SALÁRIO	*/
+		$objPagamento.Contas_Pagar.gb.Salario				= $objPagamento.Contas_Pagar.GroupBox()
+		$objPagamento.Contas_Pagar.gb.Salario.Anchor		= 1+4+8
+		$objPagamento.Contas_Pagar.gb.Salario.Text			= "Dados do salário"
+		$objPagamento.Contas_Pagar.gb.Salario.Location		= $objPagamento.Contas_Pagar.gb.comissao.left, $objPagamento.Contas_Pagar.gb.comissao.bottom+2
+		$objPagamento.Contas_Pagar.gb.Salario.size			= $objPagamento.Contas_Pagar.gb.func.width, 125
+		$objPagamento.Contas_Pagar.gb.Salario.BackColor		= $objPagamento.Contas_Pagar.BackColor
+		$objPagamento.Contas_Pagar.gb.Salario.ForeColor		= $objPagamento.Contas_Pagar.ForeColor
+	
+		;;<NÃO PAGO HOJE TODA COMISSÃO>
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario			= $objPagamento.Contas_Pagar.gb.Salario.CheckBox()
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.size		= 220, 20
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.location	= 5, 25
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.Text		= "Não irei pagar todo salário."
+			$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.OnClick	=
+			'
+				$$objPagamento.Contas_Pagar.lb._TotalSalario1.Enabled	= $$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.Checked
+				$$objPagamento.Contas_Pagar.lb.ValFaltSalario1.Enabled	= $$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.Checked
+				$$objPagamento.Contas_Pagar.tx.ValorSalario.ReadOnly	= not $$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.Checked
+
+				if ($$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.Checked = -1)
+					$$objPagamento.Contas_Pagar.tx.ValorSalario.tag		= 0.0
+					$$objPagamento.Contas_Pagar.tx.ValorSalario.text	= "0,00"
+				else
+					$$objPagamento.Contas_Pagar.tx.ValorSalario.tag		= $$objPagamento.Contas_Pagar.lb._TotalSalario1.tag
+					$$objPagamento.Contas_Pagar.tx.ValorSalario.text	= $$objPagamento.Contas_Pagar.tx.ValorSalario.tag
+				endif
+			'
+		;;</NÃO PAGO HOJE TODA COMISSÃO>
+		
+		;;<VALOR DO SALÁRIO>
+			$objPagamento.Contas_Pagar.lb._TotalSalario					= $objPagamento.Contas_Pagar.gb.Salario.Label()
+			$objPagamento.Contas_Pagar.lb._TotalSalario.size			= 220, 20
+			$objPagamento.Contas_Pagar.lb._TotalSalario.location		= $objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.right+35, $objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.top
+			$objPagamento.Contas_Pagar.lb._TotalSalario.ForeColor		= "white"
+			$objPagamento.Contas_Pagar.lb._TotalSalario.Text			= "Total do salário"
+			
+			$objPagamento.Contas_Pagar.lb._TotalSalario1				= $objPagamento.Contas_Pagar.gb.Salario.Label()
+			$objPagamento.Contas_Pagar.lb._TotalSalario1.location		= $objPagamento.Contas_Pagar.lb._TotalSalario.left, $objPagamento.Contas_Pagar.lb._TotalSalario.bottom+2
+			$objPagamento.Contas_Pagar.lb._TotalSalario1.ForeColor		= 0, 128, 0
+			$objPagamento.Contas_Pagar.lb._TotalSalario1.tag			= 0.0
+			$objPagamento.Contas_Pagar.lb._TotalSalario1.Text			= "R$ 0,00"
+			$objPagamento.Contas_Pagar.lb._TotalSalario1.size			= 150, 20
+			$objPagamento.Contas_Pagar.lb._TotalSalario1.FontBold		= true
+			$objPagamento.Contas_Pagar.lb._TotalSalario1.Enabled		= false
+		;;</VALOR DO SALÁRIO>
+		
+		;;<VALOR PAGO DO SALÁRIO>
+			$objPagamento.Contas_Pagar.lb.ValorSalario				= $objPagamento.Contas_Pagar.gb.Salario.Label()
+			$objPagamento.Contas_Pagar.lb.ValorSalario.size			= 220, 20
+			$objPagamento.Contas_Pagar.lb.ValorSalario.location		= $objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.left, $objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.bottom+25
+			$objPagamento.Contas_Pagar.lb.ValorSalario.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.lb.ValorSalario.Text			= "Quanto será pago do salário"
+			
+			$objPagamento.Contas_Pagar.tx.ValorSalario				= $objPagamento.Contas_Pagar.gb.Salario.TextBox()
+			$objPagamento.Contas_Pagar.tx.ValorSalario.location		= $objPagamento.Contas_Pagar.lb.ValorSalario.left, $objPagamento.Contas_Pagar.lb.ValorSalario.bottom+2
+			$objPagamento.Contas_Pagar.tx.ValorSalario.ForeColor	= 0, 128, 0
+			$objPagamento.Contas_Pagar.tx.ValorSalario.BackColor	= 51, 51, 51
+			$objPagamento.Contas_Pagar.tx.ValorSalario.BorderStyle	= 0
+			$objPagamento.Contas_Pagar.tx.ValorSalario.Text			= "0,00"
+			$objPagamento.Contas_Pagar.tx.ValorSalario.size			= 150, 20
+			$objPagamento.Contas_Pagar.tx.ValorSalario.FontBold		= true
+			$objPagamento.Contas_Pagar.tx.ValorSalario.ReadOnly		= true
+			$objPagamento.Contas_Pagar.tx.ValorSalario.OnTextChanged=
+			'
+				$$objPagamento.Contas_Pagar.lb.ValFaltSalario1.tag		= Cdbl($$objPagamento.Contas_Pagar.lb._TotalSalario1.tag)-Cdbl($$objPagamento.Contas_Pagar.tx.ValorSalario.Text)
+				$$objPagamento.Contas_Pagar.lb.ValFaltSalario1.text		=
+					Flip_Currency(FormatNumber(
+						$$objPagamento.Contas_Pagar.lb.ValFaltSalario1.tag,
+						2
+					))
+			'
+		;;</VALOR PAGO DO SALÁRIO>
+		
+		;;<VALOR FALTANTE DO SALÁRIO>
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario				= $objPagamento.Contas_Pagar.gb.Salario.Label()
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario.size			= 220, 20
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario.location		= $objPagamento.Contas_Pagar.lb.ValorSalario.right+35, $objPagamento.Contas_Pagar.lb.ValorSalario.top
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario.ForeColor		= "white"
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario.Text			= "Valor faltante do salário"
+			
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1				= $objPagamento.Contas_Pagar.gb.Salario.Label()
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1.location		= $objPagamento.Contas_Pagar.lb.ValFaltSalario.left, $objPagamento.Contas_Pagar.lb.ValFaltSalario.bottom+2
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1.ForeColor		= 0, 128, 0
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1.tag			= 0.0
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1.Text			= "R$ 0,00"
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1.size			= 150, 20
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1.FontBold		= true
+			$objPagamento.Contas_Pagar.lb.ValFaltSalario1.Enabled		= false
+		;;</VALOR FALTANTE DO SALÁRIO>
+		
+		/*	DADOS DO FECHAMENTO	*/
+		$objPagamento.Contas_Pagar.gb.Paga					= $objPagamento.Contas_Pagar.GroupBox()
+		$objPagamento.Contas_Pagar.gb.Paga.Anchor			= 1+4+8
+		$objPagamento.Contas_Pagar.gb.Paga.Text				= "Dados do pagamento"
+		$objPagamento.Contas_Pagar.gb.Paga.Location			= $objPagamento.Contas_Pagar.gb.Salario.left, $objPagamento.Contas_Pagar.gb.Salario.bottom+2
+		$objPagamento.Contas_Pagar.gb.Paga.size				= $objPagamento.Contas_Pagar.gb.func.width, 115
+		$objPagamento.Contas_Pagar.gb.Paga.BackColor		= $objPagamento.Contas_Pagar.BackColor
+		$objPagamento.Contas_Pagar.gb.Paga.ForeColor		= $objPagamento.Contas_Pagar.ForeColor
+		
+		;;<VALORES>
+			$objPagamento.Contas_Pagar.lb.TotalSalario				= $objPagamento.Contas_Pagar.gb.Paga.Label()
+			$objPagamento.Contas_Pagar.lb.TotalSalario.size			= 320, 18
+			$objPagamento.Contas_Pagar.lb.TotalSalario.location		= 5, 15
+			$objPagamento.Contas_Pagar.lb.TotalSalario.Font			= $System.font("Consolas", 11, 1)
+			$objPagamento.Contas_Pagar.lb.TotalSalario.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.lb.TotalSalario.fText		= "Total do salário	: {}"
+			$objPagamento.Contas_Pagar.lb.TotalSalario.Text			= "Total do salário	: R$ 0,00"
+			
+			$objPagamento.Contas_Pagar.lb.TotalComissoes			= $objPagamento.Contas_Pagar.gb.Paga.Label()
+			$objPagamento.Contas_Pagar.lb.TotalComissoes.size		= 320, 18
+			$objPagamento.Contas_Pagar.lb.TotalComissoes.location	= $objPagamento.Contas_Pagar.lb.TotalSalario.left, $objPagamento.Contas_Pagar.lb.TotalSalario.bottom
+			$objPagamento.Contas_Pagar.lb.TotalComissoes.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.lb.TotalComissoes.Font		= $System.font("Consolas", 11, 1)
+			$objPagamento.Contas_Pagar.lb.TotalComissoes.fText		= "Total das comissões	: {}"
+			$objPagamento.Contas_Pagar.lb.TotalComissoes.Text		= "Total das comissões	: R$ 0,00"
+			
+			$objPagamento.Contas_Pagar.lb.TotalFalta				= $objPagamento.Contas_Pagar.gb.Paga.Label()
+			$objPagamento.Contas_Pagar.lb.TotalFalta.size			= 320, 18
+			$objPagamento.Contas_Pagar.lb.TotalFalta.location		= $objPagamento.Contas_Pagar.lb.TotalComissoes.left, $objPagamento.Contas_Pagar.lb.TotalComissoes.bottom
+			$objPagamento.Contas_Pagar.lb.TotalFalta.ForeColor		= "white"
+			$objPagamento.Contas_Pagar.lb.TotalFalta.Font			= $System.font("Consolas", 11, 1)
+			$objPagamento.Contas_Pagar.lb.TotalFalta.fText			= "Total faltante		: {}"
+			$objPagamento.Contas_Pagar.lb.TotalFalta.Text			= "Total faltante		: R$ 0,00"
+			
+			$objPagamento.Contas_Pagar.lb.Total_SerPago				= $objPagamento.Contas_Pagar.gb.Paga.Label()
+			$objPagamento.Contas_Pagar.lb.Total_SerPago.size		= 320, 18
+			$objPagamento.Contas_Pagar.lb.Total_SerPago.location	= $objPagamento.Contas_Pagar.lb.TotalFalta.left, $objPagamento.Contas_Pagar.lb.TotalFalta.bottom
+			$objPagamento.Contas_Pagar.lb.Total_SerPago.ForeColor	= "white"
+			$objPagamento.Contas_Pagar.lb.Total_SerPago.Font		= $System.font("Consolas", 11, 1)
+			$objPagamento.Contas_Pagar.lb.Total_SerPago.fText		= "Total a ser pago	: {}"
+			$objPagamento.Contas_Pagar.lb.Total_SerPago.Text		= "Total a ser pago	: R$ 0,00"
+			
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento				= $objPagamento.Contas_Pagar.gb.Paga.ToolButton()
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.BorderStyle	= 0
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.FlatStyle		= 0
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.BackColor		= 51, 51, 51
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.HotBackColor	= 0, 185, 0
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.ForeColor		= 0, 185, 0
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.HotForeColor	= 51, 51, 51
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.Location		= $objPagamento.Contas_Pagar.lb.Total_SerPago.Left, $objPagamento.Contas_Pagar.lb.Total_SerPago.Bottom
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.size			= $objPagamento.Contas_Pagar.gb.paga.ClientWidth-10, 25
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.font			= $System.font("Segeo UI", 13, 1)
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.text			= "Confirmar pagamento"
+			$objPagamento.Contas_Pagar.bt.ConfirmarPagamento.OnClick		= "Confirmar_pagamento()"
+		;;</VALORES>
+	;;</CONTAS A PAGAR>
+	;;<PAGAMENTO>
+
+
+
+
+
+	;;<LISTAS DE CONTAS PAGAS>
+		$objPagamento.Lista_PagarTB					= $objPagamento.Table.TabPages.Add("Listar pagamentos")
+		$objPagamento.Lista_Pagar					= $objPagamento.Lista_PagarTB.panel()
+		$objPagamento.Lista_Pagar.Size				= $objPagamento.Lista_PagarTB.ClientSize
+		$objPagamento.Lista_Pagar.BackColor			= 35, 35, 35
+		$objPagamento.Lista_Pagar.ForeColor			= "white"
+		$objPagamento.Lista_Pagar.Font				= $System.font("Segeo UI", 11.5)
+		$objPagamento.Lista_Pagar.Font				= $System.font("Segeo UI", 11.5)
+		$objPagamento.Lista_Pagar.lb				= $System.Object()
+		$objPagamento.Lista_Pagar.ck				= $System.Object()
+		$objPagamento.Lista_Pagar.tx				= $System.Object()
+		$objPagamento.Lista_Pagar.bt				= $System.Object()
+		$objPagamento.Lista_Pagar.cb				= $System.Object()
+		$objPagamento.Lista_Pagar.gb				= $System.Object()
+		$objPagamento.Lista_Pagar.pn				= $System.Object()
+		$objPagamento.Lista_Pagar.grid				= $System.Object()
+		
+		$objPagamento.Lista_Pagar.lb.func							= $objPagamento.Lista_Pagar.Label()
+		$objPagamento.Lista_Pagar.lb.func.width						= 170
+		$objPagamento.Lista_Pagar.lb.func.top						= 5
+		$objPagamento.Lista_Pagar.lb.func.Text						= "Selecione o funcionário"
+
+		$objPagamento.pn.objcb3										= $objPagamento.Lista_Pagar.Panel()
+		$objPagamento.pn.objcb3.size								= 216, 22
+		$objPagamento.pn.objcb3.location							= 5, $objPagamento.Lista_Pagar.lb.func.bottom+2
+		$objPagamento.Lista_Pagar.cb.func							= $objPagamento.pn.objcb3.ComboBox()
+		$objPagamento.Lista_Pagar.cb.func.size						= 220, 22
+		$objPagamento.Lista_Pagar.cb.func.location					= -2, -1
+		$DATA = tb_GetData('funcionario.idcodigo', 'all')
+		for $i=0 to ubound($DATA)
+			$objPagamento.Lista_Pagar.cb.func.AddItem(
+				$DATA[$i]+" - "+tb_getdata('funcionario.Nome',, 'idcodigo', $DATA[$i]),
+				$i
+			)
+		next
+		
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo				= $objPagamento.Lista_Pagar.CheckBox()
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo.size			= 13, 14
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo.Cursor	 	= 16
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo.Checked		= -1
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo.FlatStyle 	= 0
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo.ToolTipText	= "(De)Seleciona a busca por@crlfperiodo de pagamento."
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo.Location		= $objPagamento.Lista_Pagar.Right-$objPagamento.Lista_Pagar.ck.BuscaPeriodo.Width-3, $objPagamento.Lista_Pagar.lb.func.top
+		$objPagamento.Lista_Pagar.ck.BuscaPeriodo.OnClick		= "$$objPagamento.Lista_Pagar.gb.datas.Enabled = $$objPagamento.Lista_Pagar.ck.BuscaPeriodo.Checked"
+
+		$objPagamento.Lista_Pagar.gb.datas					= $objPagamento.Lista_Pagar.GroupBox()
+		$objPagamento.Lista_Pagar.gb.datas.BorderStyle		= 1
+		$objPagamento.Lista_Pagar.gb.datas.ForeColor		= 5, 149, 235
+		$objPagamento.Lista_Pagar.gb.datas.Enabled			= $objPagamento.Lista_Pagar.ck.BuscaPeriodo.Checked
+		$objPagamento.Lista_Pagar.gb.datas.text				= "Datas"
+		$objPagamento.Lista_Pagar.gb.datas.size				= 255, 65
+		$objPagamento.Lista_Pagar.gb.datas.location			= $objPagamento.pn.objcb3.Right+5, $objPagamento.Lista_Pagar.lb.func.top-5
+		;;<DATA DE>
+			$objPagamento.Lista_Pagar.lb.de					= $objPagamento.Lista_Pagar.gb.datas.Label()
+			$objPagamento.Lista_Pagar.lb.de.ForeColor		= "white"
+			$objPagamento.Lista_Pagar.lb.de.text			= "De..."
+			$objPagamento.Lista_Pagar.lb.de.location		= 5, 15
+			$objPagamento.Lista_Pagar.lb.de.size			= 60, 20
+			$objPagamento.Lista_Pagar.lb.de.font			= $System.font("Consolas", 11, 1)
+			
+			$objPagamento.Lista_Pagar.tx.de					= $objPagamento.Lista_Pagar.gb.datas.MaskedTextBox()
+			$objPagamento.Lista_Pagar.tx.de.size			= 110, 20
+			$objPagamento.Lista_Pagar.tx.de.BorderStyle		= false
+			$objPagamento.Lista_Pagar.tx.de.location		= $objPagamento.Lista_Pagar.lb.de.left, $objPagamento.Lista_Pagar.lb.de.bottom
+			$objPagamento.Lista_Pagar.tx.de.Mask			= "00/00/0000"
+			$objPagamento.Lista_Pagar.tx.de.text			= replace(CurrentDate(), '/', '')
+			$objPagamento.Lista_Pagar.tx.de.forecolor		= "white"
+			$objPagamento.Lista_Pagar.tx.de.backcolor		= 51, 51, 51
+		;;</DATA DE>
+		;;<DATA ATÉ>
+			$objPagamento.Lista_Pagar.lb.ate				= $objPagamento.Lista_Pagar.gb.datas.Label()
+			$objPagamento.Lista_Pagar.lb.ate.ForeColor		= "white"
+			$objPagamento.Lista_Pagar.lb.ate.text			= "Até..."
+			$objPagamento.Lista_Pagar.lb.ate.location		= $objPagamento.Lista_Pagar.lb.de.right+65, 15
+			$objPagamento.Lista_Pagar.lb.ate.size			= 60, 20
+			$objPagamento.Lista_Pagar.lb.ate.font			= $System.font("Consolas", 11, 1)
+			
+			$objPagamento.Lista_Pagar.tx.ate				= $objPagamento.Lista_Pagar.gb.datas.MaskedTextBox()
+			$objPagamento.Lista_Pagar.tx.ate.size			= 110, 20
+			$objPagamento.Lista_Pagar.tx.ate.BorderStyle	= false
+			$objPagamento.Lista_Pagar.tx.ate.location		= $objPagamento.Lista_Pagar.lb.ate.left, $objPagamento.Lista_Pagar.lb.ate.bottom
+			$objPagamento.Lista_Pagar.tx.ate.Mask			= "00/00/0000"
+			$objPagamento.Lista_Pagar.tx.ate.text			= replace(CurrentDate(), '/', '')
+			$objPagamento.Lista_Pagar.tx.ate.forecolor		= "white"
+			$objPagamento.Lista_Pagar.tx.ate.backcolor		= 51, 51, 51
+		;;</DATA ATÉ>
+		;;<GRIDVIEW>
+			$objPagamento.Lista_Pagar.bt.buscar					= $objPagamento.Lista_Pagar.ToolButton()
+			$objPagamento.Lista_Pagar.bt.buscar.Location		= $objPagamento.pn.objcb3.left, $objPagamento.Lista_Pagar.gb.datas.bottom+5
+			$objPagamento.Lista_Pagar.bt.buscar.BorderStyle		= 0
+			$objPagamento.Lista_Pagar.bt.buscar.FlatStyle		= 0
+			$objPagamento.Lista_Pagar.bt.buscar.size			= $objPagamento.Lista_Pagar.ClientWidth-10, 27
+			$objPagamento.Lista_Pagar.bt.buscar.BackColor		= 51, 51, 51
+			$objPagamento.Lista_Pagar.bt.buscar.HotBackColor	= 247, 164, 72
+			$objPagamento.Lista_Pagar.bt.buscar.ForeColor		= 247, 164, 72
+			$objPagamento.Lista_Pagar.bt.buscar.HotForeColor	= 51, 51, 51
+			$objPagamento.Lista_Pagar.bt.buscar.Cursor			= 16
+			$objPagamento.Lista_Pagar.bt.buscar.font			= $System.font("consolas", 13, 1)
+			$objPagamento.Lista_Pagar.bt.buscar.Text			= "Buscar"
+			$objPagamento.Lista_Pagar.bt.buscar.OnClick			= "Buscar_Pagamento()"
+
+			$objPagamento.Lista_Pagar.lb.TitleGrid				= $objPagamento.Lista_Pagar.Label()
+			$objPagamento.Lista_Pagar.lb.TitleGrid.Location		= $objPagamento.Lista_Pagar.bt.buscar.left, $objPagamento.Lista_Pagar.bt.buscar.bottom
+			$objPagamento.Lista_Pagar.lb.TitleGrid.size			= $objPagamento.Lista_Pagar.ClientWidth-10, 20
+			$objPagamento.Lista_Pagar.lb.TitleGrid.BackColor	= "black"
+			$objPagamento.Lista_Pagar.lb.TitleGrid.ForeColor	= "white"
+			$objPagamento.Lista_Pagar.lb.TitleGrid.FontBold		= 1
+			$objPagamento.Lista_Pagar.lb.TitleGrid.Text			= "Lista de pagamentos da data selecionada"
+			;;<GridView>
+				$objPagamento.Lista_Pagar.grid							= $objPagamento.Lista_Pagar.GridView()
+				$objPagamento.Lista_Pagar.grid.Anchor					= 1 + 2 + 4
+				$objPagamento.Lista_Pagar.grid.BorderStyle				= 0
+				$objPagamento.Lista_Pagar.grid.ReadOnly					= 1
+				$objPagamento.Lista_Pagar.grid.FullRowSelect			= 1
+				$objPagamento.Lista_Pagar.grid.ScrollBars				= 2
+				$objPagamento.Lista_Pagar.grid.Location					= $objPagamento.Lista_Pagar.lb.TitleGrid.left, $objPagamento.Lista_Pagar.lb.TitleGrid.Bottom+2
+				$objPagamento.Lista_Pagar.grid.Fontsize					= 15
+				$objPagamento.Lista_Pagar.grid.SelectionForeColor		= 0,0,0
+				$objPagamento.Lista_Pagar.grid.size						= $objPagamento.Lista_Pagar.lb.TitleGrid.Width, 322
+				$objPagamento.Lista_Pagar.grid.HeaderStyle				= 1
+				$objPagamento.Lista_Pagar.grid.AlternatingBackColor		= &0F7EBE7
+				$objPagamento.Lista_Pagar.grid.SelectionBackColor		= 169,178,202
+				$objPagamento.Lista_Pagar.grid.BackColor				= "White";"GhostWhite"
+				$objPagamento.Lista_Pagar.grid.GridLineColor			= &E7BE94 ;"RoyalBlue"
+				$objPagamento.Lista_Pagar.grid.ForeColor				= "Black" ;"MidnightBlue"
+				$objPagamento.Lista_Pagar.grid.Font						= $System.Font("Segeo UI", 10)
+				$objPagamento.Lista_Pagar.grid.OnClick					= "ListarDados_Pagamento()"
+				
+				for each $i in tb_getField('pagamento-salario')
+					$=$objPagamento.Lista_Pagar.grid.Columns.add($i)
+					select
+						case ($objPagamento.Lista_Pagar.grid.columns.count = 1)
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Text = "ID"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Width = 45
+						case ($objPagamento.Lista_Pagar.grid.columns.count = 2)
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Text	 = 'FUNCIONARIO'
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Width = 110
+						case ($objPagamento.Lista_Pagar.grid.columns.count = 3)
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Text		 = "PAGO"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).ValueType = "currency"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).format	 = "R$ 0.00"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Width	 = 90
+						case ($objPagamento.Lista_Pagar.grid.columns.count = 4)
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Text		 = "FALTANTE"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).ValueType = "currency"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).format	 = "R$ 0.00"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Width	 = 90
+						case ($objPagamento.Lista_Pagar.grid.columns.count = 5)
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Text		 = "DATA PAGAMENTO"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).ValueType = "DATETIME"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).format	 = "00/00/0000"
+							$objPagamento.Lista_Pagar.grid.Columns($objPagamento.Lista_Pagar.grid.columns.count-1).Width	 = 140
+					endselect
+				next
+				$objPagamento.Lista_Pagar.grid.Columns.count = 5
+			;;</GridView>
+			$objPagamento.Lista_Pagar.lb.FoterGrid				= $objPagamento.Lista_Pagar.Label()
+			$objPagamento.Lista_Pagar.lb.FoterGrid.Location		= $objPagamento.Lista_Pagar.grid.left, $objPagamento.Lista_Pagar.grid.bottom+2
+			$objPagamento.Lista_Pagar.lb.FoterGrid.size			= $objPagamento.Lista_Pagar.grid.width, 20
+			$objPagamento.Lista_Pagar.lb.FoterGrid.BackColor	= "black"
+			$objPagamento.Lista_Pagar.lb.FoterGrid.ForeColor	= "white"
+			$objPagamento.Lista_Pagar.lb.FoterGrid.fText		= "Valor total : {}"
+			$objPagamento.Lista_Pagar.lb.FoterGrid.Text			= "Valor total :"
+		;;</GRIDVIEW>
+		;;<DATA PAGAMENTO>
+			/*	GRUPO	*/
+			$objPagamento.Lista_Pagar.gb.DataPag				= $objPagamento.Lista_Pagar.GroupBox()
+			$objPagamento.Lista_Pagar.gb.DataPag.BorderStyle	= 1
+			$objPagamento.Lista_Pagar.gb.DataPag.ForeColor		= 5, 149, 235
+			$objPagamento.Lista_Pagar.gb.DataPag.text			= "Data do pagamento"
+			$objPagamento.Lista_Pagar.gb.DataPag.size			= 200, 65
+			$objPagamento.Lista_Pagar.gb.DataPag.location		= $objPagamento.Lista_Pagar.lb.FoterGrid.left, $objPagamento.Lista_Pagar.lb.FoterGrid.bottom+2
+
+			$objPagamento.Lista_Pagar.lb.DataPag				= $objPagamento.Lista_Pagar.gb.DataPag.Label()
+			$objPagamento.Lista_Pagar.lb.DataPag.Location		= 5, 14
+			$objPagamento.Lista_Pagar.lb.DataPag.size			= 190, 40
+			$objPagamento.Lista_Pagar.lb.DataPag.font			= $System.font("consolas", 13, 1)
+			$objPagamento.Lista_Pagar.lb.DataPag.ForeColor		= "white"
+			$objPagamento.Lista_Pagar.lb.DataPag.fText			= "Data do pagamento"+@crlf+"{}"
+			$objPagamento.Lista_Pagar.lb.DataPag.Text			= "Data do pagamento"
+		;;</DATA PAGAMENTO>
+		;;<VALORES DO PAGAMENTO>
+			/*	GRUPO	*/
+			$objPagamento.Lista_Pagar.gb.ValPag					= $objPagamento.Lista_Pagar.GroupBox()
+			$objPagamento.Lista_Pagar.gb.ValPag.BorderStyle		= 1
+			$objPagamento.Lista_Pagar.gb.ValPag.ForeColor		= 0, 157, 0
+			$objPagamento.Lista_Pagar.gb.ValPag.text			= "Valores"
+			$objPagamento.Lista_Pagar.gb.ValPag.size			= 274, 65
+			$objPagamento.Lista_Pagar.gb.ValPag.location		= $objPagamento.Lista_Pagar.gb.DataPag.right+2, $objPagamento.Lista_Pagar.gb.DataPag.top
+			
+			$objPagamento.Lista_Pagar.lb.ValPag					= $objPagamento.Lista_Pagar.gb.ValPag.Label()
+			$objPagamento.Lista_Pagar.lb.ValPag.Location		= 5, 14
+			$objPagamento.Lista_Pagar.lb.ValPag.size			= 128, 20
+			$objPagamento.Lista_Pagar.lb.ValPag.font			= $System.font("consolas", 13, 1)
+			$objPagamento.Lista_Pagar.lb.ValPag.ForeColor		= "white"
+			$objPagamento.Lista_Pagar.lb.ValPag.Text			= "Valo pago"
+			
+			$objPagamento.Lista_Pagar.tx.ValPag					= $objPagamento.Lista_Pagar.gb.ValPag.textbox()
+			$objPagamento.Lista_Pagar.tx.ValPag.ReadOnly		= true
+			$objPagamento.Lista_Pagar.tx.ValPag.BorderStyle		= false
+			$objPagamento.Lista_Pagar.tx.ValPag.Location		= $objPagamento.Lista_Pagar.lb.ValPag.left, $objPagamento.Lista_Pagar.lb.ValPag.bottom+2
+			$objPagamento.Lista_Pagar.tx.ValPag.size			= 128, 20
+			$objPagamento.Lista_Pagar.tx.ValPag.forecolor		= "white"
+			$objPagamento.Lista_Pagar.tx.ValPag.backcolor		= 51, 51, 51
+			$objPagamento.Lista_Pagar.tx.ValPag.font			= $System.font("consolas", 13, 1)
+			;;--------
+			$objPagamento.Lista_Pagar.lb.ValFalt				= $objPagamento.Lista_Pagar.gb.ValPag.Label()
+			$objPagamento.Lista_Pagar.lb.ValFalt.Location		= $objPagamento.Lista_Pagar.lb.ValPag.right+7, $objPagamento.Lista_Pagar.lb.ValPag.top
+			$objPagamento.Lista_Pagar.lb.ValFalt.size			= 128, 20
+			$objPagamento.Lista_Pagar.lb.ValFalt.font			= $System.font("consolas", 13, 1)
+			$objPagamento.Lista_Pagar.lb.ValFalt.ForeColor		= "white"
+			$objPagamento.Lista_Pagar.lb.ValFalt.Text			= "Faltam"
+			
+			$objPagamento.Lista_Pagar.tx.ValFalt				= $objPagamento.Lista_Pagar.gb.ValPag.textbox()
+			$objPagamento.Lista_Pagar.tx.ValFalt.ReadOnly		= true
+			$objPagamento.Lista_Pagar.tx.ValFalt.BorderStyle	= false
+			$objPagamento.Lista_Pagar.tx.ValFalt.Location		= $objPagamento.Lista_Pagar.lb.ValFalt.left, $objPagamento.Lista_Pagar.lb.ValFalt.bottom+2
+			$objPagamento.Lista_Pagar.tx.ValFalt.size			= 128, 20
+			$objPagamento.Lista_Pagar.tx.ValFalt.forecolor		= "white"
+			$objPagamento.Lista_Pagar.tx.ValFalt.backcolor		= 51, 51, 51
+			$objPagamento.Lista_Pagar.tx.ValFalt.font			= $System.font("consolas", 13, 1)
+		;;</VALORES DO PAGAMENTO>
+		;;<FIM E ESTATUS DA CONTA>
+			/*	Panel	*/
+			$objPagamento.Lista_Pagar.pn.Fim_E_Status			= $objPagamento.Lista_Pagar.panel()
+			$objPagamento.Lista_Pagar.pn.Fim_E_Status.backcolor	= $objPagamento.Lista_Pagar.backcolor
+			$objPagamento.Lista_Pagar.pn.Fim_E_Status.size		= $objPagamento.Lista_Pagar.Width, 30
+			$objPagamento.Lista_Pagar.pn.Fim_E_Status.dock		= 2
+
+			$objPagamento.Lista_Pagar.lb.status					= $objPagamento.Lista_Pagar.pn.Fim_E_Status.Label()
+			$objPagamento.Lista_Pagar.lb.status.Location		= 4, 3
+			$objPagamento.Lista_Pagar.lb.status.size			= 190, 20
+			$objPagamento.Lista_Pagar.lb.status.font			= $System.font("consolas", 13, 1)
+			$objPagamento.Lista_Pagar.lb.status.ForeColor		= "white"
+			$objPagamento.Lista_Pagar.lb.status.fText			= "Estatus: {}"
+			$objPagamento.Lista_Pagar.lb.status.Text			= "Estatus:"
+			
+			$objPagamento.Lista_Pagar.bt.Finalizar				= $objPagamento.Lista_Pagar.pn.Fim_E_Status.ToolButton()
+			$objPagamento.Lista_Pagar.bt.Finalizar.Location		= $objPagamento.Lista_Pagar.lb.status.right+2, 3
+			$objPagamento.Lista_Pagar.bt.Finalizar.size			= 285, 27
+			$objPagamento.Lista_Pagar.bt.Finalizar.enabled		= false
+			$objPagamento.Lista_Pagar.bt.Finalizar.BackColor	= 51, 51, 51
+			$objPagamento.Lista_Pagar.bt.Finalizar.HotBackColor	= 0, 185, 0
+			$objPagamento.Lista_Pagar.bt.Finalizar.ForeColor	= 0, 185, 0
+			$objPagamento.Lista_Pagar.bt.Finalizar.HotForeColor	= 51, 51, 51
+			$objPagamento.Lista_Pagar.bt.Finalizar.BorderStyle	= 0
+			$objPagamento.Lista_Pagar.bt.Finalizar.FlatStyle	= 0
+			$objPagamento.Lista_Pagar.bt.Finalizar.Cursor		= 16
+			$objPagamento.Lista_Pagar.bt.Finalizar.font			= $System.font("consolas", 13, 1)
+			$objPagamento.Lista_Pagar.bt.Finalizar.Text			= "Pagar"
+			$objPagamento.Lista_Pagar.bt.Finalizar.OnClick		=
+			"
+				if (tb_getdata('pagamento-salario.status',, 'idcodigo', $$objPagamento.Lista_Pagar.grid.Cells($$objPagamento.Lista_Pagar.grid.CurrentRow.index, 0).text) = 'A')
+					frmFinalizar_Pagamento()
+					if (@@error = -1) exit 1 endif
+					ListarDados_Pagamento()
+					$$objPagamento.Lista_Pagar.bt.Finalizar.tag = 0
+					for $$=0 to $$objPagamento.Lista_Pagar.grid.Rows.Count
+						$$objPagamento.Lista_Pagar.bt.Finalizar.tag =
+							$$objPagamento.Lista_Pagar.bt.Finalizar.tag + cfloat(replace($$objPagamento.Lista_Pagar.grid.cells($$, 2).text, 'R$ ', ''))
+					next
+					$$objPagamento.Lista_Pagar.lb.FoterGrid.text = format(
+						$$objPagamento.Lista_Pagar.lb.FoterGrid.ftext,
+						$$objPagamento.Lista_Pagar.bt.Finalizar.tag
+					)
+				endif
+			"
+		;;</FIM E ESTATUS DA CONTA>
+		
+	;;<LISTAS DE CONTAS PAGAS>
+
+	Limpar_Campos()
+	$objPagamento.task.Start() ;Iniciando o serviço.
+	$objPagamento.form.Center()
+	$objPagamento.form.ShowModal()
+endfunction
+
+function frmFinalizar_Pagamento()
+	dim
+		$frm, $bt, $tx, $lb,
+		$ID_FUNC, $IDCODIGO,
+		$Val_Pago, $Val_Faltante
+	$ID_FUNC			= Cint(Substr($objPagamento.Lista_Pagar.cb.func.text, 1, instr($objPagamento.Lista_Pagar.cb.func.text, ' -')-1))
+	$IDCODIGO			= $objPagamento.Lista_Pagar.grid.Cells($objPagamento.Lista_Pagar.grid.CurrentRow.index, 0).text
+	;------------------------->
+	$frm				= $System.Form($objPagamento.form)
+	$frm.MaximizeBox	= 0
+	$frm.MinimizeBox	= 0
+	$frm.FormBorderStyle= 1
+	$frm.backcolor		= 51, 51, 51
+	$frm.icon			= $objPagamento.form.icon
+	$frm.size			= 250, 150
+	$frm.Text			= "Finalizar pagamento"
+	$frm.Font			= $System.font("Segeo UI", 13)
+	
+	$lb				= $frm.Label()
+	$lb.Width		= $frm.ClientWidth-20
+	$lb.Location	= 10, 20
+	$lb.ForeColor	= "White"
+	$lb.Text		= "Valor que será pago"
+	
+	$tx					= $frm.TextBox()
+	$tx.Width			= $lb.Width
+	$tx.TextAlign		= 2
+	$tx.BorderStyle		= 0
+	$tx.BackColor		= 35, 35, 35
+	$tx.ForeColor		= 0, 185, 0
+	$tx.Location		= $lb.left, $lb.Bottom+5
+	$tx.Font			= $System.font("Segeo UI", 16, 1)
+	$tx.text			= 'R$ '+substr($objPagamento.Lista_Pagar.tx.ValFalt.Text, 4)
+	$tx.SelectionStart	= 3
+	$tx.SelectionLength	= len($tx.text)
+	$tx.OnKeyDown		=
+	"
+		if ($$tx.keycode = 13)
+			$$=Execute($$bt.OnClick)
+		else
+			$$					= $$tx.SelectionStart
+			$$tx.text			= 'R$ '+MaskTextBox($$tx.text, '0123456789,')
+			$$tx.SelectionStart	= $$+3
+		endif
+	"
+	
+	$bt				= $frm.ToolButton()
+	$bt.Dock		= 2
+	$bt.BackColor	= 51, 51, 51
+	$bt.HotBackColor= 0, 185, 0
+	$bt.ForeColor	= 0, 185, 0
+	$bt.HotForeColor= 51, 51, 51
+	$bt.BorderStyle	= 0
+	$bt.FlatStyle	= 0
+	$bt.Cursor		= 16
+	$bt.FontBold	= true
+	$bt.Text		= "Finalizar pagamento"
+	$bt.OnClick		=
+	"
+		select
+			case (cfloat(substr($$tx.text, 4)) > cfloat(substr($$objPagamento.Lista_Pagar.tx.ValFalt.Text, 4)))
+				$$=msg('Atenção!', 'O valor excede o valor faltante do pagamento', 48+4096)
+				exit 1
+
+			case (cfloat(substr($$tx.text, 4)) =< 0.0)
+				$$=msg('Atenção!', 'O valor é menor que o valor faltante do pagamento', 48+4096)
+				exit 1
+		endselect
+
+		if (msg('Atenção!', 'Deseja fazer o pagamento no valor de '+cstr($$tx.Text)+'?', 4+48+4096) = 6)
+			$$bt.tag = 1
+			$$frm.Hide()
+			$$tx.text = substr($$tx.text, 4)
+		endif
+	"
+
+	$tx.SetFocus()
+	$frm.Center()
+	$frm.ShowModal()
+	while $frm.Visible
+		$=Execute($frm.DoEvents())
+	loop
+	if ($bt.tag)
+		dim $temp
+		$temp			= cdbl(substr($objPagamento.Lista_Pagar.tx.ValFalt.Text, 4))
+		$Val_Pago		= tb_increment("pagamento-salario.valor-pago",, 'idcodigo', $IDCODIGO, $tx.text, false)
+		$Val_Faltante	= tb_decrement("pagamento-salario.valor-faltante",, 'idcodigo', $IDCODIGO, $tx.text, false)
+		tb_updata("pagamento-salario", "DATA-MODIFICACAO", CurrentDate(), 'idcodigo', $IDCODIGO)
+		tb_updata("pagamento-salario", "STATUS", iif(cfloat($Val_Faltante) = 0.0, "F", "A"), 'idcodigo', $IDCODIGO)
+		$objPagamento.Lista_Pagar.grid.Cells($objPagamento.Lista_Pagar.grid.CurrentRow.index, 2).text = $Val_Pago
+		$objPagamento.Lista_Pagar.grid.Cells($objPagamento.Lista_Pagar.grid.CurrentRow.index, 3).text = $Val_Faltante
+		tb_save2("pagamento-salario")
+	endif
+endfunction
+
+function task_Calcula_pagamento()
+	if (VarType($objPagamento) = 8) exit 0 endif
+	dim
+		$i, $objLocal, $IDCODIGO
+
+	$objLocal	= $objPagamento.Contas_Pagar
+	$IDCODIGO	= Cint(Substr($objLocal.cb.func.text, 1, instr($objLocal.cb.func.text, '-')-1))
+
+	if (tb_getdata('funcionario.tipo-pagamento',, 'idcodigo', $IDCODIGO) = 2)
+		$objLocal.lb._TotalSalario1.tag		= $objLocal.lb.SalarioFunc1.tag
+		$objLocal.lb._TotalSalario1.text	= $objLocal.lb.SalarioFunc1.text
+		$objLocal.tx.HorasTrabalha1.Enabled	= false
+		$objLocal.gb.comissao.Enabled		= true
+	else
+		$objLocal.lb._TotalSalario1.tag		= Cdbl(Replace($objLocal.tx.HorasTrabalha1.Text, '_', ''))*Cdbl($objLocal.lb.SalarioFunc1.tag)
+		$objLocal.lb._TotalSalario1.text	= Flip_Currency(formatnumber($objLocal.lb._TotalSalario1.Tag, 2))
+		$objLocal.tx.HorasTrabalha1.Enabled	= true
+		$objLocal.gb.comissao.Enabled		= false
+	endif
+	if not $objLocal.ck.NaoPagaTodoSalario.Checked
+		$objLocal.tx.ValorSalario.tag		= $objLocal.lb._TotalSalario1.tag
+		$objLocal.tx.ValorSalario.text		= formatnumber($objLocal.lb._TotalSalario1.Tag, 2)
+	endif
+
+	$objLocal.lb.TotalSalario.Text	=
+		format(
+			$objLocal.lb.TotalSalario.fText,
+			Flip_Currency(
+				formatnumber(
+					Cdbl($objLocal.lb._TotalSalario1.tag)-Cdbl($objLocal.lb.ValFaltSalario1.tag),
+					2
+				)
+			)
+		)
+
+	$objLocal.lb.TotalComissoes.Text	=
+		format(
+			$objLocal.lb.TotalComissoes.fText,
+			Flip_Currency(
+				formatnumber(
+					Cdbl($objLocal.lb.ValorComissao1.tag)-Cdbl($objLocal.lb.ValorFaltComissao1.tag),
+					2
+				)
+			)
+		)
+
+	$objLocal.lb.TotalFalta.Text	=
+		format(
+			$objLocal.lb.TotalFalta.fText,
+			Flip_Currency(
+				formatnumber(
+					Cdbl($objLocal.lb.ValorFaltComissao1.tag)+Cdbl($objLocal.lb.ValFaltSalario1.tag),
+					2
+				)
+			)
+		)
+
+	$objLocal.lb.Total_SerPago.Text	=
+		format(
+			$objLocal.lb.Total_SerPago.fText,
+			Flip_Currency(
+				formatnumber(
+					Cdbl($objLocal.tx.ValorPagComissao1.Text)+Cdbl($objLocal.tx.ValorSalario.text),
+					2
+				)
+			)
+		)
+endfunction
+
+function Buscar_Pagamento()
+	dim
+		$objLocal, $ID_FUNCIONARIO, $IDCODIGO_FUNCS,
+		$temp, $func_noPeriodo, $i, $Valor_Total
+	$objLocal		= $objPagamento.Lista_Pagar
+	$ID_FUNCIONARIO	= Cint(Substr($objLocal.cb.func.text, 1, instr($objLocal.cb.func.text, ' -')-1))
+	if $objLocal.ck.BuscaPeriodo.Checked
+		$IDCODIGO_FUNCS	= tb_FindTextinSequenceData("pagamento-salario.idcodigo", "id-func", $ID_FUNCIONARIO, "=*")
+		for $i=0 to ubound($IDCODIGO_FUNCS)
+			$temp = tb_getdata('pagamento-salario.data-pagamento',, 'idcodigo', $IDCODIGO_FUNCS[$i])
+			if (replace($temp, '/', '') >= replace($objLocal.tx.de.text,'/','')) ;inicio;
+				if (replace($temp, '/', '') =< replace($objLocal.tx.ate.text,'/','')) ;fim.
+					redim preserve $func_noPeriodo[ubound($func_noPeriodo)+1]
+					$func_noPeriodo[ubound($func_noPeriodo)] = $IDCODIGO_FUNCS[$i]
+				endif
+			endif
+		next
+	else
+		$func_noPeriodo = tb_FindTextinSequenceData("pagamento-salario.idcodigo", 'id-func', $ID_FUNCIONARIO, "=*")
+	endif
+	if (trim(join($func_noPeriodo,'')) = '')
+		$objLocal.grid.rows.count = 0
+		Limpar_Campos_Pagamento()
+		$objLocal.lb.FoterGrid.text	= format($objLocal.lb.FoterGrid.ftext, "")
+	else
+		$objLocal.grid.rows.count = ubound($func_noPeriodo)+1
+		$Valor_Total = 0.0
+		for $i=0 to ubound($func_noPeriodo)
+			$objLocal.grid.cells($i, 0).text = $func_noPeriodo[$i]
+			$objLocal.grid.cells($i, 1).text = $ID_FUNCIONARIO
+			$objLocal.grid.cells($i, 2).text = tb_getdata("pagamento-salario.valor-pago",, 'idcodigo', $func_noPeriodo[$i])
+			$objLocal.grid.cells($i, 3).text = tb_getdata("pagamento-salario.valor-faltante",, 'idcodigo', $func_noPeriodo[$i])
+			$objLocal.grid.cells($i, 4).text = tb_getdata("pagamento-salario.data-pagamento",, 'idcodigo', $func_noPeriodo[$i])
+			$objLocal.grid.cells($i, 5).text = tb_getdata("pagamento-salario.descrição",, 'idcodigo', $func_noPeriodo[$i])
+			$Valor_Total = $Valor_Total + cfloat($objLocal.grid.cells($i, 2).text, true)
+		next
+		$objLocal.lb.FoterGrid.text = format(
+			$objLocal.lb.FoterGrid.ftext,
+			$Valor_Total
+		)
+		$=Execute($objLocal.grid.Onclick)
+	endif
+endfunction
+
+function ListarDados_Pagamento()
+	dim $objLocal $objLocal = $objPagamento.Lista_Pagar
+	if ($objLocal.grid.CurrentColumn.Index <> -1)
+		dim $id, $row
+		$row= $objLocal.grid.CurrentRow.Index
+		$id	= $objLocal.grid.Cells($row, 0).text
+		$objLocal.lb.DataPag.text = format(
+			$objLocal.lb.DataPag.ftext,
+			$objLocal.grid.Cells($row, 4).text
+		)
+		$objLocal.tx.ValFalt.text = $objLocal.grid.Cells($row, 3).text
+		$objLocal.tx.ValPag.text = $objLocal.grid.Cells($row, 2).text
+		$objLocal.lb.status.text = format(
+			$objLocal.lb.status.ftext,
+			iif(tb_getdata('pagamento-salario.status',, 'idcodigo', $id)='A', "Em aberto", "Pago!")
+		)
+		if (tb_getdata('pagamento-salario.status',, 'idcodigo', $id)='A')
+			$objLocal.lb.status.ForeColor	= 255, 83, 83
+			$objLocal.bt.Finalizar.Enabled	= true
+		else
+			$objLocal.lb.status.ForeColor = 0, 255, 64
+			$objLocal.bt.Finalizar.Enabled	= false
+		endif
+	else
+		Limpar_Campos_Pagamento()
+	endif
+endfunction
+
+function Limpar_Campos_Pagamento()
+	dim $objLocal $objLocal = $objPagamento.Lista_Pagar
+	$objLocal.lb.DataPag.text		= format($objLocal.lb.DataPag.ftext, '')
+	$objLocal.tx.ValFalt.text		= ""
+	$objLocal.tx.ValPag.text		= ""
+	$objLocal.lb.status.text		= format($objLocal.lb.status.ftext, '')
+	$objLocal.lb.status.ForeColor	= "White"
+endfunction
+
+function Limpar_Campos()
+	$objPagamento.Contas_Pagar.cb.func.SelectedIndex			= -1
+	$objPagamento.Contas_Pagar.tx.nomefunc.Text					= ""
+	$objPagamento.Contas_Pagar.tx.HorasTrabalha1.Tag			= 0
+	$objPagamento.Contas_Pagar.tx.HorasTrabalha1.Text			= "__"
+	$objPagamento.Contas_Pagar.lb.TipoComissao1.Text			= ""
+	$objPagamento.Contas_Pagar.lb.Tipofunc1.Text				= ""
+	$objPagamento.Contas_Pagar.lb.TipoPagfunc1.Text				= ""
+	$objPagamento.Contas_Pagar.ck.NaoPagaTodoSalario.Checked	= 0
+	$objPagamento.Contas_Pagar.ck.NaoPagaTodaComissao.Checked	= 0
+	$objPagamento.Contas_Pagar.lb.TotalComissoes.text			= ""
+	$objPagamento.Contas_Pagar.lb.TotalSalario.text				= ""
+	$objPagamento.Contas_Pagar.lb.ValFaltSalario1.tag			= 0
+	$objPagamento.Contas_Pagar.lb.ValorComissao1.tag			= 0
+	$objPagamento.Contas_Pagar.tx.ValorSalario.tag				= 0
+	$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Tag			= 0
+	$objPagamento.Contas_Pagar.lb.SalarioFunc1.Tag				= 0
+	$objPagamento.Contas_Pagar.tx.ValorPagComissao1.Text		= "0,00"
+	$objPagamento.Contas_Pagar.lb.SalarioFunc1.Text				= "R$ 0,00"
+	$objPagamento.Contas_Pagar.lb.ValFaltSalario1.text			= "R$ 0,00"
+	$objPagamento.Contas_Pagar.lb.ValorComissao1.text			= "R$ 0,00"
+	$objPagamento.Contas_Pagar.tx.ValorSalario.Text				= "R$ 0,00"
+endfunction
+
+function fPagamento_cb_func()
+	dim $i, $k, $, $contratos
+	dim
+		$objLocal, $IDCODIGO,
+		$ID_COMISSAO, $temp[2],
+		$TIPO_PAG[2], $TIPO_FUNC[1],
+		$Data_number
+	$TIPO_PAG[1]	= "Por Hora"
+	$TIPO_PAG[2]	= "Valor fixo"
+	$TIPO_FUNC[0]	= "Professor"
+	$TIPO_FUNC[1]	= "Não professor"
+
+	$objLocal	= $objPagamento.Contas_Pagar
+	$IDCODIGO	= Cint(Substr($objLocal.cb.func.text, 1, instr($objLocal.cb.func.text, '-')-1))
+
+	$ID_COMISSAO								= tb_getdata('funcionario.tipo-comisao',, 'idcodigo', $IDCODIGO)
+	$objLocal.ck.NaoPagaTodaComissao.Checked	= 0
+	$objLocal.ck.NaoPagaTodoSalario.Checked		= 0
+	$objLocal.tx.nomefunc.text					= Substr($objLocal.cb.func.text, instr($objLocal.cb.func.text, '-')+2)
+	$objLocal.lb.TipoPagfunc1.text				= $TIPO_PAG[tb_getdata('funcionario.tipo-pagamento',, 'idcodigo', $IDCODIGO)]
+	$objLocal.lb.Tipofunc1.text					= $TIPO_FUNC[tb_getdata('funcionario.tipo-func',, 'idcodigo', $IDCODIGO)]
+	$objLocal.lb.TipoComissao1.text				= tb_getdata('perfil-comissao.nome-perfil',, 'idcodigo', $ID_COMISSAO)
+	
+	; if (tb_GetMaxRow('pagamento-salario') > 0)
+		
+	; endif
+	$objLocal.lb.SalarioFunc1.tag				= tb_getdata('funcionario.val-salario',, 'idcodigo', $IDCODIGO)
+	$objLocal.lb.SalarioFunc1.text				= Flip_Currency(formatnumber($objLocal.lb.SalarioFunc1.tag, 2))
+
+	if (tb_getdata('funcionario.tipo-func',, 'idcodigo', $IDCODIGO) = 1)
+		$contratos		= tb_FindTextinSequenceData('contrato.idcodigo', 'comissao-paga', '0', '=*')
+		$Data_number	= 0.0
+		for $i=0 to ubound($contratos)
+			if (tb_getdata('contrato.func-contrato',, 'idcodigo', $contratos[$i]) == $IDCODIGO)
+				$temp[0]		= Cdbl(tb_getdata('contrato.val-matricula',, 'idcodigo', $contratos[$i]))
+				$temp[1]		= tb_FindTextinSequenceData('dados-comissao.idcodigo', 'id-perfil', $ID_COMISSAO, '=*')
+				$temp[2]		= $temp[1]
+				for $k=0 to ubound($temp[1])
+					$temp[2][$k] = cdbl(tb_getdata('dados-comissao.valor-cond',, 'idcodigo', $temp[1][$k]))
+				next
+				$k = IndexBetweenOrSmallerArrayItem($temp[0], $temp[2])
+
+				for $=1 to int($temp[0]/$temp[2][$k])
+					if (($temp[2][$k] > $temp[0]) or ($temp[0]/$temp[2][$k]))
+						$Data_number = $Data_number + cdbl(tb_getdata('dados-comissao.valor/porce-comi',, 'idcodigo', $temp[1][$k]))
+					endif
+				next
+				
+			endif
+		next
+	else
+		$Data_number = 0
+	endif
+	$objLocal.lb.ValorComissao1.tag			= $Data_number
+	$objLocal.lb.ValorComissao1.text		= Flip_Currency(formatnumber($Data_number, 2))
+	$objLocal.tx.ValorPagComissao1.tag		= $Data_number
+	$objLocal.tx.ValorPagComissao1.Text		= formatnumber($Data_number, 2)
+
+	/*	DADOS DO SALÁRIO	*/
+	if (tb_getdata('funcionario.tipo-pagamento',, 'idcodigo', $IDCODIGO) = 2)
+		$objLocal.lb._TotalSalario1.Tag		= $objLocal.lb.SalarioFunc1.tag
+		$objLocal.lb._TotalSalario1.text	= $objLocal.lb.SalarioFunc1.text
+		$objLocal.tx.ValorSalario.tag		= $objLocal.lb.SalarioFunc1.tag
+		$objLocal.tx.ValorSalario.text		= formatnumber($objLocal.lb.SalarioFunc1.tag, 2)
+	else
+		$objLocal.lb._TotalSalario1.Tag		= Cdbl(Replace($objLocal.tx.HorasTrabalha1.Text, '_', ''))*Cdbl($objLocal.lb.SalarioFunc1.tag)
+		$objLocal.lb._TotalSalario1.text	= Flip_Currency(formatnumber($objLocal.lb._TotalSalario1.Tag, 2))
+		$objLocal.tx.ValorSalario.tag		= $objLocal.lb._TotalSalario1.Tag
+		$objLocal.tx.ValorSalario.text		= formatnumber($objLocal.lb._TotalSalario1.Tag, 2)
+	endif
+endfunction
+
+function Confirmar_pagamento()
+	Dim
+		$i, $y, $data, $temp[2],
+		$objLocal, $ID_COMISSAO,
+		$IDCODIGO_PAG, $ID_CONTRATOS,
+		$PERIODO_PAGAMENTO[1], $
+	DIM
+		$ID_FUNCIONARIO, $VALOR_A_PAGAR,
+		$VALOR_FALTANTE, $DATA_PAGAMENTO,
+		$DATA_PROX_PAGAMENTO
+	
+	$PERIODO_PAGAMENTO[0]	= "Diário", "Semanal", "Quizenal", "Mensal"
+	$PERIODO_PAGAMENTO[1]	= 1, 7, 15, 30
+	$objLocal				= $objPagamento.Contas_Pagar
+	if (msg("Informação do sistema", "Deseja fazer o pagamento do funcionário "+Substr($objLocal.cb.func.text, instr($objLocal.cb.func.text, '-')+1), 4096+64+4) = 7)
+		exit -1
+	endif
+
+	$ID_FUNCIONARIO			= Cint(Substr($objLocal.cb.func.text, 1, instr($objLocal.cb.func.text, '-')-1))
+	$ID_COMISSAO			= tb_getdata('funcionario.tipo-comisao',, 'idcodigo', $ID_FUNCIONARIO)
+
+	$				 		= tb_FindTextinSequenceData('pagamento-salario.idcodigo', 'id-func', $ID_FUNCIONARIO, '=*')
+	$				 		= $[ubound($)]
+	$DATA_PAGAMENTO 		= tb_getdata('pagamento-salario.DATA-PAGAMENTO',, 'idcodigo', $)
+	$DATA_PROX_PAGAMENTO	= tb_getdata('pagamento-salario.DATA-PROXIMO-PAGAMENTO',, 'idcodigo', $)
+	$PERIODO_PAGAMENTO[0]	= $PERIODO_PAGAMENTO[0][Ascan($PERIODO_PAGAMENTO[1], cint(tb_getdata("funcionario.periodo-pagamento",, 'idcodigo', $ID_FUNCIONARIO)))]
+	$PERIODO_PAGAMENTO[1]	= tb_getdata("funcionario.periodo-pagamento",, 'idcodigo', $ID_FUNCIONARIO)
+	if ($DATA_PAGAMENTO =< CurrentDate()) and ($DATA_PROX_PAGAMENTO => CurrentDate())
+		$ =
+			tb_getdata("funcionario.nome",, 'idcodigo', $ID_FUNCIONARIO), $DATA_PAGAMENTO,
+			$PERIODO_PAGAMENTO[0],
+			$DATA_PROX_PAGAMENTO, CurrentDate()
+		
+		if ($PERIODO_PAGAMENTO[1] = 30)
+			$[2] = $[2]+'(dia '+tb_getdata("funcionario.DATA-PAGAMENTO",, 'idcodigo', $ID_FUNCIONARIO)+')'
+		endif
+		if (msg("Atenção!",
+			format(
+				'O funcionário(a) "{}" já tem um pagamento@crlfna data de "{}" e o período do pagamento do fuincionário(a) é {}.@crlf'+
+				'Próximo dia de pagamento do funcionário(a) será "{}"@crlfVocê deseja mesmo assim fazer mais um pagamento hoje({})?', $
+			),
+			4+32+256+4096) <> 6)
+			Limpar_Campos()
+			exit -1
+		endif
+	endif
+	$VALOR_A_PAGAR	=
+		formatnumber(
+			Cdbl($objLocal.tx.ValorPagComissao1.Text)+Cdbl($objLocal.tx.ValorSalario.text),
+			2
+		)
+	$VALOR_FALTANTE =
+		formatnumber(
+			Cdbl($objLocal.lb.ValorFaltComissao1.tag)+Cdbl($objLocal.lb.ValFaltSalario1.tag),
+			2
+		)
+
+	$DATA_PAGAMENTO = CurrentDate()
+	$IDCODIGO_PAG	= tb_increment('gen.pagamento-salario', 1)
+	$data			=
+		$IDCODIGO_PAG, $ID_FUNCIONARIO,
+		$VALOR_A_PAGAR, $VALOR_FALTANTE, $DATA_PAGAMENTO,
+		DateCalc_Br(@date, iif($PERIODO_PAGAMENTO[1]=30, tb_getdata("funcionario.DATA-PAGAMENTO",, 'idcodigo', $ID_FUNCIONARIO), $PERIODO_PAGAMENTO[1])),
+		'', OnlyNumbers($objLocal.tx.HorasTrabalha1.text),
+		replace($objLocal.lb._TotalSalario1.text, 'R$ ', ''),
+		'', '0', iif(Cfloat($objLocal.lb.ValorFaltComissao1.tag)+Cfloat($objLocal.lb.ValFaltSalario1.tag)>0, "A", "F")
+	tb_insertdata('pagamento-salario', $data)
+
+	if (tb_getdata('funcionario.tipo-func',, 'idcodigo', $ID_FUNCIONARIO) = 1)
+		$ID_CONTRATOS = tb_FindTextinSequenceData('contrato.idcodigo', 'comissao-paga', '0', '=*')
+		for $i=0 to ubound($ID_CONTRATOS)
+			if (tb_getdata('contrato.func-contrato',, 'idcodigo', $ID_CONTRATOS[$i]) == $ID_FUNCIONARIO)
+				$temp[0]		= Cdbl(tb_getdata('contrato.val-matricula',, 'idcodigo', $ID_CONTRATOS[$i]))
+				$temp[1]		= tb_FindTextinSequenceData('dados-comissao.idcodigo', 'id-perfil', $ID_COMISSAO, '=*')
+				$temp[2]		= $temp[1]
+				for $y=0 to ubound($temp[1])
+					$temp[2][$y] = cdbl(tb_getdata('dados-comissao.valor-cond',, 'idcodigo', $temp[1][$y]))
+				next
+				$y = IndexBetweenOrSmallerArrayItem($temp[0], $temp[2])
+	
+				for $=1 to int($temp[0]/$temp[2][$y])
+					if (($temp[2][$y] > $temp[0]) or ($temp[0]/$temp[2][$y]))
+						$data =
+							tb_increment('gen.pagamento-comissao', 1), $IDCODIGO_PAG, $ID_CONTRATOS[$i], /*ID-CONTRATO*/
+							cdbl(tb_getdata('dados-comissao.valor/porce-comi',, 'idcodigo', $temp[1][$y])),
+							CurrentDate()
+							
+						tb_insertdata('pagamento-comissao', $data)
+						tb_UpData('contrato', 'comissao-paga', 1, 'idcodigo', $ID_CONTRATOS[$i])
+					endif
+				next
+			endif
+		next
+	endif
+	
+	tb_save2('pagamento-salario')
+	tb_save2('pagamento-comissao')
+	tb_save2('contrato')
+	Limpar_Campos()
+	$=msg("Informação do sistema", "Pagamento concluído com sucesso!", 4096+64)
+endfunction

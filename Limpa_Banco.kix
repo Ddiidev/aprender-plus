@@ -1,0 +1,53 @@
+break on
+include "Includes\KiXDB\Tokens.udf"
+include "Includes\KiXDB\hash.Udf"
+include "Includes\KiXDB\AlsArray.udf"
+include "Includes\KiXDB\AlsString.Udf"
+include "Includes\KiXDB\KiXDB.Udf"
+
+$DIR = @Curdir+"\DataBase"
+tb_load($DIR+"\Generetors.ktb", "Gen")
+tb_load($DIR+"\usuario.ktb", "usuario")
+tb_load($DIR+"\Empresa.ktb", "Empresa")
+tb_load($DIR+"\Contrato.ktb", "Contrato")
+tb_load($DIR+"\Funcionario.ktb", "funcionario")
+tb_load($DIR+"\Dados-Comissao.ktb", "Dados-Comissao")
+tb_load($DIR+"\Cadastro-Aluno.ktb", "Cadastro-Aluno")
+tb_load($DIR+"\Perfil-Comissao.ktb", "Perfil-Comissao")
+tb_load($DIR+"\pagamento-salario.ktb", "pagamento-salario")
+tb_load($DIR+"\pagamento-comissao.ktb", "pagamento-comissao")
+tb_load($DIR+"\pagamento-mensalidade-aluno.ktb", "pag-mensalidade-aluno")
+
+tb_RemoveAllRows("usuario")
+tb_RemoveAllRows("empresa")
+tb_RemoveAllRows("contrato")
+tb_RemoveAllRows("cursos")
+tb_RemoveAllRows("funcionario")
+tb_RemoveAllRows("dados-comissao")
+tb_RemoveAllRows("perfil-comissao")
+tb_RemoveAllRows("Cadastro-Aluno")
+tb_RemoveAllRows("pagamento-salario")
+tb_RemoveAllRows("pagamento-comissao")
+tb_RemoveAllRows("pag-mensalidade-aluno")
+tb_updata("gen",
+	'
+		"base-curso", "cadastro-aluno",
+		"contrato", "perfil-comissao",
+		"dados-comissao", "funcionario",
+		"usuario", "pagamento-salario",
+		"pagamento-comissao"
+	',
+	'0,0,0,0,0,0,0,0,0',
+	1
+)
+tb_save2("gen")
+tb_save2("usuario")
+tb_save2("empresa")
+tb_save2("contrato")
+tb_save2("funcionario")
+tb_save2("dados-comissao")
+tb_save2("perfil-comissao")
+tb_save2("Cadastro-Aluno")
+tb_save2("pagamento-salario")
+tb_save2("pagamento-comissao")
+tb_save2("pag-mensalidade-aluno")
